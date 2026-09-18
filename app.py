@@ -22,6 +22,7 @@ DB_PATH = os.path.join(BASE_DIR, os.environ.get("DB_PATH", "database.db"))
 APP_URL = (
     os.environ.get("MINI_APP_URL")
     or os.environ.get("APP_URL")
+    or os.environ.get("RENDER_EXTERNAL_URL")
     or ""
 ).strip()
 PREMIUM_PRICE = 50
@@ -162,6 +163,8 @@ def generate_code():
 
 
 last_update_id = 0
+_workers_started = False
+_workers_lock = threading.Lock()
 
 
 def poll_bot():
@@ -271,6 +274,18 @@ def process_auctions():
         except:
             pass
         time.sleep(15)
+
+
+def start_background_workers():
+    global _workers_started
+    with _workers_lock:
+        if _workers_started:
+            return
+        init_db()
+        if BOT_TOKEN:
+            threading.Thread(target=poll_bot, daemon=True).start()
+        threading.Thread(target=process_auctions, daemon=True).start()
+        _workers_started = True
 
 
 # ── AUTH ─────────────────────────────────────────────
@@ -1074,11 +1089,10 @@ def set_premium():
     return nc(jsonify({"success": True}))
 
 
+start_background_workers()
+
+
 if __name__ == "__main__":
-    init_db()
-    if BOT_TOKEN:
-        threading.Thread(target=poll_bot, daemon=True).start()
-    threading.Thread(target=process_auctions, daemon=True).start()
     app.run(
         host="0.0.0.0",
         port=int(os.environ.get("PORT", "5000")),
