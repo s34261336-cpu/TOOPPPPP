@@ -19,7 +19,25 @@ BOT_TOKEN = (
 ).strip()
 ADMIN_CODE = os.environ.get("ADMIN_CODE", "").strip()
 DB_PATH = os.path.join(BASE_DIR, os.environ.get("DB_PATH", "database.db"))
+ENABLE_BOT_POLLING = os.environ.get("ENABLE_BOT_POLLING", "1").strip().lower() not in {
+    "0",
+    "false",
+    "no",
+    "off",
+}
+ENABLE_CODE_SYNC = os.environ.get("ENABLE_CODE_SYNC", "1").strip().lower() not in {
+    "0",
+    "false",
+    "no",
+    "off",
+}
+REPLIT_DEV_DOMAIN = os.environ.get("REPLIT_DEV_DOMAIN", "").strip()
 APP_URL = (
+    f"https://{REPLIT_DEV_DOMAIN}" if ENABLE_BOT_POLLING and REPLIT_DEV_DOMAIN else ""
+)
+APP_URL = (
+    APP_URL
+    or
     os.environ.get("WEBAPP_URL")
     or os.environ.get("WEB_APP_URL")
     or os.environ.get("MINI_APP_URL")
@@ -31,12 +49,6 @@ CODE_SYNC_URL = (
     os.environ.get("CODE_SYNC_URL") or APP_URL
 ).strip().rstrip("/")
 CODE_SYNC_SECRET = os.environ.get("CODE_SYNC_SECRET", "").strip()
-ENABLE_BOT_POLLING = os.environ.get("ENABLE_BOT_POLLING", "1").strip().lower() not in {
-    "0",
-    "false",
-    "no",
-    "off",
-}
 PREMIUM_PRICE = 50
 UPLOAD_FOLDER = os.path.join(BASE_DIR, "static", "uploads")
 ALLOWED_EXT = {"png", "jpg", "jpeg", "gif", "webp"}
@@ -175,7 +187,7 @@ def generate_code():
 
 
 def sync_code_to_webapp(telegram_id, code, username, first_name):
-    if not CODE_SYNC_URL:
+    if not ENABLE_CODE_SYNC or not CODE_SYNC_URL:
         return True
     if not CODE_SYNC_SECRET:
         app.logger.error("CODE_SYNC_URL задан, но CODE_SYNC_SECRET не задан")
