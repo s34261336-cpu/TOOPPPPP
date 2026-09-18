@@ -45,6 +45,21 @@ python app.py
 Без `BOT_TOKEN` веб-часть запускается для локальной проверки, но Telegram
 polling не включается.
 
+## BotHost + Render одновременно
+
+Если бот работает на BotHost, а Mini App открывается на Render, локальная
+SQLite-база у них разная. Для входа нужно включить синхронизацию кодов:
+
+1. На Render добавьте `CODE_SYNC_SECRET`.
+2. На BotHost добавьте такой же `CODE_SYNC_SECRET`, а `WEBAPP_URL` укажите
+   точным адресом Render без завершающего `/`.
+3. На BotHost запускайте этот `app.py` с `BOT_TOKEN` и `ADMIN_CODE`.
+4. На Render оставьте `BOT_TOKEN` пустым, чтобы два сервера не конкурировали
+   за Telegram polling.
+
+`CODE_SYNC_SECRET` — это общий длинный случайный секрет. Его значение должно
+совпадать на BotHost и Render, но не должно попадать в Git или сообщения.
+
 ## Render Free
 
 В репозитории есть готовый `render.yaml`.

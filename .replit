@@ -47,3 +47,5 @@ channel = "stable-25_05"
 
 [userenv.shared]
 MINI_APP_URL = "https://tooppppp.onrender.com"
+
+ENABLE_BOT_POLLING = "0"

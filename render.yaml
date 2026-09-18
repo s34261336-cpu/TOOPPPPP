@@ -13,6 +13,8 @@ services:
         sync: false
       - key: BOT_USERNAME
         sync: false
+      - key: CODE_SYNC_SECRET
+        sync: false
       - key: SESSION_SECRET
         generateValue: true
       - key: DB_PATH

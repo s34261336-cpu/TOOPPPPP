@@ -1,4 +1,4 @@
-import os, sqlite3, random, string, threading, time, secrets, requests
+import hashlib, hmac, os, sqlite3, random, string, threading, time, secrets, requests
 from flask import Flask, render_template, request, jsonify, session, send_from_directory
 from flask_cors import CORS
 
@@ -27,6 +27,16 @@ APP_URL = (
     or os.environ.get("RENDER_EXTERNAL_URL")
     or ""
 ).strip()
+CODE_SYNC_URL = (
+    os.environ.get("CODE_SYNC_URL") or APP_URL
+).strip().rstrip("/")
+CODE_SYNC_SECRET = os.environ.get("CODE_SYNC_SECRET", "").strip()
+ENABLE_BOT_POLLING = os.environ.get("ENABLE_BOT_POLLING", "1").strip().lower() not in {
+    "0",
+    "false",
+    "no",
+    "off",
+}
 PREMIUM_PRICE = 50
 UPLOAD_FOLDER = os.path.join(BASE_DIR, "static", "uploads")
 ALLOWED_EXT = {"png", "jpg", "jpeg", "gif", "webp"}
@@ -164,6 +174,43 @@ def generate_code():
     return "".join(random.choices(string.digits, k=6))
 
 
+def sync_code_to_webapp(telegram_id, code, username, first_name):
+    if not CODE_SYNC_URL:
+        return True
+    if not CODE_SYNC_SECRET:
+        app.logger.error("CODE_SYNC_URL задан, но CODE_SYNC_SECRET не задан")
+        return False
+
+    timestamp = int(time.time())
+    signing_text = f"{telegram_id}:{code}:{timestamp}".encode()
+    signature = hmac.new(
+        CODE_SYNC_SECRET.encode(), signing_text, hashlib.sha256
+    ).hexdigest()
+    payload = {
+        "telegram_id": telegram_id,
+        "code": code,
+        "username": username,
+        "first_name": first_name,
+        "timestamp": timestamp,
+        "signature": signature,
+    }
+    endpoint = f"{CODE_SYNC_URL}/api/internal/sync-code"
+
+    for attempt in range(3):
+        try:
+            response = requests.post(endpoint, json=payload, timeout=5)
+            if response.ok and response.json().get("success"):
+                return True
+            app.logger.warning(
+                "Синхронизация кода отклонена: HTTP %s", response.status_code
+            )
+        except requests.RequestException as exc:
+            app.logger.warning("Ошибка синхронизации кода (попытка %s): %s", attempt + 1, exc)
+        if attempt < 2:
+            time.sleep(0.5 * (attempt + 1))
+    return False
+
+
 last_update_id = 0
 _workers_started = False
 _workers_lock = threading.Lock()
@@ -207,6 +254,11 @@ def poll_bot():
                         )
                         conn.commit()
                         conn.close()
+                        if not sync_code_to_webapp(cid, code, un, fn):
+                            app.logger.error(
+                                "Код для Telegram ID %s не синхронизирован с Mini App",
+                                cid,
+                            )
                         kb = (
                             {
                                 "inline_keyboard": [
@@ -284,7 +336,7 @@ def start_background_workers():
         if _workers_started:
             return
         init_db()
-        if BOT_TOKEN:
+        if BOT_TOKEN and ENABLE_BOT_POLLING:
             threading.Thread(target=poll_bot, daemon=True).start()
         threading.Thread(target=process_auctions, daemon=True).start()
         _workers_started = True
@@ -304,6 +356,54 @@ def index():
 @app.route("/static/uploads/<path:filename>")
 def uploads(filename):
     return send_from_directory(UPLOAD_FOLDER, filename)
+
+
+@app.route("/api/internal/sync-code", methods=["POST"])
+def sync_code():
+    if not CODE_SYNC_SECRET:
+        return nc(jsonify({"success": False, "message": "Синхронизация не настроена"})), 503
+
+    data = request.get_json(silent=True) or {}
+    telegram_id = str(data.get("telegram_id", "")).strip()
+    code = str(data.get("code", "")).strip()
+    username = str(data.get("username", "")).strip()
+    first_name = str(data.get("first_name", "Пользователь")).strip() or "Пользователь"
+    try:
+        timestamp = int(data.get("timestamp", 0))
+    except (TypeError, ValueError):
+        timestamp = 0
+    signature = str(data.get("signature", "")).strip()
+
+    if (
+        not telegram_id
+        or len(code) != 6
+        or not code.isdigit()
+        or not signature
+        or abs(int(time.time()) - timestamp) > 120
+    ):
+        return nc(jsonify({"success": False, "message": "Некорректный запрос"})), 400
+
+    signing_text = f"{telegram_id}:{code}:{timestamp}".encode()
+    expected_signature = hmac.new(
+        CODE_SYNC_SECRET.encode(), signing_text, hashlib.sha256
+    ).hexdigest()
+    if not hmac.compare_digest(signature, expected_signature):
+        return nc(jsonify({"success": False, "message": "Недействительная подпись"})), 401
+
+    conn = get_db()
+    c = conn.cursor()
+    c.execute(
+        "INSERT OR IGNORE INTO users(telegram_id,username,first_name) VALUES(?,?,?)",
+        (telegram_id, username, first_name),
+    )
+    c.execute("DELETE FROM codes WHERE telegram_id=? AND used=0", (telegram_id,))
+    c.execute(
+        "INSERT INTO codes(telegram_id,code) VALUES(?,?)",
+        (telegram_id, code),
+    )
+    conn.commit()
+    conn.close()
+    return nc(jsonify({"success": True}))
 
 
 @app.route("/api/login", methods=["POST"])
