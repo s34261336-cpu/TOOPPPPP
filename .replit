@@ -29,7 +29,7 @@ outputType = "webview"
 
 [[workflows.workflow.tasks]]
 task = "shell.exec"
-args = "uv run --no-sync python app.py"
+args = "uv sync --frozen && uv run --no-sync python app.py"
 waitForPort = 5000
 
 [agent]

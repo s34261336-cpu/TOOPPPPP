@@ -1,0 +1,1 @@
+- [Python uv projects](python-uv-projects.md) — запуск должен сначала синхронизировать зависимости из lock-файла, а post-merge не должен выполнять чужие Node/DB-шаги.
