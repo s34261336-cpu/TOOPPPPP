@@ -1,0 +1,1304 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no">
+<title>GiftFastel</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;}
+body{min-height:100vh;background:#060410;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;color:#e2e8f0;overflow-x:hidden;}
+.bg-orbs{position:fixed;inset:0;z-index:0;pointer-events:none;}
+.orb{position:absolute;border-radius:50%;filter:blur(120px);opacity:.16;animation:float 10s ease-in-out infinite;}
+.orb1{width:500px;height:500px;background:#5b21b6;top:-150px;left:-150px;}
+.orb2{width:400px;height:400px;background:#0e7490;bottom:-100px;right:-100px;animation-delay:4s;}
+.orb3{width:300px;height:300px;background:#be185d;top:40%;left:40%;animation-delay:2s;}
+@keyframes float{0%,100%{transform:translateY(0);}50%{transform:translateY(-20px);}}
+.gl{background:rgba(255,255,255,.04);backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);border:1px solid rgba(255,255,255,.08);border-radius:20px;}
+.gc{background:rgba(0,0,0,.38);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border:1px solid rgba(255,255,255,.07);border-radius:14px;}
+.page{display:none;position:relative;z-index:1;min-height:100vh;padding:14px;}
+.page.active{display:flex;flex-direction:column;align-items:center;justify-content:center;}
+.page.ptop{justify-content:flex-start;}
+
+/* LOGIN */
+.lc{width:100%;max-width:360px;padding:36px 28px;text-align:center;}
+.logo{width:78px;height:78px;background:linear-gradient(135deg,#6d28d9,#0e7490);border-radius:22px;display:flex;align-items:center;justify-content:center;font-size:34px;margin:0 auto 18px;box-shadow:0 0 50px rgba(109,40,217,.4);animation:glo 3s ease-in-out infinite;}
+@keyframes glo{0%,100%{box-shadow:0 0 50px rgba(109,40,217,.3);}50%{box-shadow:0 0 80px rgba(14,116,144,.5);}}
+.ltitle{font-size:28px;font-weight:800;margin-bottom:6px;background:linear-gradient(135deg,#e2e8f0,#a78bfa);-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
+.lsub{font-size:12px;color:rgba(226,232,240,.35);margin-bottom:24px;}
+input[type=text],input[type=number]{width:100%;padding:14px;background:rgba(0,0,0,.45);border:1px solid rgba(255,255,255,.1);border-radius:12px;color:#e2e8f0;font-size:20px;letter-spacing:5px;text-align:center;outline:none;transition:all .3s;margin-bottom:12px;}
+input[type=text]:focus,input[type=number]:focus{border-color:rgba(109,40,217,.7);box-shadow:0 0 0 3px rgba(109,40,217,.15);}
+input::placeholder{color:rgba(226,232,240,.2);letter-spacing:2px;font-size:14px;}
+.fi{width:100%;padding:10px 12px;background:rgba(0,0,0,.45);border:1px solid rgba(255,255,255,.1);border-radius:10px;color:#e2e8f0;font-size:13px;outline:none;letter-spacing:normal;text-align:left;transition:all .3s;}
+.fi:focus{border-color:rgba(109,40,217,.5);}
+select.fi option{background:#0d0b1e;}
+.btn{width:100%;padding:13px;border:none;border-radius:12px;font-size:14px;font-weight:600;cursor:pointer;transition:all .25s;}
+.bp{background:linear-gradient(135deg,#6d28d9,#0e7490);color:#fff;box-shadow:0 4px 20px rgba(109,40,217,.35);}
+.bp:hover{transform:translateY(-2px);box-shadow:0 8px 28px rgba(109,40,217,.45);}
+.bd{background:linear-gradient(135deg,#b91c1c,#7f1d1d);color:#fff;}
+.bs{background:linear-gradient(135deg,#047857,#065f46);color:#fff;}
+.bprem{background:linear-gradient(135deg,#d97706,#b45309);color:#fff;box-shadow:0 4px 18px rgba(217,119,6,.35);font-weight:700;}
+.bprem:hover{transform:translateY(-2px);}.bprem:disabled{opacity:.45;cursor:not-allowed;transform:none;}
+.bupg{background:linear-gradient(135deg,#6d28d9,#7c3aed);color:#fff;}
+.bsec{background:rgba(255,255,255,.06);color:rgba(226,232,240,.6);border:1px solid rgba(255,255,255,.1);}
+.bgold{background:linear-gradient(135deg,#d97706,#92400e);color:#fff;box-shadow:0 4px 16px rgba(217,119,6,.3);}
+.sm{width:auto;padding:7px 12px;font-size:12px;border-radius:9px;}
+.xsm{width:auto;padding:5px 10px;font-size:11px;border-radius:8px;}
+.errmsg{color:#f87171;font-size:12px;margin-top:10px;padding:10px 14px;background:rgba(185,28,28,.12);border-radius:10px;border:1px solid rgba(185,28,28,.25);display:none;}
+.hint{margin-top:16px;padding:12px;background:rgba(109,40,217,.08);border:1px solid rgba(109,40,217,.2);border-radius:11px;font-size:12px;color:rgba(226,232,240,.5);line-height:1.6;}
+.hlink{display:block;margin-top:8px;color:#a78bfa;font-weight:600;text-decoration:none;font-size:13px;}
+.topbar{width:100%;max-width:680px;display:flex;align-items:center;justify-content:space-between;padding:10px 2px;margin-bottom:12px;}
+.logoutbtn{display:flex;align-items:center;gap:5px;padding:7px 12px;background:rgba(0,0,0,.4);border:1px solid rgba(255,255,255,.1);border-radius:11px;color:rgba(226,232,240,.6);font-size:12px;cursor:pointer;transition:all .3s;font-weight:500;}
+.logoutbtn:hover{background:rgba(185,28,28,.2);border-color:rgba(185,28,28,.3);color:#f87171;}
+.ttitle{font-size:16px;font-weight:700;background:linear-gradient(135deg,#e2e8f0,#a78bfa);-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
+.nav-tabs{display:flex;gap:4px;width:100%;max-width:680px;margin-bottom:12px;padding:4px;background:rgba(0,0,0,.35);border:1px solid rgba(255,255,255,.07);border-radius:14px;}
+.ntab{flex:1;padding:8px 4px;border:none;border-radius:10px;background:transparent;color:rgba(226,232,240,.4);font-size:11px;font-weight:600;cursor:pointer;transition:all .3s;}
+.ntab.active{background:linear-gradient(135deg,#6d28d9,#0e7490);color:#fff;box-shadow:0 3px 12px rgba(109,40,217,.3);}
+
+/* PROFILE HERO */
+.pc{width:100%;max-width:680px;}
+.phero{padding:20px;text-align:center;margin-bottom:10px;cursor:pointer;transition:all .25s;}
+.phero:hover{transform:translateY(-2px);}
+.avatar{width:72px;height:72px;background:linear-gradient(135deg,#6d28d9,#0e7490);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:28px;margin:0 auto 10px;box-shadow:0 0 30px rgba(109,40,217,.35);border:2px solid rgba(255,255,255,.1);transition:all .3s;}
+.avatar.prem{background:linear-gradient(135deg,#d97706,#6d28d9,#0e7490);box-shadow:0 0 40px rgba(217,119,6,.5);border-color:rgba(217,119,6,.4);animation:pglo 2s ease-in-out infinite;}
+@keyframes pglo{0%,100%{box-shadow:0 0 30px rgba(217,119,6,.4);}50%{box-shadow:0 0 55px rgba(217,119,6,.7);}}
+.pname{font-size:18px;font-weight:700;margin-bottom:2px;}
+.puname{font-size:12px;color:rgba(226,232,240,.4);margin-bottom:10px;}
+.bdrow{display:flex;align-items:center;justify-content:center;gap:8px;flex-wrap:wrap;margin-bottom:8px;}
+.sbadge{display:inline-flex;align-items:center;gap:6px;padding:8px 16px;background:rgba(217,119,6,.12);border:1px solid rgba(217,119,6,.25);border-radius:18px;font-size:14px;font-weight:600;color:#fbbf24;}
+.prembadge{display:inline-flex;align-items:center;gap:4px;padding:6px 12px;background:rgba(217,119,6,.15);border:1px solid rgba(217,119,6,.3);border-radius:18px;font-size:12px;font-weight:700;color:#fbbf24;}
+.lvlbadge{display:inline-flex;align-items:center;gap:4px;padding:5px 11px;border-radius:18px;font-size:12px;font-weight:700;border:1px solid;cursor:pointer;}
+.tap-hint{font-size:11px;color:rgba(226,232,240,.25);margin-top:4px;}
+
+/* PREM CARD */
+.premcard{margin-bottom:10px;padding:20px;background:linear-gradient(135deg,rgba(217,119,6,.08),rgba(109,40,217,.08));border:1px solid rgba(217,119,6,.2);border-radius:18px;text-align:center;position:relative;overflow:hidden;}
+.premcard::before{content:'';position:absolute;top:-50%;left:-50%;width:200%;height:200%;background:linear-gradient(45deg,transparent 35%,rgba(217,119,6,.04) 50%,transparent 65%);animation:shine 4s linear infinite;}
+@keyframes shine{to{transform:rotate(360deg);}}
+.pctitle{font-size:18px;font-weight:800;margin-bottom:6px;background:linear-gradient(135deg,#fbbf24,#d97706);-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
+.pcsub{font-size:11px;color:rgba(226,232,240,.4);margin-bottom:14px;line-height:1.5;}
+.perks{display:flex;flex-direction:column;gap:6px;margin-bottom:14px;text-align:left;}
+.perk{display:flex;align-items:center;gap:8px;padding:8px 11px;background:rgba(0,0,0,.3);border-radius:9px;font-size:12px;}
+.plabel{font-size:15px;font-weight:700;color:#fbbf24;margin-bottom:10px;}
+.sc{padding:16px;margin-bottom:10px;}
+.stitle{font-size:13px;font-weight:600;color:rgba(226,232,240,.5);margin-bottom:10px;display:flex;align-items:center;gap:6px;}
+.empty{text-align:center;padding:24px 16px;color:rgba(226,232,240,.25);font-size:13px;}
+.emico{font-size:32px;margin-bottom:8px;}
+
+/* FILTER */
+.filter-bar{display:flex;gap:6px;margin-bottom:12px;flex-wrap:wrap;}
+.fbtn{padding:5px 12px;border:1px solid rgba(255,255,255,.1);border-radius:20px;background:rgba(0,0,0,.3);color:rgba(226,232,240,.5);font-size:11px;font-weight:600;cursor:pointer;transition:all .25s;}
+.fbtn.active{background:rgba(109,40,217,.3);border-color:rgba(109,40,217,.5);color:#a78bfa;}
+
+/* ═══ INVENTORY CARDS ═══ */
+.igrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(144px,1fr));gap:10px;}
+.icard{border-radius:14px;overflow:hidden;position:relative;display:flex;flex-direction:column;transition:transform .25s;}
+.icard:hover{transform:translateY(-3px);}
+.card-img-wrap{width:100%;aspect-ratio:1;overflow:hidden;position:relative;}
+.card-img{width:100%;height:100%;object-fit:cover;display:block;}
+.card-ph{width:100%;height:100%;display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,rgba(109,40,217,.12),rgba(14,116,144,.08));font-size:48px;}
+.badge-corner{position:absolute;top:7px;left:7px;padding:3px 8px;border-radius:20px;font-size:10px;font-weight:700;backdrop-filter:blur(8px);z-index:2;}
+.badge-selling{background:rgba(5,150,105,.85);color:#6ee7b7;border:1px solid rgba(16,185,129,.4);}
+.badge-auc{background:rgba(180,83,9,.9);color:#fcd34d;border:1px solid rgba(217,119,6,.5);font-style:italic;}
+.card-body{padding:9px 9px;}
+.card-name{font-size:12px;font-weight:600;margin-bottom:5px;color:#e2e8f0;}
+
+/* ═══ UPGRADE CARD (collectible) ═══ */
+.upg-card{border-radius:12px;overflow:hidden;margin-top:0;border:1px solid;}
+.upg-card-bg{width:100%;aspect-ratio:1;display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden;}
+.upg-card-photo{width:75%;height:75%;object-fit:contain;filter:drop-shadow(0 4px 16px rgba(0,0,0,.7));position:relative;z-index:1;}
+.upg-card-rar-badge{position:absolute;top:7px;right:7px;padding:3px 9px;border-radius:20px;font-size:10px;font-weight:800;z-index:2;backdrop-filter:blur(6px);}
+.upg-card-foot{padding:8px 9px;background:rgba(0,0,0,.55);}
+.upg-card-rar{font-size:12px;font-weight:800;margin-bottom:2px;}
+.upg-card-mod{font-size:10px;color:rgba(226,232,240,.5);}
+.upg-card-num{font-size:10px;color:rgba(226,232,240,.4);margin-top:1px;}
+.no-upg{text-align:center;font-size:10px;color:rgba(226,232,240,.2);margin-top:4px;}
+
+/* ═══ CORNER RIBBONS ═══ */
+.cr{position:absolute;top:12px;right:-28px;font-size:9px;font-weight:800;padding:3px 34px;transform:rotate(35deg);letter-spacing:.6px;box-shadow:0 2px 10px rgba(0,0,0,.5);z-index:6;white-space:nowrap;pointer-events:none;}
+.cr-sold{background:linear-gradient(135deg,#b91c1c,#7f1d1d);color:#fca5a5;}
+.cr-avail{background:linear-gradient(135deg,#047857,#065f46);color:#6ee7b7;}
+.cr-few{background:linear-gradient(135deg,#d97706,#92400e);color:#fef3c7;}
+.cr-num{background:linear-gradient(135deg,#4c1d95,#7c3aed);color:#ddd6fe;}
+.cr-sell{background:linear-gradient(135deg,#047857,#065f46);color:#6ee7b7;}
+.cr-auc{background:linear-gradient(135deg,#d97706,#92400e);color:#fef3c7;font-style:italic;}
+
+/* ═══ CONFETTI ═══ */
+@keyframes confettiFall{0%{opacity:1;transform:translateY(0) rotate(0deg) scale(1);}100%{opacity:0;transform:translateY(105vh) rotate(720deg) scale(0.5);}}
+@keyframes confettiSway{0%,100%{margin-left:0;}50%{margin-left:30px;}}
+
+/* ═══ SHOP ═══ */
+.sgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(144px,1fr));gap:10px;}
+.scard{border-radius:14px;overflow:hidden;display:flex;flex-direction:column;transition:transform .25s;position:relative;}
+.scard:hover{transform:translateY(-3px);}.scard.so{opacity:.6;}
+.scard-body{padding:10px 9px;flex:1;display:flex;flex-direction:column;}
+.scard-name{font-size:12px;font-weight:600;margin-bottom:6px;color:#e2e8f0;}
+.scard-footer{margin-top:auto;}
+.scard-price{font-size:13px;font-weight:700;color:#fbbf24;margin-bottom:4px;}
+.scard-qty{font-size:10px;color:rgba(226,232,240,.35);margin-bottom:6px;}.scard-qty.low{color:#f87171;}
+
+/* ═══ MARKET ═══ */
+.mgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(144px,1fr));gap:10px;}
+.mcard{border-radius:14px;overflow:hidden;display:flex;flex-direction:column;transition:transform .25s;}
+.mcard:hover{transform:translateY(-3px);}
+.mcard-body{padding:10px 9px;flex:1;display:flex;flex-direction:column;}
+.mcard-name{font-size:12px;font-weight:600;margin-bottom:3px;color:#e2e8f0;}
+.mcard-seller{font-size:10px;color:rgba(226,232,240,.3);margin-bottom:5px;}
+.mcard-price{font-size:14px;font-weight:700;color:#fbbf24;margin-bottom:6px;}
+
+/* ═══ AUCTION ═══ */
+.agrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px;}
+.acard{border-radius:14px;overflow:hidden;display:flex;flex-direction:column;transition:transform .25s;position:relative;}
+.acard:hover{transform:translateY(-3px);}
+.auc-ribbon{position:absolute;top:10px;right:-22px;background:linear-gradient(135deg,#d97706,#92400e);color:#fef3c7;font-size:10px;font-weight:800;padding:3px 28px;transform:rotate(35deg);letter-spacing:.5px;box-shadow:0 2px 8px rgba(0,0,0,.4);z-index:5;}
+.acard-body{padding:10px 9px;flex:1;display:flex;flex-direction:column;}
+.acard-name{font-size:12px;font-weight:600;margin-bottom:3px;color:#e2e8f0;}
+.acard-seller{font-size:10px;color:rgba(226,232,240,.3);margin-bottom:4px;}
+.acard-price{font-size:14px;font-weight:700;color:#fbbf24;margin-bottom:2px;}
+.acard-bids{font-size:10px;color:rgba(226,232,240,.4);margin-bottom:4px;}
+.acard-timer{font-size:11px;font-weight:600;color:#a78bfa;margin-bottom:6px;}
+.acard-timer.urgent{color:#f87171;animation:blink .8s ease-in-out infinite;}
+
+/* ═══ SLOT MACHINE MODAL ═══ */
+.modal-bg{position:fixed;inset:0;background:rgba(0,0,0,.9);backdrop-filter:blur(16px);z-index:200;display:none;align-items:center;justify-content:center;padding:20px;}
+.modal-bg.show{display:flex;}
+.modal{background:#080612;border:1px solid rgba(255,255,255,.1);border-radius:22px;padding:22px 18px;width:100%;max-width:360px;text-align:center;position:relative;overflow:hidden;}
+.modal-x{position:absolute;top:12px;right:14px;background:none;border:none;color:rgba(226,232,240,.35);font-size:22px;cursor:pointer;}
+.upg-stage{display:flex;flex-direction:column;align-items:center;}
+.upg-stage.dn{display:none;}
+
+/* Slot machine */
+.slot-machine{display:flex;gap:8px;justify-content:center;margin:16px 0;align-items:flex-start;}
+.slot-col{display:flex;flex-direction:column;align-items:center;gap:6px;}
+.slot-label{font-size:10px;color:rgba(226,232,240,.4);font-weight:600;letter-spacing:.5px;}
+.slot-window{width:80px;height:80px;border-radius:12px;overflow:hidden;border:2px solid rgba(255,255,255,.1);position:relative;box-shadow:inset 0 0 12px rgba(0,0,0,.5);}
+/* highlight bar across middle of slot */
+.slot-window::before{content:'';position:absolute;top:0;left:0;right:0;height:50%;background:linear-gradient(to bottom,rgba(0,0,0,.4),transparent);z-index:3;pointer-events:none;}
+.slot-window::after{content:'';position:absolute;bottom:0;left:0;right:0;height:50%;background:linear-gradient(to top,rgba(0,0,0,.4),transparent);z-index:3;pointer-events:none;}
+.slot-reel{display:flex;flex-direction:column;will-change:transform;}
+.si{width:80px;height:80px;flex-shrink:0;display:flex;align-items:center;justify-content:center;overflow:hidden;}
+.si img{width:100%;height:100%;object-fit:cover;}
+.si-text{font-size:11px;font-weight:600;color:#e2e8f0;padding:6px;text-align:center;word-break:break-all;line-height:1.3;}
+.slot-tick{font-size:16px;transition:all .3s;}
+.slot-status{font-size:11px;color:rgba(226,232,240,.3);margin-top:4px;animation:blink 1s ease-in-out infinite;}
+.slot-status.done{color:#6ee7b7;animation:none;}
+@keyframes blink{0%,100%{opacity:.3;}50%{opacity:1;}}
+
+/* Result stage */
+.upg-res-card{border-radius:16px;overflow:hidden;border:2px solid;margin:10px auto;max-width:220px;animation:revpop .6s cubic-bezier(.34,1.56,.64,1) forwards;}
+@keyframes revpop{0%{opacity:0;transform:scale(.5) rotate(-6deg);}60%{transform:scale(1.05) rotate(1deg);}100%{opacity:1;transform:scale(1) rotate(0);}}
+.upg-res-bg{width:100%;height:140px;display:flex;align-items:center;justify-content:center;position:relative;}
+.upg-res-photo{height:80%;width:80%;object-fit:contain;filter:drop-shadow(0 4px 20px rgba(0,0,0,.8));position:relative;z-index:1;}
+.upg-res-rar-label{position:absolute;top:8px;right:8px;padding:3px 9px;border-radius:20px;font-size:11px;font-weight:800;backdrop-filter:blur(6px);z-index:2;}
+.upg-res-foot{padding:10px 12px;background:rgba(0,0,0,.6);}
+.upg-res-rar{font-size:18px;font-weight:900;animation:rglo 1.5s ease-in-out infinite;}
+@keyframes rglo{0%,100%{text-shadow:none;}50%{text-shadow:0 0 18px currentColor;}}
+.upg-res-num{font-size:14px;font-weight:700;color:rgba(226,232,240,.8);margin-top:3px;}
+.upg-res-mod{font-size:11px;color:rgba(226,232,240,.4);}
+.particles{position:absolute;inset:0;pointer-events:none;overflow:hidden;}
+.pt{position:absolute;width:5px;height:5px;border-radius:50%;animation:ptfly 1.2s ease-out forwards;}
+@keyframes ptfly{0%{opacity:1;transform:translate(0,0) scale(1);}100%{opacity:0;transform:var(--tx) var(--ty) scale(0);}}
+
+/* SELL MODAL */
+.sell-modal{max-width:300px;}
+.bid-modal{max-width:300px;}
+
+/* PHOTO MODAL */
+.photo-modal{max-height:88vh;overflow-y:auto;max-width:360px;}
+.ph-grid{display:flex;flex-wrap:wrap;gap:7px;margin-top:8px;justify-content:center;}
+.ph-thumb{width:50px;height:50px;object-fit:cover;border-radius:8px;border:1px solid rgba(255,255,255,.12);cursor:pointer;}
+.mltag{padding:3px 9px;background:rgba(109,40,217,.18);border:1px solid rgba(109,40,217,.3);border-radius:18px;font-size:11px;color:#a78bfa;cursor:pointer;}
+
+/* ACCOUNT MODAL */
+.acc-modal{max-width:340px;}
+.acc-ava{width:80px;height:80px;border-radius:50%;margin:0 auto 12px;display:flex;align-items:center;justify-content:center;font-size:32px;border:3px solid rgba(255,255,255,.15);}
+.acc-name{font-size:20px;font-weight:800;margin-bottom:3px;}
+.acc-uname{font-size:12px;color:rgba(226,232,240,.4);margin-bottom:14px;}
+.lvl-card{padding:14px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:14px;margin-bottom:12px;}
+.lvl-top{display:flex;align-items:center;gap:10px;margin-bottom:10px;}
+.lvl-icon{font-size:28px;}
+.lvl-info{flex:1;}
+.lvl-name{font-size:16px;font-weight:800;}
+.lvl-num{font-size:12px;color:rgba(226,232,240,.4);}
+.lvl-bar-wrap{width:100%;height:6px;background:rgba(255,255,255,.08);border-radius:20px;overflow:hidden;margin-bottom:5px;}
+.lvl-bar{height:100%;border-radius:20px;transition:width 1s ease;}
+.lvl-bar-text{display:flex;justify-content:space-between;font-size:10px;color:rgba(226,232,240,.4);}
+.stat-row{display:flex;justify-content:space-between;padding:10px 14px;background:rgba(0,0,0,.3);border-radius:11px;font-size:13px;margin-bottom:7px;}
+.stat-label{color:rgba(226,232,240,.5);}
+.stat-val{font-weight:700;color:#e2e8f0;}
+
+/* ADMIN */
+.ac{width:100%;max-width:680px;}
+.abadge{display:inline-flex;align-items:center;gap:4px;padding:4px 11px;background:rgba(185,28,28,.15);border:1px solid rgba(185,28,28,.3);border-radius:18px;font-size:11px;font-weight:600;color:#f87171;}
+.atabs{display:flex;gap:4px;margin-bottom:12px;padding:4px;background:rgba(0,0,0,.35);border:1px solid rgba(255,255,255,.07);border-radius:14px;}
+.atab{flex:1;padding:8px 3px;border:none;border-radius:10px;background:transparent;color:rgba(226,232,240,.4);font-size:10px;font-weight:600;cursor:pointer;transition:all .3s;}
+.atab.active{background:linear-gradient(135deg,#6d28d9,#0e7490);color:#fff;}
+.atc{display:none;}.atc.active{display:block;}
+.fg{margin-bottom:10px;}
+.fl{font-size:11px;color:rgba(226,232,240,.5);margin-bottom:3px;display:block;}
+.gitem{display:flex;align-items:center;justify-content:space-between;padding:10px 12px;margin-bottom:7px;}
+.gleft{display:flex;align-items:center;gap:9px;}
+.gthumb{width:42px;height:42px;object-fit:cover;border-radius:8px;border:1px solid rgba(255,255,255,.08);}
+.gthumb-ph{width:42px;height:42px;background:rgba(109,40,217,.12);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:18px;}
+.gname{font-size:12px;font-weight:600;color:#e2e8f0;}
+.gmeta{font-size:10px;color:rgba(226,232,240,.35);margin-top:1px;}
+.upg-ac{padding:12px;margin-bottom:8px;border-radius:13px;}
+.upg-ah{display:flex;align-items:flex-start;justify-content:space-between;gap:8px;}
+.upg-at{font-size:12px;font-weight:700;color:#e2e8f0;}
+.upg-as{font-size:10px;color:rgba(226,232,240,.4);margin-top:2px;}
+.uitem{display:flex;align-items:center;justify-content:space-between;padding:10px 12px;margin-bottom:7px;flex-wrap:wrap;gap:7px;}
+.uleft{display:flex;align-items:center;gap:8px;}
+.uava{width:36px;height:36px;background:linear-gradient(135deg,#6d28d9,#0e7490);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;}
+.uava.up{background:linear-gradient(135deg,#d97706,#6d28d9);}
+.uname{font-size:12px;font-weight:600;color:#e2e8f0;}
+.umeta{font-size:10px;color:rgba(226,232,240,.35);margin-top:1px;}
+.uacts{display:flex;gap:4px;flex-wrap:wrap;align-items:center;}
+.sinput{width:58px;padding:5px 7px;background:rgba(0,0,0,.4);border:1px solid rgba(255,255,255,.1);border-radius:7px;color:#e2e8f0;font-size:11px;text-align:center;outline:none;}
+.file-btn{display:inline-block;padding:8px 14px;background:rgba(0,0,0,.4);border:1px solid rgba(255,255,255,.1);border-radius:9px;font-size:12px;cursor:pointer;color:rgba(226,232,240,.6);transition:all .3s;text-align:center;}
+.file-btn:hover{background:rgba(0,0,0,.6);}
+input[type=file]{display:none;}
+.prev-img{width:64px;height:64px;object-fit:cover;border-radius:9px;margin-top:6px;border:1px solid rgba(255,255,255,.1);}
+.prev-imgs{display:flex;flex-wrap:wrap;gap:5px;margin-top:6px;}
+.divider{height:1px;background:rgba(255,255,255,.06);margin:10px 0;}
+.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(110px);background:linear-gradient(135deg,#047857,#065f46);color:#fff;padding:11px 22px;border-radius:12px;font-size:13px;font-weight:600;z-index:9999;transition:transform .4s cubic-bezier(.34,1.56,.64,1);box-shadow:0 6px 24px rgba(0,0,0,.5);white-space:nowrap;}
+.toast.show{transform:translateX(-50%) translateY(0);}
+.loader{display:inline-block;width:16px;height:16px;border:2px solid rgba(226,232,240,.25);border-top-color:#e2e8f0;border-radius:50%;animation:spin .8s linear infinite;}
+@keyframes spin{to{transform:rotate(360deg);}}
+.dyn-model-row{display:flex;gap:6px;margin-bottom:5px;}
+@media(max-width:400px){.igrid,.sgrid,.mgrid{grid-template-columns:repeat(2,1fr);}.agrid{grid-template-columns:repeat(2,1fr);}.slot-machine{gap:5px;}.slot-window{width:72px;height:72px;}.si{width:72px;height:72px;}.uacts{flex-direction:column;align-items:flex-start;}}
+</style>
+</head>
+<body>
+<div class="bg-orbs"><div class="orb orb1"></div><div class="orb orb2"></div><div class="orb orb3"></div></div>
+
+<!-- ─── LOGIN ─── -->
+<div id="pg-login" class="page active">
+  <div class="lc gl">
+    <div class="logo">🌟</div>
+    <h1 class="ltitle">Вход</h1>
+    <p class="lsub">Напиши боту — получи код для входа</p>
+    <input type="text" id="code-input" maxlength="8" placeholder="Введи код" autocomplete="off" inputmode="numeric">
+    <button class="btn bp" onclick="doLogin()"><span id="lbtn">Войти</span></button>
+    <div id="lerr" class="errmsg"></div>
+    <div class="hint">💬 Напиши боту и получи код
+      {% if bot_link %}<a class="hlink" href="{{ bot_link }}" target="_blank">👉 @{{ bot_username }}</a>{% endif %}
+    </div>
+  </div>
+</div>
+
+<!-- ─── USER ─── -->
+<div id="pg-user" class="page ptop">
+  <div class="topbar">
+    <button class="logoutbtn" onclick="doLogout()">← Выйти</button>
+    <div class="ttitle" id="u-title">Профиль</div>
+    <div style="width:68px;"></div>
+  </div>
+  <div class="nav-tabs">
+    <button class="ntab active" onclick="uTab('profile',this)">👤 Профиль</button>
+    <button class="ntab" onclick="uTab('shop',this)">🛒 Магазин</button>
+    <button class="ntab" onclick="uTab('market',this)">💱 Маркет</button>
+    <button class="ntab" onclick="uTab('auction',this)">🔨 Аукцион</button>
+  </div>
+  <div class="pc">
+    <!-- PROFILE -->
+    <div id="ut-profile" class="atc active">
+      <div class="phero gl" onclick="openAccModal()">
+        <div class="avatar" id="u-ava">👤</div>
+        <div class="pname" id="u-name">...</div>
+        <div class="puname" id="u-uname"></div>
+        <div class="bdrow">
+          <div class="sbadge">⭐ <span id="u-stars">0</span></div>
+          <div class="prembadge" id="u-premb" style="display:none;">👑 PREMIUM</div>
+          <div class="lvlbadge" id="u-lvlb" style="display:none;"></div>
+        </div>
+        <div class="tap-hint">Нажми для просмотра аккаунта</div>
+      </div>
+      <div class="premcard" id="prem-buy" style="display:none;">
+        <div class="pctitle">👑 PREMIUM</div>
+        <div class="pcsub">Разблокируй особый статус и эксклюзивный вид</div>
+        <div class="perks">
+          <div class="perk">👑 <span>Золотой значок Premium</span></div>
+          <div class="perk">✨ <span>Эксклюзивное оформление</span></div>
+          <div class="perk">🎁 <span>Доступ к особым подаркам</span></div>
+          <div class="perk">⚡ <span>Приоритет в списке</span></div>
+        </div>
+        <div class="plabel">⭐ <span id="prem-p">1000</span> звёзд</div>
+        <button class="btn bprem" id="prem-btn" onclick="buyPremium()">Купить Премиум</button>
+      </div>
+      <div class="premcard" id="prem-on" style="display:none;background:linear-gradient(135deg,rgba(217,119,6,.08),rgba(109,40,217,.08));">
+        <div class="pctitle">✨ Премиум активен!</div>
+        <div class="pcsub">Ты пользуешься всеми преимуществами Premium!</div>
+      </div>
+      <div class="sc gl">
+        <div class="stitle">🎁 Мои подарки</div>
+        <div class="filter-bar">
+          <button class="fbtn active" onclick="setFilter('all',this)">Все</button>
+          <button class="fbtn" onclick="setFilter('upgraded',this)">Улучшённые</button>
+          <button class="fbtn" onclick="setFilter('plain',this)">Обычные</button>
+          <button class="fbtn" onclick="setFilter('selling',this)">На продаже</button>
+        </div>
+        <div id="u-gifts"><div class="empty"><div class="loader"></div></div></div>
+      </div>
+    </div>
+    <!-- SHOP -->
+    <div id="ut-shop" class="atc">
+      <div class="sc gl">
+        <div class="stitle">🛒 Магазин подарков</div>
+        <div id="shop-list"><div class="empty"><div class="loader"></div></div></div>
+      </div>
+    </div>
+    <!-- MARKET -->
+    <div id="ut-market" class="atc">
+      <div class="sc gl">
+        <div class="stitle">💱 Маркет</div>
+        <div id="market-list"><div class="empty"><div class="loader"></div></div></div>
+      </div>
+    </div>
+    <!-- AUCTION -->
+    <div id="ut-auction" class="atc">
+      <div class="sc gl">
+        <div class="stitle">🔨 Аукцион</div>
+        <div id="auc-list"><div class="empty"><div class="loader"></div></div></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ─── ADMIN ─── -->
+<div id="pg-admin" class="page ptop">
+  <div class="topbar">
+    <button class="logoutbtn" onclick="doLogout()">← Выйти</button>
+    <div class="ttitle">Панель</div>
+    <span class="abadge">🔴 ADMIN</span>
+  </div>
+  <div class="ac">
+    <div class="atabs">
+      <button class="atab active" onclick="aTab('gifts',this)">🎁 Подарки</button>
+      <button class="atab" onclick="aTab('upgrades',this)">⚡ Улучшения</button>
+      <button class="atab" onclick="aTab('users',this)">👥 Юзеры</button>
+    </div>
+    <div id="at-gifts" class="atc active">
+      <div class="sc gl">
+        <div class="stitle">✨ Новый подарок</div>
+        <div class="fg"><label class="fl">Название</label><input class="fi" id="a-gname" placeholder="Название"></div>
+        <div class="fg"><label class="fl">Цена (⭐)</label><input class="fi" id="a-gprice" type="number" placeholder="0" min="0" style="letter-spacing:normal;text-align:left;font-size:13px;"></div>
+        <div class="fg"><label class="fl">Количество (пусто = ∞)</label><input class="fi" id="a-gqty" type="number" placeholder="∞" min="1" style="letter-spacing:normal;text-align:left;font-size:13px;"></div>
+        <div class="fg"><label class="fl">Фото</label>
+          <label class="file-btn" for="a-gimg" style="display:block;">📷 Выбрать фото</label>
+          <input type="file" id="a-gimg" accept="image/*" onchange="prevImg(this,'a-gprev')">
+          <img id="a-gprev" class="prev-img" style="display:none;">
+        </div>
+        <div class="fg"><label class="fl">В магазине</label>
+          <select class="fi" id="a-gshop"><option value="1">Да</option><option value="0">Нет</option></select></div>
+        <button class="btn bs" onclick="addGift()">+ Добавить</button>
+      </div>
+      <div class="sc gl"><div class="stitle">📋 Все подарки</div>
+        <div id="a-glist"><div class="empty"><div class="loader"></div></div></div>
+      </div>
+    </div>
+    <div id="at-upgrades" class="atc">
+      <div class="sc gl">
+        <div class="stitle">⚡ Создать улучшение</div>
+        <div class="fg"><label class="fl">Подарок</label><select class="fi" id="upg-gsel"><option value="">— выберите —</option></select></div>
+        <div class="fg"><label class="fl">Название улучшения</label><input class="fi" id="upg-nm" placeholder="Название"></div>
+        <div class="fg">
+          <label class="fl">Фото улучшений (до 15)</label>
+          <label class="file-btn" for="upg-photos-inp" style="display:block;">📷 Выбрать фото</label>
+          <input type="file" id="upg-photos-inp" accept="image/*" multiple onchange="prevUpgPhotos(this)">
+          <div id="upg-prev-imgs" class="prev-imgs"></div>
+        </div>
+        <div class="fg">
+          <label class="fl">Модели</label>
+          <div id="models-list"></div>
+          <div style="display:flex;gap:6px;margin-top:5px;">
+            <input class="fi" id="model-inp-new" placeholder="Название модели" style="flex:1;">
+            <button class="btn bs sm" onclick="addModelToForm()">+ Добавить</button>
+          </div>
+        </div>
+        <button class="btn bp" onclick="createUpg()">Создать улучшение</button>
+      </div>
+      <div class="sc gl"><div class="stitle">📋 Список</div>
+        <div id="a-upglist"><div class="empty"><div class="loader"></div></div></div>
+      </div>
+    </div>
+    <div id="at-users" class="atc">
+      <div class="sc gl"><div class="stitle">👥 Пользователи</div>
+        <div id="a-ulist"><div class="empty"><div class="loader"></div></div></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ─── UPGRADE SLOT MODAL ─── -->
+<div class="modal-bg" id="upg-modal">
+  <div class="modal">
+    <button class="modal-x" id="upg-modal-x" onclick="closeUpg()">×</button>
+    <!-- Loading -->
+    <div class="upg-stage" id="st-load">
+      <div style="font-size:17px;font-weight:700;margin-bottom:8px;">⚡ Улучшение</div>
+      <div class="loader" style="width:28px;height:28px;border-width:3px;margin:12px;"></div>
+      <div style="font-size:12px;color:rgba(226,232,240,.3);">Подготовка...</div>
+    </div>
+    <!-- Slot machine -->
+    <div class="upg-stage dn" id="st-spin">
+      <div style="font-size:16px;font-weight:700;margin-bottom:2px;">⚡ Улучшение</div>
+      <div style="font-size:11px;color:rgba(226,232,240,.3);margin-bottom:12px;" id="upg-lbl"></div>
+      <div class="slot-machine">
+        <div class="slot-col">
+          <div class="slot-label">ФОН</div>
+          <div class="slot-window"><div class="slot-reel" id="sr-bg"></div></div>
+          <div class="slot-tick" id="st-bg">⏳</div>
+        </div>
+        <div class="slot-col">
+          <div class="slot-label">ФОТО</div>
+          <div class="slot-window"><div class="slot-reel" id="sr-ph"></div></div>
+          <div class="slot-tick" id="st-ph">⏳</div>
+        </div>
+        <div class="slot-col">
+          <div class="slot-label">МОДЕЛЬ</div>
+          <div class="slot-window"><div class="slot-reel" id="sr-md"></div></div>
+          <div class="slot-tick" id="st-md">⏳</div>
+        </div>
+      </div>
+      <div class="slot-status" id="slot-status-txt">Крутим барабаны...</div>
+    </div>
+    <!-- Result -->
+    <div class="upg-stage dn" id="st-res">
+      <div class="particles" id="pts"></div>
+      <div style="font-size:12px;color:rgba(226,232,240,.35);margin-bottom:6px;">✨ Результат улучшения</div>
+      <div class="upg-res-card" id="res-full-card">
+        <div class="upg-res-bg" id="res-bg">
+          <img id="res-photo-big" class="upg-res-photo" style="display:none;">
+          <div id="res-no-photo" style="font-size:52px;display:none;">🎁</div>
+          <div class="upg-res-rar-label" id="res-rar-badge"></div>
+        </div>
+        <div class="upg-res-foot">
+          <div class="upg-res-rar" id="res-rar-txt"></div>
+          <div class="upg-res-num" id="res-num-txt"></div>
+          <div class="upg-res-mod" id="res-mod-txt"></div>
+        </div>
+      </div>
+      <button class="btn bp" onclick="closeUpg()" style="margin-top:6px;max-width:220px;">Закрыть</button>
+    </div>
+  </div>
+</div>
+
+<!-- ─── SELL MODAL ─── -->
+<div class="modal-bg" id="sell-modal">
+  <div class="modal sell-modal">
+    <button class="modal-x" onclick="$('sell-modal').classList.remove('show')">×</button>
+    <div style="font-size:16px;font-weight:700;margin-bottom:3px;">💱 На продажу</div>
+    <div style="font-size:12px;color:rgba(226,232,240,.35);margin-bottom:12px;" id="sell-lbl"></div>
+    <div class="fg"><label class="fl">Цена (⭐)</label>
+      <input class="fi" id="sell-price" type="number" min="1" placeholder="Цена" style="letter-spacing:normal;text-align:left;font-size:13px;margin-bottom:0;"></div>
+    <div style="display:flex;gap:8px;margin-top:10px;">
+      <button class="btn bs" onclick="listOnMarket()" style="flex:1;">💱 Маркет</button>
+      <button class="btn bgold" onclick="toggleAucForm()" style="flex:1;">🔨 Аукцион</button>
+    </div>
+    <div id="auc-form-wrap" style="display:none;margin-top:10px;">
+      <div class="fg"><label class="fl">Длительность</label>
+        <select class="fi" id="auc-dur">
+          <option value="1">1 час</option><option value="6">6 часов</option>
+          <option value="24" selected>24 часа</option><option value="72">3 дня</option><option value="168">7 дней</option>
+        </select></div>
+      <button class="btn bgold" onclick="confirmAuction()">Выставить на аукцион</button>
+    </div>
+  </div>
+</div>
+
+<!-- ─── BID MODAL ─── -->
+<div class="modal-bg" id="bid-modal">
+  <div class="modal bid-modal">
+    <button class="modal-x" onclick="$('bid-modal').classList.remove('show')">×</button>
+    <div style="font-size:16px;font-weight:700;margin-bottom:3px;">🔨 Сделать ставку</div>
+    <div style="font-size:12px;color:rgba(226,232,240,.35);margin-bottom:3px;" id="bid-lbl"></div>
+    <div style="font-size:13px;color:#fbbf24;margin-bottom:12px;">Текущая: ⭐ <span id="bid-cur">0</span></div>
+    <div class="fg"><label class="fl">Ваша ставка (⭐)</label>
+      <input class="fi" id="bid-amount" type="number" min="1" placeholder="Ставка" style="letter-spacing:normal;text-align:left;font-size:13px;margin-bottom:0;"></div>
+    <button class="btn bgold" onclick="placeBid()" style="margin-top:10px;">Поставить</button>
+  </div>
+</div>
+
+<!-- ─── PHOTO ADMIN MODAL ─── -->
+<div class="modal-bg" id="photo-modal">
+  <div class="modal photo-modal">
+    <button class="modal-x" onclick="$('photo-modal').classList.remove('show')">×</button>
+    <div style="font-size:15px;font-weight:700;margin-bottom:3px;">📷 Фото и модели</div>
+    <div style="font-size:11px;color:rgba(226,232,240,.35);margin-bottom:10px;">Загружено: <span id="ph-cnt">0</span>/15</div>
+    <div id="ph-grid" class="ph-grid"></div>
+    <div class="divider"></div>
+    <label class="file-btn" for="ph-inp" style="display:block;text-align:center;margin-bottom:8px;">📷 Добавить фото</label>
+    <input type="file" id="ph-inp" accept="image/*" multiple onchange="uploadPhots()">
+    <div id="ph-models" style="margin-top:8px;"></div>
+    <div class="divider"></div>
+    <div style="display:flex;gap:7px;">
+      <input class="fi" id="nm-inp" placeholder="Название модели" style="flex:1;">
+      <button class="btn bs sm" onclick="addModel()">+ Мод</button>
+    </div>
+  </div>
+</div>
+
+<!-- ─── SEND GIFT FROM SHOP ─── -->
+<div class="modal-bg" id="send-shop-modal">
+  <div class="modal" style="max-width:300px;">
+    <button class="modal-x" onclick="$('send-shop-modal').classList.remove('show')">×</button>
+    <div style="font-size:22px;margin-bottom:4px;">🎁</div>
+    <div style="font-size:16px;font-weight:700;margin-bottom:3px;">Подарить</div>
+    <div style="font-size:12px;color:rgba(226,232,240,.35);margin-bottom:14px;" id="send-shop-lbl"></div>
+    <div class="fg">
+      <label class="fl">Юзернейм в Telegram</label>
+      <input class="fi" id="send-shop-un" placeholder="@username" style="letter-spacing:normal;font-size:14px;margin-bottom:0;" autocomplete="off">
+    </div>
+    <div style="font-size:11px;color:rgba(226,232,240,.3);margin:6px 0 12px;">Получатель должен сначала написать боту</div>
+    <button class="btn bs" onclick="confirmSendShop()" style="margin-bottom:6px;">🎁 Отправить</button>
+    <div style="font-size:11px;color:#fbbf24;" id="send-shop-price"></div>
+  </div>
+</div>
+
+<!-- ─── TRANSFER GIFT FROM INVENTORY ─── -->
+<div class="modal-bg" id="transfer-modal">
+  <div class="modal" style="max-width:300px;">
+    <button class="modal-x" onclick="$('transfer-modal').classList.remove('show')">×</button>
+    <div style="font-size:22px;margin-bottom:4px;">📤</div>
+    <div style="font-size:16px;font-weight:700;margin-bottom:3px;">Передать подарок</div>
+    <div style="font-size:12px;color:rgba(226,232,240,.35);margin-bottom:14px;" id="transfer-lbl"></div>
+    <div class="fg">
+      <label class="fl">Юзернейм в Telegram</label>
+      <input class="fi" id="transfer-un" placeholder="@username" style="letter-spacing:normal;font-size:14px;margin-bottom:0;" autocomplete="off">
+    </div>
+    <div style="font-size:11px;color:rgba(226,232,240,.3);margin:6px 0 12px;">Подарок перейдёт безвозвратно</div>
+    <button class="btn bd" onclick="confirmTransfer()">📤 Передать</button>
+  </div>
+</div>
+
+<!-- ─── ACCOUNT MODAL ─── -->
+<div class="modal-bg" id="acc-modal">
+  <div class="modal acc-modal">
+    <button class="modal-x" onclick="$('acc-modal').classList.remove('show')">×</button>
+    <div class="acc-ava" id="acc-ava" style="background:linear-gradient(135deg,#6d28d9,#0e7490);">👤</div>
+    <div class="acc-name" id="acc-name"></div>
+    <div class="acc-uname" id="acc-uname"></div>
+    <div class="lvl-card" id="acc-lvl-card">
+      <div class="lvl-top">
+        <div class="lvl-icon" id="acc-lvl-icon">🌱</div>
+        <div class="lvl-info">
+          <div class="lvl-name" id="acc-lvl-name">Новичок</div>
+          <div class="lvl-num" id="acc-lvl-num">Уровень 1</div>
+        </div>
+      </div>
+      <div class="lvl-bar-wrap"><div class="lvl-bar" id="acc-lvl-bar" style="width:0%;background:linear-gradient(90deg,#6d28d9,#a78bfa);"></div></div>
+      <div class="lvl-bar-text"><span id="acc-bar-left">0 ⭐</span><span id="acc-bar-right">20,000 ⭐</span></div>
+    </div>
+    <div class="stat-row"><span class="stat-label">⭐ Баланс</span><span class="stat-val" id="acc-stars">0</span></div>
+    <div class="stat-row"><span class="stat-label">💸 Потрачено</span><span class="stat-val" id="acc-spent">0</span></div>
+    <div class="stat-row"><span class="stat-label">🎁 Подарков</span><span class="stat-val" id="acc-gifts">0</span></div>
+  </div>
+</div>
+
+<div id="toast" class="toast"></div>
+
+<script>
+const $=id=>document.getElementById(id);
+let premPrice=1000,activeFilter='all',allGifts=[],aucTimer=null;
+let curSellUgId=null,curAucId=null,curAucPrice=0,curUpgAdmId=null;
+let cachedProfile=null;
+let formModels=[];
+
+// 8 beautiful gradient backgrounds for upgrades
+const SLOT_BGS=[
+  {css:'linear-gradient(160deg,#1a0533,#3b0764)',name:'Аметист'},
+  {css:'linear-gradient(160deg,#0f1730,#1a3a6e)',name:'Сапфир'},
+  {css:'linear-gradient(160deg,#0d1f12,#1a4a2e)',name:'Изумруд'},
+  {css:'linear-gradient(160deg,#2a0a0a,#5c1a1a)',name:'Рубин'},
+  {css:'linear-gradient(160deg,#0f0c29,#24243e)',name:'Космос'},
+  {css:'linear-gradient(160deg,#1a1200,#4a3500)',name:'Янтарь'},
+  {css:'linear-gradient(160deg,#001a1a,#004040)',name:'Океан'},
+  {css:'linear-gradient(160deg,#1a001a,#3d003d)',name:'Пурпур'},
+];
+
+// Level system
+const LEVELS=[
+  {level:1,name:'Новичок',icon:'🌱',color:'#6d28d9',next:20000},
+  {level:2,name:'Звёздный',icon:'⭐',color:'#0e7490',next:75000},
+  {level:3,name:'Элита',icon:'💫',color:'#7c3aed',next:225000},
+  {level:4,name:'Легенда',icon:'👑',color:'#d97706',next:675000},
+  {level:5,name:'Мифик',icon:'🔥',color:'#dc2626',next:2025000},
+  {level:6,name:'Бог',icon:'⚡',color:'#f59e0b',next:6075000},
+  {level:7,name:'Абсолют',icon:'🌟',color:'#fbbf24',next:Infinity},
+];
+function getLevel(spent){
+  for(let i=LEVELS.length-1;i>=0;i--){
+    const prev=i>0?LEVELS[i-1].next:0;
+    if(spent>=prev)return{...LEVELS[i],prev};
+  }
+  return{...LEVELS[0],prev:0};
+}
+function fmtNum(n){return n>=1000000?(n/1000000).toFixed(1)+'M':n>=1000?(n/1000).toFixed(1)+'K':n.toString();}
+
+/* ─ UTILS ─ */
+function showPage(p){document.querySelectorAll('.page').forEach(x=>x.classList.remove('active'));$(p).classList.add('active');window.scrollTo(0,0);}
+function toast(msg,col){const t=$('toast');t.textContent=msg;t.style.background=col||'linear-gradient(135deg,#047857,#065f46)';t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2800);}
+function esc(s){return String(s).replace(/'/g,"\\'");}
+function rIcon(r){return{Legendary:'🌟',Mythic:'🔮',Epic:'💜',Common:'⬜'}[r]||'🎁';}
+function timeLeft(end){
+  const d=new Date(end+'Z')-new Date();
+  if(d<=0)return'Завершён';
+  const h=Math.floor(d/3600000),m=Math.floor((d%3600000)/60000),s=Math.floor((d%60000)/1000);
+  if(h>0)return h+'ч '+m+'м';if(m>0)return m+'м '+s+'с';return s+'с';
+}
+
+/* ─ AUTH ─ */
+async function doLogin(){
+  const code=$('code-input').value.trim();if(!code)return;
+  $('lbtn').innerHTML='<span class="loader"></span>';$('lerr').style.display='none';
+  try{
+    const d=await fetch('/api/login',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({code})}).then(r=>r.json());
+    if(d.success){
+      if(d.role==='admin'){showPage('pg-admin');loadAdminGifts();loadUpgGsel();}
+      else{await loadProfile();showPage('pg-user');}
+    }else{$('lerr').textContent=d.message||'Ошибка';$('lerr').style.display='block';}
+  }catch{$('lerr').textContent='Ошибка соединения';$('lerr').style.display='block';}
+  $('lbtn').textContent='Войти';
+}
+async function doLogout(){await fetch('/api/logout',{method:'POST'});$('code-input').value='';$('lerr').style.display='none';showPage('pg-login');}
+
+/* ─ USER TABS ─ */
+function uTab(nm,el){
+  document.querySelectorAll('.ntab').forEach(b=>b.classList.remove('active'));
+  document.querySelectorAll('#pg-user .atc').forEach(c=>c.classList.remove('active'));
+  el.classList.add('active');$('ut-'+nm).classList.add('active');
+  $('u-title').textContent={profile:'Профиль',shop:'Магазин',market:'Маркет',auction:'Аукцион'}[nm];
+  if(nm==='shop')loadShop();
+  if(nm==='market')loadMarket();
+  if(nm==='auction')loadAuctions();
+}
+
+/* ─ FILTER ─ */
+function setFilter(f,el){
+  document.querySelectorAll('.fbtn').forEach(b=>b.classList.remove('active'));
+  el.classList.add('active');activeFilter=f;renderInv(allGifts);
+}
+
+/* ─ PROFILE ─ */
+async function loadProfile(){
+  const u=await fetch('/api/profile',{headers:{'Cache-Control':'no-cache'}}).then(r=>r.json());
+  if(u.error){doLogout();return;}
+  cachedProfile=u; premPrice=u.premium_price||1000;
+  $('u-name').textContent=u.first_name||'Пользователь';
+  $('u-uname').textContent=u.username?'@'+u.username:'';
+  $('u-stars').textContent=u.stars||0;
+  $('prem-p').textContent=premPrice;
+  const ip=!!u.is_premium;
+  const av=$('u-ava');av.className='avatar'+(ip?' prem':'');av.textContent=ip?'👑':'👤';
+  $('u-premb').style.display=ip?'inline-flex':'none';
+  $('prem-buy').style.display=ip?'none':'block';
+  $('prem-on').style.display=ip?'block':'none';
+  const pb=$('prem-btn');
+  if(pb){pb.disabled=(u.stars||0)<premPrice;pb.textContent=(u.stars||0)<premPrice?`Нужно ещё ${premPrice-(u.stars||0)} ⭐`:`Купить за ${premPrice} ⭐`;}
+  // Level badge
+  const spent=u.stars_spent||0;const lvl=getLevel(spent);
+  const lb=$('u-lvlb');
+  lb.style.display='inline-flex';lb.textContent=`${lvl.icon} Ур. ${lvl.level}`;
+  lb.style.background=lvl.color+'22';lb.style.borderColor=lvl.color+'55';lb.style.color=lvl.color;
+  allGifts=u.gifts||[];renderInv(allGifts);
+}
+
+/* ─ INVENTORY RENDER ─ */
+function renderInv(gifts){
+  let filtered=gifts;
+  if(activeFilter==='upgraded')filtered=gifts.filter(g=>g.upgrade_result);
+  else if(activeFilter==='plain')filtered=gifts.filter(g=>!g.upgrade_result);
+  else if(activeFilter==='selling')filtered=gifts.filter(g=>g.on_market||g.on_auction);
+  const el=$('u-gifts');
+  if(!filtered.length){el.innerHTML='<div class="empty"><div class="emico">🎁</div>Нет подарков</div>';return;}
+  el.innerHTML='<div class="igrid">'+filtered.map(g=>{
+    let imgSection='';
+    let corners='';
+    if(g.on_market)corners+=`<span class="badge-corner badge-selling">Продаётся</span>`;
+    if(g.on_auction)corners+=`<span class="badge-corner badge-auc">AUCTION</span>`;
+    if(g.upgrade_result){
+      // Beautiful collectible card
+      const r=g.upgrade_result;const bg=SLOT_BGS[r.bg_id||0].css;
+      imgSection=`
+        <div class="upg-card r-${r.rarity}" style="border-color:${r.rarity_color}44;">
+          <div class="upg-card-bg" style="background:${bg};position:relative;overflow:hidden;">
+            ${corners}
+            <span class="cr cr-num">#${r.number}</span>
+            <div class="upg-card-rar-badge" style="background:${r.rarity_color}33;border:1px solid ${r.rarity_color}88;color:${r.rarity_color};">${rIcon(r.rarity)} ${r.rarity}</div>
+            ${r.photo?`<img src="/static/uploads/${r.photo}" class="upg-card-photo">`:`<div style="font-size:52px;">🎁</div>`}
+          </div>
+          <div class="upg-card-foot">
+            <div class="upg-card-rar" style="color:${r.rarity_color};">${r.rarity}</div>
+            ${r.model?`<div class="upg-card-mod">🔩 ${r.model}</div>`:''}
+            <div class="upg-card-num">#${r.number}</div>
+          </div>
+        </div>`;
+    }else{
+      imgSection=`<div style="position:relative;overflow:hidden;">
+        <div class="card-img-wrap">${g.image?`<img class="card-img" src="/static/uploads/${g.image}">`:`<div class="card-ph">🎁</div>`}</div>
+        ${corners}
+      </div>`;
+    }
+    let actions='';
+    if(g.upgrade_result){
+      if(!g.on_market&&!g.on_auction)actions=`
+        <div style="display:flex;gap:4px;margin-top:5px;">
+          <button class="btn bs" style="padding:5px;font-size:10px;border-radius:8px;flex:1;" onclick="openSell(${g.ug_id},'${esc(g.name)}')">💱 Продать</button>
+          <button class="btn bsec" style="padding:5px;font-size:10px;border-radius:8px;flex:1;" onclick="openTransfer(${g.ug_id},'${esc(g.name)}')">📤</button>
+        </div>`;
+      else if(g.on_market)actions=`<button class="btn bd" style="padding:5px;font-size:11px;border-radius:8px;width:100%;margin-top:5px;" onclick="cancelMarket(${g.market_id})">✕ Снять</button>`;
+      else if(g.on_auction)actions=`<button class="btn bd" style="padding:5px;font-size:11px;border-radius:8px;width:100%;margin-top:5px;" onclick="cancelAuction(${g.auc_id})">✕ Аукцион</button>`;
+    }else if(g.has_upgrade){
+      actions=`
+        <div style="display:flex;gap:4px;margin-top:5px;">
+          <button class="btn bupg" style="padding:6px;font-size:10px;border-radius:8px;flex:1;" onclick="openUpg(${g.ug_id},'${esc(g.name)}')">⚡ Улучшить</button>
+          <button class="btn bsec" style="padding:6px;font-size:10px;border-radius:8px;" onclick="openTransfer(${g.ug_id},'${esc(g.name)}')">📤</button>
+        </div>`;
+    }else{
+      actions=`
+        <div style="display:flex;gap:4px;margin-top:5px;align-items:center;">
+          <div class="no-upg" style="flex:1;">нет улучшений</div>
+          <button class="btn bsec" style="padding:5px 8px;font-size:10px;border-radius:8px;" onclick="openTransfer(${g.ug_id},'${esc(g.name)}')">📤</button>
+        </div>`;
+    }
+    const showName=!g.upgrade_result;
+    return `<div class="icard gc">
+      ${imgSection}
+      <div class="card-body">
+        ${showName?`<div class="card-name">${g.name}</div>`:''}
+        ${actions}
+      </div>
+    </div>`;
+  }).join('')+'</div>';
+}
+
+/* ─ ACCOUNT MODAL ─ */
+function openAccModal(){
+  if(!cachedProfile)return;
+  const u=cachedProfile;
+  const ip=!!u.is_premium;
+  const av=$('acc-ava');
+  av.style.background=ip?'linear-gradient(135deg,#d97706,#6d28d9,#0e7490)':'linear-gradient(135deg,#6d28d9,#0e7490)';
+  av.textContent=ip?'👑':'👤';
+  $('acc-name').textContent=u.first_name||'Пользователь';
+  $('acc-uname').textContent=u.username?'@'+u.username:'';
+  const spent=u.stars_spent||0;
+  const lvl=getLevel(spent);
+  $('acc-lvl-icon').textContent=lvl.icon;
+  $('acc-lvl-name').textContent=lvl.name;
+  $('acc-lvl-name').style.color=lvl.color;
+  $('acc-lvl-num').textContent='Уровень '+lvl.level;
+  // Progress bar
+  const next=lvl.next===Infinity?spent:lvl.next;
+  const prev=lvl.prev||0;
+  const pct=lvl.next===Infinity?100:Math.min(100,((spent-prev)/(next-prev))*100);
+  const bar=$('acc-lvl-bar');bar.style.width=pct+'%';bar.style.background=`linear-gradient(90deg,${lvl.color},${lvl.color}88)`;
+  $('acc-bar-left').textContent=fmtNum(spent)+' ⭐';
+  $('acc-bar-right').textContent=lvl.next===Infinity?'MAX':fmtNum(lvl.next)+' ⭐';
+  $('acc-stars').textContent=(u.stars||0).toLocaleString()+' ⭐';
+  $('acc-spent').textContent=spent.toLocaleString()+' ⭐';
+  $('acc-gifts').textContent=(u.gifts||[]).length;
+  $('acc-modal').classList.add('show');
+}
+
+/* ─ BUY PREMIUM ─ */
+async function buyPremium(){
+  const btn=$('prem-btn');btn.disabled=true;btn.textContent='⏳...';
+  const d=await fetch('/api/buy_premium',{method:'POST'}).then(r=>r.json());
+  if(d.success){toast('👑 Премиум активирован!','linear-gradient(135deg,#d97706,#b45309)');await loadProfile();}
+  else{toast('❌ '+(d.message||'Ошибка'),'linear-gradient(135deg,#b91c1c,#7f1d1d)');btn.disabled=false;btn.textContent=`Купить за ${premPrice} ⭐`;}
+}
+
+/* ─ SLOT MACHINE UPGRADE ─ */
+const SLOT_ITEM_H=80;
+const SLOT_RAND=22;
+
+function buildReel(reelEl,items,winIdx,rendFn){
+  const list=[];
+  for(let i=0;i<SLOT_RAND;i++)list.push(items[Math.floor(Math.random()*items.length)]);
+  list.push(items[winIdx]);
+  reelEl.innerHTML=list.map(rendFn).join('');
+  reelEl.style.transition='none';
+  reelEl.style.transform='translateY(0)';
+}
+
+function spinReel(reelEl,durMs){
+  return new Promise(resolve=>{
+    const target=-(SLOT_RAND*SLOT_ITEM_H);
+    setTimeout(()=>{
+      reelEl.style.transition=`transform ${durMs/1000}s cubic-bezier(0.05,0,0.05,1)`;
+      reelEl.style.transform=`translateY(${target}px)`;
+      setTimeout(resolve,durMs+200);
+    },60);
+  });
+}
+
+async function openUpg(ugId,name){
+  $('upg-lbl').textContent=name;
+  ['st-load','st-spin','st-res'].forEach(id=>$(id).classList.add('dn'));
+  $('st-load').classList.remove('dn');
+  $('upg-modal-x').style.display='none';
+  $('upg-modal').classList.add('show');
+
+  // Fetch options and result in parallel
+  const [optR,upgR]=await Promise.all([
+    fetch(`/api/upgrade_options/${ugId}`,{headers:{'Cache-Control':'no-cache'}}).then(r=>r.json()),
+    fetch(`/api/upgrade/${ugId}`,{method:'POST'}).then(r=>r.json()),
+  ]);
+
+  if(!upgR.success){
+    $('upg-modal').classList.remove('show');
+    $('upg-modal-x').style.display='';
+    toast('❌ '+(upgR.message||'Ошибка'),'linear-gradient(135deg,#b91c1c,#7f1d1d)');
+    return;
+  }
+  const res=upgR.result;
+  const photos=optR.photos||[];
+  const models=optR.models||[];
+
+  // Build BG reel
+  const bgList=Array.from({length:8},(_,i)=>i);
+  const bgWin=res.bg_id||0;
+  buildReel($('sr-bg'),bgList,bgList.indexOf(bgWin)>=0?bgList.indexOf(bgWin):0,
+    (i)=>`<div class="si" style="background:${SLOT_BGS[i].css};flex-direction:column;gap:2px;">
+      <span style="font-size:9px;color:rgba(255,255,255,.5);">${SLOT_BGS[i].name}</span>
+    </div>`);
+
+  // Build Photo reel
+  const phList=photos.length?photos:[''];
+  const phWin=res.photo?phList.indexOf(res.photo):0;
+  buildReel($('sr-ph'),phList,phWin>=0?phWin:0,
+    (fn)=>`<div class="si">${fn?`<img src="/static/uploads/${fn}" style="width:100%;height:100%;object-fit:cover;">`:`<span style="font-size:28px;">🎁</span>`}</div>`);
+
+  // Build Model reel
+  const mdList=models.length?models:['—'];
+  const mdWin=res.model?mdList.indexOf(res.model):0;
+  buildReel($('sr-md'),mdList,mdWin>=0?mdWin:0,
+    (m)=>`<div class="si"><div class="si-text">${m}</div></div>`);
+
+  // Show slot stage
+  $('st-load').classList.add('dn');
+  $('st-spin').classList.remove('dn');
+  [$('st-bg'),$('st-ph'),$('st-md')].forEach(e=>{e.textContent='⏳';e.style.color='';});
+  $('slot-status-txt').textContent='Крутим барабаны...';
+  $('slot-status-txt').className='slot-status';
+
+  // Spin reels — stop one by one
+  const p1=spinReel($('sr-bg'),2000);
+  const p2=spinReel($('sr-ph'),3400);
+  const p3=spinReel($('sr-md'),4600);
+  setTimeout(()=>{$('st-bg').textContent='✅';$('st-bg').style.color='#6ee7b7';},2200);
+  setTimeout(()=>{$('st-ph').textContent='✅';$('st-ph').style.color='#6ee7b7';},3600);
+  setTimeout(()=>{$('st-md').textContent='✅';$('st-md').style.color='#6ee7b7';$('slot-status-txt').textContent='Готово!';$('slot-status-txt').className='slot-status done';},4800);
+
+  await Promise.all([p1,p2,p3]);
+  await new Promise(r=>setTimeout(r,600));
+
+  // Show result
+  $('st-spin').classList.add('dn');
+  $('st-res').classList.remove('dn');
+  $('upg-modal-x').style.display='';
+  showUpgRes(res);
+  loadProfile();
+}
+
+function showUpgRes(r){
+  const bg=SLOT_BGS[r.bg_id||0].css;
+  const card=$('res-full-card');
+  card.style.borderColor=r.rarity_color+'66';
+  const resBg=$('res-bg');resBg.style.background=bg;
+  const ph=$('res-photo-big');
+  if(r.photo){ph.src='/static/uploads/'+r.photo;ph.style.display='block';$('res-no-photo').style.display='none';}
+  else{ph.style.display='none';$('res-no-photo').style.display='block';}
+  const rarBadge=$('res-rar-badge');
+  rarBadge.textContent=rIcon(r.rarity)+' '+r.rarity;
+  rarBadge.style.background=r.rarity_color+'33';rarBadge.style.border=`1px solid ${r.rarity_color}77`;rarBadge.style.color=r.rarity_color;
+  $('res-rar-txt').textContent=rIcon(r.rarity)+' '+r.rarity;$('res-rar-txt').style.color=r.rarity_color;
+  $('res-num-txt').textContent='#'+r.number;
+  $('res-mod-txt').textContent=r.model?'🔩 '+r.model:'';
+  spawnPts(r.rarity_color);
+}
+
+function spawnPts(col){
+  const c=$('pts');c.innerHTML='';
+  const cx=160,cy=120;
+  for(let i=0;i<24;i++){
+    const el=document.createElement('div');el.className='pt';
+    const a=Math.random()*360,d=80+Math.random()*120;
+    el.style.cssText=`left:${cx}px;top:${cy}px;background:${col};--tx:translateX(${Math.cos(a*Math.PI/180)*d}px);--ty:translateY(${Math.sin(a*Math.PI/180)*d}px);animation-delay:${Math.random()*.3}s;`;
+    c.appendChild(el);
+  }
+}
+
+function closeUpg(){$('upg-modal').classList.remove('show');}
+
+/* ─ SELL ─ */
+function openSell(ugId,name){
+  curSellUgId=ugId;$('sell-lbl').textContent=name;$('sell-price').value='';
+  $('auc-form-wrap').style.display='none';$('sell-modal').classList.add('show');
+}
+function toggleAucForm(){
+  const w=$('auc-form-wrap');w.style.display=w.style.display==='none'?'block':'none';
+}
+async function listOnMarket(){
+  const price=parseInt($('sell-price').value)||0;
+  if(price<1){toast('❌ Укажи цену','linear-gradient(135deg,#b91c1c,#7f1d1d)');return;}
+  const d=await fetch('/api/market/list',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({user_gift_id:curSellUgId,price})}).then(r=>r.json());
+  if(d.success){toast('💱 На маркете!');$('sell-modal').classList.remove('show');await loadProfile();}
+  else toast('❌ '+(d.message||'Ошибка'),'linear-gradient(135deg,#b91c1c,#7f1d1d)');
+}
+async function confirmAuction(){
+  const price=parseInt($('sell-price').value)||0;const dur=parseInt($('auc-dur').value)||24;
+  if(price<1){toast('❌ Укажи стартовую цену','linear-gradient(135deg,#b91c1c,#7f1d1d)');return;}
+  const d=await fetch('/api/auction/create',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({user_gift_id:curSellUgId,start_price:price,duration_hours:dur})}).then(r=>r.json());
+  if(d.success){toast('🔨 Аукцион создан!','linear-gradient(135deg,#d97706,#b45309)');$('sell-modal').classList.remove('show');await loadProfile();}
+  else toast('❌ '+(d.message||'Ошибка'),'linear-gradient(135deg,#b91c1c,#7f1d1d)');
+}
+async function cancelMarket(id){
+  const d=await fetch(`/api/market/cancel/${id}`,{method:'POST'}).then(r=>r.json());
+  if(d.success){toast('✅ Снято');await loadProfile();}
+}
+async function cancelAuction(id){
+  const d=await fetch(`/api/auction/cancel/${id}`,{method:'POST'}).then(r=>r.json());
+  if(d.success){toast('✅ Отменён');await loadProfile();}
+  else toast('❌ '+(d.message||'Ошибка'),'linear-gradient(135deg,#b91c1c,#7f1d1d)');
+}
+
+/* ─ CONFETTI ─ */
+function launchConfetti(){
+  const colors=['#FFD700','#FF6EF7','#A855F7','#6ee7b7','#f87171','#60a5fa','#fbbf24','#34d399','#f9a8d4','#a5f3fc'];
+  const wrap=document.createElement('div');
+  wrap.style.cssText='position:fixed;inset:0;pointer-events:none;z-index:9998;overflow:hidden;';
+  document.body.appendChild(wrap);
+  for(let i=0;i<90;i++){
+    const el=document.createElement('div');
+    const col=colors[Math.floor(Math.random()*colors.length)];
+    const x=Math.random()*100;
+    const w=5+Math.random()*8;
+    const h=w*(Math.random()>0.5?1:0.4);
+    const dur=2.2+Math.random()*1.8;
+    const delay=Math.random()*0.7;
+    const rot=Math.random()*360;
+    const shape=Math.random()>0.5?'50%':'3px';
+    el.style.cssText=`position:absolute;left:${x}%;top:-24px;width:${w}px;height:${h}px;background:${col};border-radius:${shape};transform:rotate(${rot}deg);animation:confettiFall ${dur}s ${delay}s ease-in forwards,confettiSway ${dur*0.6}s ${delay}s ease-in-out infinite;`;
+    wrap.appendChild(el);
+  }
+  setTimeout(()=>wrap.remove(),4000);
+}
+
+/* ─ SHOP ─ */
+let curSendShopGid=null;
+async function loadShop(){
+  const gifts=await fetch('/api/shop',{headers:{'Cache-Control':'no-cache'}}).then(r=>r.json());
+  const el=$('shop-list');
+  if(!gifts.length){el.innerHTML='<div class="empty"><div class="emico">🛒</div>Магазин пуст</div>';return;}
+  el.innerHTML='<div class="sgrid">'+gifts.map(g=>{
+    const so=g.sold_out;
+    const few=!so&&g.remaining!==null&&g.remaining<=5;
+    const ribbon=so
+      ?`<span class="cr cr-sold">SOLD OUT</span>`
+      :(few?`<span class="cr cr-few">Мало!</span>`:`<span class="cr cr-avail">Available</span>`);
+    const imgW=g.image
+      ?`<div class="card-img-wrap" style="position:relative;overflow:hidden;"><img class="card-img" src="/static/uploads/${g.image}">${ribbon}</div>`
+      :`<div class="card-img-wrap" style="position:relative;overflow:hidden;"><div class="card-ph">🎁</div>${ribbon}</div>`;
+    const qty=g.remaining!==null?`<div class="scard-qty${g.remaining<=5?' low':''}">Осталось: ${g.remaining}</div>`:'';
+    const btns=so
+      ?`<button class="btn bsec" style="padding:8px;font-size:12px;" disabled>Нет в наличии</button>`
+      :`<div style="display:flex;gap:5px;">
+          <button class="btn bp" style="padding:7px 6px;font-size:11px;flex:1;" onclick="shopBuy(${g.id},'${esc(g.name)}')">🛒 Купить</button>
+          <button class="btn bs" style="padding:7px 6px;font-size:11px;flex:1;" onclick="openSendShop(${g.id},'${esc(g.name)}',${g.price})">🎁 Дарить</button>
+        </div>`;
+    return `<div class="scard gc ${so?'so':''}">
+      ${imgW}<div class="scard-body">
+        <div class="scard-name">${g.name}</div>
+        <div class="scard-footer">
+          <div class="scard-price">${g.price>0?'⭐ '+g.price:'Бесплатно'}</div>${qty}
+          ${btns}
+        </div>
+      </div>
+    </div>`;
+  }).join('')+'</div>';
+}
+async function shopBuy(gid,name){
+  const d=await fetch(`/api/shop/buy/${gid}`,{method:'POST'}).then(r=>r.json());
+  if(d.success){toast(`🎁 ${name} получен!`);launchConfetti();await loadShop();await loadProfile();}
+  else toast('❌ '+(d.message||'Ошибка'),'linear-gradient(135deg,#b91c1c,#7f1d1d)');
+}
+function openSendShop(gid,name,price){
+  curSendShopGid=gid;
+  $('send-shop-lbl').textContent=name;
+  $('send-shop-price').textContent=price>0?`Стоимость: ⭐ ${price}`:'Бесплатно';
+  $('send-shop-un').value='';
+  $('send-shop-modal').classList.add('show');
+}
+async function confirmSendShop(){
+  const un=$('send-shop-un').value.trim().replace(/^@/,'');
+  if(!un){toast('❌ Введи юзернейм','linear-gradient(135deg,#b91c1c,#7f1d1d)');return;}
+  const d=await fetch(`/api/shop/gift_send/${curSendShopGid}`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({username:un})}).then(r=>r.json());
+  if(d.success){
+    $('send-shop-modal').classList.remove('show');
+    toast(d.message||'🎁 Подарок отправлен!');
+    launchConfetti();
+    await loadShop();await loadProfile();
+  }else toast('❌ '+(d.message||'Ошибка'),'linear-gradient(135deg,#b91c1c,#7f1d1d)');
+}
+
+/* ─ TRANSFER GIFT ─ */
+let curTransferUgId=null;
+function openTransfer(ugId,name){
+  curTransferUgId=ugId;
+  $('transfer-lbl').textContent=name;
+  $('transfer-un').value='';
+  $('transfer-modal').classList.add('show');
+}
+async function confirmTransfer(){
+  const un=$('transfer-un').value.trim().replace(/^@/,'');
+  if(!un){toast('❌ Введи юзернейм','linear-gradient(135deg,#b91c1c,#7f1d1d)');return;}
+  const d=await fetch('/api/gift/transfer',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({user_gift_id:curTransferUgId,username:un})}).then(r=>r.json());
+  if(d.success){
+    $('transfer-modal').classList.remove('show');
+    toast(d.message||'✅ Передан!');
+    await loadProfile();
+  }else toast('❌ '+(d.message||'Ошибка'),'linear-gradient(135deg,#b91c1c,#7f1d1d)');
+}
+
+/* ─ MARKET ─ */
+async function loadMarket(){
+  const items=await fetch('/api/market',{headers:{'Cache-Control':'no-cache'}}).then(r=>r.json());
+  const el=$('market-list');
+  if(!items.length){el.innerHTML='<div class="empty"><div class="emico">💱</div>Маркет пуст</div>';return;}
+  el.innerHTML='<div class="mgrid">'+items.map(it=>{
+    const bg=SLOT_BGS[it.bg_id||0].css;
+    const imgSection=it.rarity
+      ?`<div style="width:100%;aspect-ratio:1;background:${bg};display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden;">
+          ${it.photo_filename?`<img src="/static/uploads/${it.photo_filename}" style="width:75%;height:75%;object-fit:contain;filter:drop-shadow(0 4px 12px rgba(0,0,0,.7));">`:`<span style="font-size:42px;">🎁</span>`}
+          <span style="position:absolute;top:6px;right:6px;padding:2px 7px;border-radius:18px;font-size:9px;font-weight:800;background:${it.rarity_color}33;border:1px solid ${it.rarity_color}66;color:${it.rarity_color};">${rIcon(it.rarity)} ${it.rarity}</span>
+        </div>`
+      :`<div class="card-img-wrap">${it.image?`<img class="card-img" src="/static/uploads/${it.image}">`:`<div class="card-ph">🎁</div>`}</div>`;
+    return `<div class="mcard gc">${imgSection}
+      <div class="mcard-body">
+        <div class="mcard-name">${it.name}</div>
+        <div class="mcard-seller">от ${it.seller_name}</div>
+        ${it.model_name?`<div style="font-size:10px;color:rgba(226,232,240,.4);margin-bottom:4px;">🔩 ${it.model_name} #${it.number}</div>`:''}
+        <div class="mcard-price">⭐ ${it.price}</div>
+        <button class="btn bp" style="padding:8px;font-size:12px;" onclick="buyMarket(${it.id})">Купить</button>
+      </div></div>`;
+  }).join('')+'</div>';
+}
+async function buyMarket(id){
+  const d=await fetch(`/api/market/buy/${id}`,{method:'POST'}).then(r=>r.json());
+  if(d.success){toast('🎁 Куплено!');await loadMarket();await loadProfile();}
+  else toast('❌ '+(d.message||'Ошибка'),'linear-gradient(135deg,#b91c1c,#7f1d1d)');
+}
+
+/* ─ AUCTIONS ─ */
+async function loadAuctions(){
+  const items=await fetch('/api/auctions',{headers:{'Cache-Control':'no-cache'}}).then(r=>r.json());
+  const el=$('auc-list');
+  if(!items.length){el.innerHTML='<div class="empty"><div class="emico">🔨</div>Нет аукционов</div>';return;}
+  el.innerHTML='<div class="agrid">'+items.map(it=>{
+    const bg=SLOT_BGS[it.bg_id||0].css;
+    const tl=timeLeft(it.end_time);const urgent=new Date(it.end_time+'Z')-new Date()<300000;
+    return `<div class="acard gc">
+      <div style="position:relative;overflow:hidden;">
+        <div style="width:100%;aspect-ratio:1;background:${bg};display:flex;align-items:center;justify-content:center;">
+          ${it.photo_filename?`<img src="/static/uploads/${it.photo_filename}" style="width:72%;height:72%;object-fit:contain;filter:drop-shadow(0 4px 12px rgba(0,0,0,.7));">`:`<span style="font-size:42px;">🎁</span>`}
+        </div>
+        <div class="auc-ribbon">AUCTION</div>
+      </div>
+      <div class="acard-body">
+        <div class="acard-name">${it.name}</div>
+        <div class="acard-seller">от ${it.seller_name}</div>
+        ${it.rarity?`<div style="font-size:10px;font-weight:700;color:${it.rarity_color};margin-bottom:3px;">${rIcon(it.rarity)} ${it.rarity} #${it.number}</div>`:''}
+        <div class="acard-price">⭐ ${it.current_price}</div>
+        <div class="acard-bids">Ставок: ${it.bid_count}</div>
+        <div class="acard-timer${urgent?' urgent':{}}">⏱ ${tl}</div>
+        <button class="btn bgold" style="padding:8px;font-size:12px;" onclick="openBid(${it.id},'${esc(it.name)}',${it.current_price})">🔨 Ставка</button>
+      </div></div>`;
+  }).join('')+'</div>';
+  if(aucTimer)clearInterval(aucTimer);
+  aucTimer=setInterval(()=>{
+    document.querySelectorAll('.acard-timer').forEach((el,i)=>{
+      if(items[i]){const tl=timeLeft(items[i].end_time);el.textContent='⏱ '+tl;el.className='acard-timer'+(new Date(items[i].end_time+'Z')-new Date()<300000?' urgent':'');}
+    });
+  },1000);
+}
+function openBid(aid,name,cur){
+  curAucId=aid;curAucPrice=cur;$('bid-lbl').textContent=name;$('bid-cur').textContent=cur;$('bid-amount').value=cur+1;$('bid-modal').classList.add('show');
+}
+async function placeBid(){
+  const amount=parseInt($('bid-amount').value)||0;
+  if(amount<=curAucPrice){toast(`❌ Ставка > ${curAucPrice} ⭐`,'linear-gradient(135deg,#b91c1c,#7f1d1d)');return;}
+  const d=await fetch(`/api/auction/bid/${curAucId}`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({amount})}).then(r=>r.json());
+  if(d.success){toast(`🔨 Ставка ${amount} ⭐!`,'linear-gradient(135deg,#d97706,#b45309)');$('bid-modal').classList.remove('show');loadAuctions();}
+  else toast('❌ '+(d.message||'Ошибка'),'linear-gradient(135deg,#b91c1c,#7f1d1d)');
+}
+
+/* ─ ADMIN TABS ─ */
+function aTab(nm,el){
+  document.querySelectorAll('.atab').forEach(b=>b.classList.remove('active'));
+  document.querySelectorAll('#pg-admin .atc').forEach(c=>c.classList.remove('active'));
+  el.classList.add('active');$('at-'+nm).classList.add('active');
+  if(nm==='gifts')loadAdminGifts();
+  if(nm==='upgrades'){loadAdminUpgs();loadUpgGsel();}
+  if(nm==='users')loadAdminUsers();
+}
+
+/* ─ ADMIN GIFTS ─ */
+async function loadAdminGifts(){
+  const gifts=await fetch('/api/admin/gifts',{headers:{'Cache-Control':'no-cache'}}).then(r=>r.json());
+  const el=$('a-glist');
+  if(!gifts.length){el.innerHTML='<div class="empty"><div class="emico">🎁</div>Нет подарков</div>';return;}
+  el.innerHTML=gifts.map(g=>{
+    const rem=g.quantity!==null?g.quantity-(g.sold||0):null;
+    const stock=rem!==null?`· ${rem}/${g.quantity}`:'· ∞';
+    return `<div class="gitem gc"><div class="gleft">
+      ${g.image?`<img class="gthumb" src="/static/uploads/${g.image}">`:`<div class="gthumb-ph">🎁</div>`}
+      <div><div class="gname">${g.name}</div><div class="gmeta">⭐${g.price} ${g.in_shop?'· Магазин':''} ${stock}</div></div>
+    </div><button class="btn bd xsm" onclick="delGift(${g.id})">Удалить</button></div>`;
+  }).join('');
+}
+function prevImg(inp,pid){const f=inp.files[0];if(!f)return;const r=new FileReader();r.onload=e=>{const i=$(pid);i.src=e.target.result;i.style.display='block';};r.readAsDataURL(f);}
+async function addGift(){
+  const name=$('a-gname').value.trim();
+  if(!name){toast('❌ Введи название','linear-gradient(135deg,#b91c1c,#7f1d1d)');return;}
+  const fd=new FormData();
+  fd.append('name',name);fd.append('price',parseInt($('a-gprice').value)||0);
+  fd.append('in_shop',$('a-gshop').value);
+  const qty=$('a-gqty').value.trim();if(qty)fd.append('quantity',qty);
+  const f=$('a-gimg').files[0];if(f)fd.append('image',f);
+  const d=await fetch('/api/admin/gifts',{method:'POST',body:fd}).then(r=>r.json());
+  if(d.success){toast('🎁 Добавлен!');$('a-gname').value='';$('a-gprice').value='';$('a-gqty').value='';$('a-gimg').value='';$('a-gprev').style.display='none';loadAdminGifts();loadUpgGsel();}
+}
+async function delGift(id){
+  if(!confirm('Удалить?'))return;
+  const d=await fetch(`/api/admin/gifts/${id}`,{method:'DELETE'}).then(r=>r.json());
+  if(d.success){toast('🗑️ Удалено');loadAdminGifts();loadUpgGsel();}
+}
+
+/* ─ ADMIN UPGRADES (with photos in form) ─ */
+function prevUpgPhotos(inp){
+  const wrap=$('upg-prev-imgs');wrap.innerHTML='';
+  for(const f of inp.files){
+    const r=new FileReader();
+    r.onload=e=>{const img=document.createElement('img');img.className='prev-img';img.src=e.target.result;wrap.appendChild(img);};
+    r.readAsDataURL(f);
+  }
+}
+function addModelToForm(){
+  const inp=$('model-inp-new');const nm=inp.value.trim();if(!nm)return;
+  formModels.push(nm);inp.value='';renderFormModels();
+}
+function removeFormModel(i){formModels.splice(i,1);renderFormModels();}
+function renderFormModels(){
+  const el=$('models-list');
+  el.innerHTML=formModels.map((m,i)=>`<div class="dyn-model-row"><div class="fi" style="flex:1;padding:7px 10px;font-size:12px;">🔩 ${m}</div><button class="btn bd xsm" onclick="removeFormModel(${i})">✕</button></div>`).join('');
+}
+
+async function loadUpgGsel(){
+  const gifts=await fetch('/api/admin/gifts',{headers:{'Cache-Control':'no-cache'}}).then(r=>r.json());
+  const sel=$('upg-gsel');
+  sel.innerHTML='<option value="">— выберите —</option>'+gifts.map(g=>`<option value="${g.id}">🎁 ${g.name}</option>`).join('');
+}
+async function createUpg(){
+  const gid=$('upg-gsel').value;const nm=$('upg-nm').value.trim();
+  if(!gid||!nm){toast('❌ Выбери подарок и введи название','linear-gradient(135deg,#b91c1c,#7f1d1d)');return;}
+  const fd=new FormData();
+  fd.append('gift_id',gid);fd.append('name',nm);
+  for(const f of $('upg-photos-inp').files)fd.append('photos',f);
+  formModels.forEach(m=>fd.append('models[]',m));
+  const d=await fetch('/api/admin/upgrades',{method:'POST',body:fd}).then(r=>r.json());
+  if(d.success){
+    toast('⚡ Создано!');$('upg-nm').value='';$('upg-photos-inp').value='';
+    $('upg-prev-imgs').innerHTML='';formModels=[];renderFormModels();loadAdminUpgs();
+  }
+}
+async function loadAdminUpgs(){
+  const upgs=await fetch('/api/admin/upgrades',{headers:{'Cache-Control':'no-cache'}}).then(r=>r.json());
+  const el=$('a-upglist');
+  if(!upgs.length){el.innerHTML='<div class="empty"><div class="emico">⚡</div>Нет улучшений</div>';return;}
+  el.innerHTML=upgs.map(u=>`
+    <div class="upg-ac gc">
+      <div class="upg-ah">
+        <div style="flex:1;">
+          <div class="upg-at">🎁 ${u.gift_name} — ${u.name}</div>
+          <div class="upg-as">Выдано: ${u.counter} · Фото: ${u.photo_count}/15 · Моделей: ${u.model_count}</div>
+          ${u.photos.length?`<div class="ph-grid" style="margin-top:7px;">${u.photos.slice(0,5).map(p=>`<img class="ph-thumb" src="/static/uploads/${p}">`).join('')}${u.photos.length>5?`<span style="width:50px;height:50px;display:flex;align-items:center;justify-content:center;background:rgba(255,255,255,.04);border-radius:8px;font-size:11px;">+${u.photos.length-5}</span>`:''}</div>`:''}
+          ${u.models.length?`<div style="display:flex;flex-wrap:wrap;gap:4px;margin-top:6px;">${u.models.map(m=>`<span class="mltag">🔩 ${m}</span>`).join('')}</div>`:''}
+        </div>
+        <div style="display:flex;flex-direction:column;gap:4px;align-items:flex-end;flex-shrink:0;">
+          <button class="btn bp xsm" onclick="openPhMod(${u.id})">📷</button>
+          <button class="btn bd xsm" onclick="delUpg(${u.id})">✕</button>
+        </div>
+      </div>
+    </div>`).join('');
+}
+async function openPhMod(id){curUpgAdmId=id;$('photo-modal').classList.add('show');await refreshPh();}
+async function refreshPh(){
+  if(!curUpgAdmId)return;
+  const d=await fetch(`/api/admin/upgrade_photos_list/${curUpgAdmId}`,{headers:{'Cache-Control':'no-cache'}}).then(r=>r.json());
+  $('ph-cnt').textContent=d.photos.length;
+  $('ph-grid').innerHTML=d.photos.map(p=>`<img class="ph-thumb" src="/static/uploads/${p.filename}" onclick="delPh(${p.id})" title="Удалить">`).join('');
+  $('ph-models').innerHTML=d.models.length?
+    '<div style="font-size:11px;color:rgba(226,232,240,.35);margin-bottom:4px;">Модели:</div><div style="display:flex;flex-wrap:wrap;gap:5px;">'+
+    d.models.map(m=>`<span class="mltag" onclick="delMod(${m.id})">🔩 ${m.name} ✕</span>`).join('')+'</div>':'';
+}
+async function uploadPhots(){
+  const files=$('ph-inp').files;if(!files.length)return;
+  const fd=new FormData();for(const f of files)fd.append('photos',f);
+  const d=await fetch(`/api/admin/upgrades/${curUpgAdmId}/photos`,{method:'POST',body:fd}).then(r=>r.json());
+  toast(`📷 Загружено ${d.saved}!`);$('ph-inp').value='';await refreshPh();loadAdminUpgs();
+}
+async function addModel(){
+  const nm=$('nm-inp').value.trim();if(!nm)return;
+  await fetch(`/api/admin/upgrades/${curUpgAdmId}/models`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({name:nm})});
+  $('nm-inp').value='';await refreshPh();loadAdminUpgs();
+}
+async function delMod(id){await fetch(`/api/admin/upgrades/${curUpgAdmId}/models/${id}`,{method:'DELETE'});await refreshPh();loadAdminUpgs();}
+async function delPh(id){await fetch(`/api/admin/upgrades/${curUpgAdmId}/photos/${id}`,{method:'DELETE'});await refreshPh();loadAdminUpgs();}
+async function delUpg(id){
+  if(!confirm('Удалить улучшение?'))return;
+  await fetch(`/api/admin/upgrades/${id}`,{method:'DELETE'});toast('🗑️ Удалено');loadAdminUpgs();
+}
+
+/* ─ ADMIN USERS ─ */
+async function loadAdminUsers(){
+  const [users,gifts]=await Promise.all([
+    fetch('/api/admin/users',{headers:{'Cache-Control':'no-cache'}}).then(r=>r.json()),
+    fetch('/api/admin/gifts',{headers:{'Cache-Control':'no-cache'}}).then(r=>r.json())]);
+  const gopts=gifts.map(g=>`<option value="${g.id}">🎁 ${g.name}</option>`).join('');
+  const el=$('a-ulist');
+  if(!users.length){el.innerHTML='<div class="empty"><div class="emico">👥</div>Нет пользователей</div>';return;}
+  el.innerHTML=users.map(u=>`
+    <div class="uitem gc">
+      <div class="uleft">
+        <div class="uava ${u.is_premium?'up':''}">${u.is_premium?'👑':'👤'}</div>
+        <div><div class="uname">${u.first_name||'?'}${u.is_premium?' <span style="font-size:9px;color:#fbbf24;">PRO</span>':''}</div>
+          <div class="umeta">⭐${u.stars}${u.username?' @'+u.username:''}</div></div>
+      </div>
+      <div class="uacts">
+        <input class="sinput" id="si-${u.id}" type="number" value="10" min="1">
+        <button class="btn bp xsm" onclick="gStars(${u.id})">⭐</button>
+        ${gifts.length?`<select class="fi" id="gs-${u.id}" style="width:auto;padding:4px 6px;font-size:10px;border-radius:7px;">${gopts}</select>
+        <button class="btn bs xsm" onclick="gGift(${u.id})">🎁</button>`:''}
+        <button class="btn xsm ${u.is_premium?'bd':'bprem'}" onclick="togPrem(${u.id},${u.is_premium?0:1})">${u.is_premium?'❌P':'👑P'}</button>
+      </div>
+    </div>`).join('');
+}
+async function gStars(uid){
+  const s=parseInt($('si-'+uid).value)||0;if(!s)return;
+  const d=await fetch('/api/admin/give_stars',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({user_id:uid,stars:s})}).then(r=>r.json());
+  if(d.success){toast(`⭐ +${s}!`);loadAdminUsers();}
+}
+async function gGift(uid){
+  const sel=$('gs-'+uid);if(!sel)return;
+  const d=await fetch('/api/admin/give_gift',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({user_id:uid,gift_id:parseInt(sel.value)})}).then(r=>r.json());
+  if(d.success)toast('🎁 Выдан!');
+}
+async function togPrem(uid,val){
+  const d=await fetch('/api/admin/set_premium',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({user_id:uid,premium:!!val})}).then(r=>r.json());
+  if(d.success){toast(val?'👑 Выдан!':'❌ Снят',val?'linear-gradient(135deg,#d97706,#b45309)':'linear-gradient(135deg,#b91c1c,#7f1d1d)');loadAdminUsers();}
+}
+
+$('code-input').addEventListener('keydown',e=>{if(e.key==='Enter')doLogin();});
+</script>
+</body>
+</html>

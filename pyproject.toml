@@ -1,0 +1,11 @@
+[project]
+name = "giftfastel-mini-app"
+version = "0.1.0"
+description = "Telegram Mini App for a digital gift shop"
+authors = [{ name = "GiftFastel" }]
+requires-python = ">=3.11"
+dependencies = [
+    "Flask>=3.0,<4",
+    "Flask-Cors>=4.0,<6",
+    "requests>=2.31,<3",
+]
