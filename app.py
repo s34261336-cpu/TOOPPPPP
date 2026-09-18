@@ -20,7 +20,9 @@ BOT_TOKEN = (
 ADMIN_CODE = os.environ.get("ADMIN_CODE", "").strip()
 DB_PATH = os.path.join(BASE_DIR, os.environ.get("DB_PATH", "database.db"))
 APP_URL = (
-    os.environ.get("MINI_APP_URL")
+    os.environ.get("WEBAPP_URL")
+    or os.environ.get("WEB_APP_URL")
+    or os.environ.get("MINI_APP_URL")
     or os.environ.get("APP_URL")
     or os.environ.get("RENDER_EXTERNAL_URL")
     or ""
