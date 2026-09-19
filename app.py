@@ -49,6 +49,8 @@ CODE_SYNC_URL = (
     os.environ.get("CODE_SYNC_URL") or APP_URL
 ).strip().rstrip("/")
 CODE_SYNC_SECRET = os.environ.get("CODE_SYNC_SECRET", "").strip()
+CODE_SYNC_CONNECT_TIMEOUT = 5
+CODE_SYNC_READ_TIMEOUT = 30
 PREMIUM_PRICE = 50
 UPLOAD_FOLDER = os.path.join(BASE_DIR, "static", "uploads")
 ALLOWED_EXT = {"png", "jpg", "jpeg", "gif", "webp"}
@@ -210,9 +212,18 @@ def sync_code_to_webapp(telegram_id, code, username, first_name):
 
     for attempt in range(3):
         try:
-            response = requests.post(endpoint, json=payload, timeout=5)
+            response = requests.post(
+                endpoint,
+                json=payload,
+                timeout=(CODE_SYNC_CONNECT_TIMEOUT, CODE_SYNC_READ_TIMEOUT),
+            )
             if response.ok and response.json().get("success"):
                 return True
+            if 400 <= response.status_code < 500:
+                app.logger.error(
+                    "Синхронизация кода отклонена: HTTP %s", response.status_code
+                )
+                return False
             app.logger.warning(
                 "Синхронизация кода отклонена: HTTP %s", response.status_code
             )
