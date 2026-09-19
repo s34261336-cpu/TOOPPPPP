@@ -140,6 +140,7 @@ _CACHE_TTL_SECONDS = 300.0
 _AUTH_CACHE_TTL_SECONDS = 2.0
 _remote_cache: dict[str, list[dict[str, Any]]] | None = None
 _remote_table_at: dict[str, float] = {}
+_unsupported_columns: set[tuple[str, str]] = set()
 
 
 class SupabaseConnection:
@@ -318,12 +319,22 @@ class SupabaseConnection:
             self._publish(snapshot, changed_tables)
         self._synced_snapshot = snapshot
         _remote_cache = {
-            table: [dict(row) for row in rows]
+            table: [
+                {
+                    column: value
+                    for column, value in row.items()
+                    if (table, column) not in _unsupported_columns
+                }
+                for row in rows
+            ]
             for table, rows in snapshot.items()
         }
         committed_at = time.monotonic()
         for table in changed_tables:
             _remote_table_at[table] = committed_at
+
+    def remote_column_supported(self, table: str, column: str) -> bool:
+        return (table, column) not in _unsupported_columns
 
     def rollback(self) -> None:
         self._conn.rollback()
@@ -358,6 +369,14 @@ class SupabaseConnection:
             rows = snapshot[table]
             for start in range(0, len(rows), 500):
                 chunk = rows[start : start + 500]
+                publish_chunk = [
+                    {
+                        column: value
+                        for column, value in row.items()
+                        if (table, column) not in _unsupported_columns
+                    }
+                    for row in chunk
+                ]
                 response = self._http.post(
                     f"{self._base_url}/rest/v1/{table}",
                     headers={
@@ -365,11 +384,34 @@ class SupabaseConnection:
                         "Prefer": "return=minimal,resolution=merge-duplicates",
                     },
                     params={"on_conflict": "id"},
-                    json=chunk,
+                    json=publish_chunk,
                     timeout=20,
                 )
                 if not response.ok:
                     detail = response.text[:300].replace("\n", " ")
+                    if table == "user_gifts" and "worn" in detail.lower():
+                        _unsupported_columns.add(("user_gifts", "worn"))
+                        publish_chunk = [
+                            {
+                                column: value
+                                for column, value in row.items()
+                                if column != "worn"
+                            }
+                            for row in chunk
+                        ]
+                        response = self._http.post(
+                            f"{self._base_url}/rest/v1/{table}",
+                            headers={
+                                **self._headers,
+                                "Prefer": "return=minimal,resolution=merge-duplicates",
+                            },
+                            params={"on_conflict": "id"},
+                            json=publish_chunk,
+                            timeout=20,
+                        )
+                        if response.ok:
+                            continue
+                        detail = response.text[:300].replace("\n", " ")
                     raise RuntimeError(
                         f"Supabase UPSERT {table} failed "
                         f"({response.status_code}): {detail}"

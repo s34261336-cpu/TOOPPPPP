@@ -630,7 +630,22 @@ def wear_gift():
         "UPDATE user_gifts SET worn=? WHERE id=? AND user_id=?",
         (1 if want_worn else 0, ug_id, uid),
     )
-    conn.commit()
+    try:
+        conn.commit()
+    except Exception:
+        conn.rollback()
+        conn.close()
+        app.logger.exception("Не удалось сохранить состояние надетого подарка")
+        return nc(jsonify({
+            "success": False,
+            "message": "Не удалось сохранить состояние подарка. Проверьте схему базы.",
+        })), 500
+    if hasattr(conn, "remote_column_supported") and not conn.remote_column_supported("user_gifts", "worn"):
+        conn.close()
+        return nc(jsonify({
+            "success": False,
+            "message": "Для кнопки «Носить» примените SQL-миграцию worn в Supabase.",
+        })), 409
     conn.close()
     return nc(jsonify({"success": True, "worn": want_worn}))
 
@@ -705,7 +720,16 @@ def shop_buy(gid):
     c.execute("INSERT INTO user_gifts(user_id,gift_id) VALUES(?,?)", (uid, gid))
     if gift["quantity"] is not None:
         c.execute("UPDATE gifts SET sold=sold+1 WHERE id=?", (gid,))
-    conn.commit()
+    try:
+        conn.commit()
+    except Exception:
+        conn.rollback()
+        conn.close()
+        app.logger.exception("Не удалось сохранить покупку подарка")
+        return nc(jsonify({
+            "success": False,
+            "message": "Не удалось купить подарок. Попробуйте ещё раз.",
+        })), 500
     conn.close()
     return nc(
         jsonify({"success": True, "message": f"Подарок «{gift['name']}» получен!"})
@@ -929,6 +953,7 @@ def market_list():
         "INSERT INTO marketplace(user_gift_id,seller_id,price) VALUES(?,?,?)",
         (ug_id, uid, price),
     )
+    c.execute("UPDATE user_gifts SET worn=0 WHERE id=? AND user_id=?", (ug_id, uid))
     conn.commit()
     conn.close()
     return nc(jsonify({"success": True}))
