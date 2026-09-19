@@ -925,6 +925,180 @@ body{
 @media(min-width:481px){
   .shop-detail{height:min(640px,calc(100vh - 92px));}
 }
+/* ═══ ADMIN CONTROL CENTER ═══ */
+.admin-hero{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:16px;
+  padding:20px;
+  margin-bottom:10px;
+  overflow:hidden;
+  position:relative;
+  background:
+    radial-gradient(circle at 100% 0%,rgba(42,171,238,.2),transparent 42%),
+    linear-gradient(145deg,rgba(45,68,87,.76),rgba(13,23,33,.8));
+}
+.admin-hero::after{
+  content:'';
+  position:absolute;
+  inset:0;
+  background:linear-gradient(115deg,transparent 35%,rgba(255,255,255,.06) 50%,transparent 65%);
+  transform:translateX(-100%);
+  animation:adminShine 6s ease-in-out infinite;
+  pointer-events:none;
+}
+@keyframes adminShine{50%,100%{transform:translateX(100%);}}
+.admin-hero-copy{position:relative;z-index:1;min-width:0;}
+.admin-eyebrow{
+  display:block;
+  margin-bottom:5px;
+  color:#83d2fa;
+  font-size:9px;
+  font-weight:800;
+  letter-spacing:1.4px;
+  text-transform:uppercase;
+}
+.admin-hero h1{font-size:20px;line-height:1.15;margin:0 0 6px;color:#fff;}
+.admin-hero p{max-width:430px;color:rgba(244,247,250,.58);font-size:11px;line-height:1.5;}
+.admin-hero-mark{
+  position:relative;
+  z-index:1;
+  flex:0 0 54px;
+  width:54px;
+  height:54px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  border-radius:18px;
+  color:#bdeaff;
+  font-size:30px;
+  background:linear-gradient(145deg,rgba(42,171,238,.35),rgba(42,171,238,.08));
+  border:1px solid rgba(120,210,250,.34);
+  box-shadow:0 0 30px rgba(42,171,238,.18),inset 0 1px 0 rgba(255,255,255,.2);
+}
+.admin-metrics{display:grid;grid-template-columns:repeat(4,1fr);gap:7px;margin-bottom:10px;}
+.admin-metric{
+  display:grid;
+  grid-template-columns:auto 1fr;
+  column-gap:7px;
+  align-items:center;
+  padding:10px 9px;
+  min-width:0;
+  border-radius:16px;
+}
+.admin-metric-icon{grid-row:span 2;font-size:16px;opacity:.9;}
+.admin-metric strong{font-size:15px;line-height:1;color:#fff;}
+.admin-metric small{color:rgba(244,247,250,.45);font-size:9px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.atabs{gap:5px;padding:5px;}
+.atab{display:flex;align-items:center;justify-content:center;gap:5px;min-height:38px;font-size:10px;}
+.atab span{font-size:15px;line-height:1;}
+.admin-section-head{display:flex;align-items:flex-start;justify-content:space-between;gap:10px;margin-bottom:12px;}
+.admin-section-head .stitle{margin-bottom:2px;}
+.admin-section-note{color:rgba(244,247,250,.42);font-size:10px;line-height:1.4;}
+.admin-section-icon{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  width:30px;
+  height:30px;
+  flex:0 0 30px;
+  border-radius:11px;
+  color:#9ddcff;
+  background:rgba(42,171,238,.12);
+  border:1px solid rgba(42,171,238,.22);
+}
+.admin-form-grid{display:grid;grid-template-columns:minmax(0,1.35fr) minmax(120px,.65fr);gap:8px;}
+.admin-field-wide{min-width:0;}
+.admin-submit-wrap{display:flex;flex-direction:column;}
+.admin-submit-wrap .btn{margin-top:auto;}
+.stock-mode{display:grid;grid-template-columns:1fr 1fr;gap:7px;}
+.stock-mode-btn{
+  display:flex;
+  align-items:center;
+  gap:8px;
+  padding:9px 10px;
+  border:1px solid rgba(255,255,255,.1);
+  border-radius:13px;
+  background:rgba(6,16,25,.42);
+  color:rgba(244,247,250,.62);
+  text-align:left;
+  cursor:pointer;
+  transition:all .22s ease;
+}
+.stock-mode-btn>span:first-child{font-size:19px;color:#83d2fa;line-height:1;}
+.stock-mode-btn b{display:block;color:inherit;font-size:10px;line-height:1.25;}
+.stock-mode-btn small{display:block;margin-top:2px;color:rgba(244,247,250,.36);font-size:9px;line-height:1.25;}
+.stock-mode-btn.active{
+  background:linear-gradient(145deg,rgba(42,171,238,.2),rgba(42,171,238,.07));
+  border-color:rgba(42,171,238,.58);
+  color:#fff;
+  box-shadow:0 0 0 1px rgba(42,171,238,.1),inset 0 1px 0 rgba(255,255,255,.1);
+}
+.admin-field-hint{margin-top:6px;color:rgba(244,247,250,.38);font-size:10px;line-height:1.45;}
+.gitem{
+  padding:11px;
+  border-radius:16px;
+  border-color:rgba(255,255,255,.1);
+  background:rgba(7,17,27,.36);
+}
+.gleft{min-width:0;}
+.gleft>div:last-child{min-width:0;}
+.gname{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:250px;}
+.gmeta{line-height:1.5;}
+.admin-status{
+  display:inline-flex;
+  align-items:center;
+  gap:4px;
+  margin-top:4px;
+  padding:3px 7px;
+  border-radius:9px;
+  font-size:9px;
+  font-weight:700;
+}
+.admin-status.is-unlimited{color:#bdeaff;background:rgba(42,171,238,.13);border:1px solid rgba(42,171,238,.25);}
+.admin-status.is-available{color:#6ee7b7;background:rgba(16,185,129,.12);border:1px solid rgba(16,185,129,.3);}
+.admin-status.is-sold{color:#fca5a5;background:rgba(185,28,28,.12);border:1px solid rgba(185,28,28,.25);}
+
+/* Telegram-style sparkle accents in the shop */
+.gift-sparkles{position:absolute;inset:0;z-index:2;pointer-events:none;overflow:hidden;}
+.gift-sparkles span{
+  position:absolute;
+  color:#ffd86a;
+  font-size:10px;
+  line-height:1;
+  opacity:0;
+  filter:drop-shadow(0 0 5px rgba(255,196,62,.8));
+  animation:giftSparkle 2.8s ease-in-out infinite;
+}
+.gift-sparkles span:nth-child(1){left:13%;top:18%;font-size:8px;}
+.gift-sparkles span:nth-child(2){left:77%;top:25%;font-size:12px;animation-delay:.6s;}
+.gift-sparkles span:nth-child(3){left:24%;top:74%;font-size:7px;animation-delay:1.2s;}
+.gift-sparkles span:nth-child(4){left:82%;top:68%;font-size:9px;animation-delay:1.8s;}
+.gift-sparkles span:nth-child(5){left:48%;top:10%;font-size:6px;animation-delay:2.2s;}
+@keyframes giftSparkle{
+  0%,100%{opacity:0;transform:scale(.45) rotate(0deg);}
+  35%{opacity:.9;transform:scale(1) rotate(18deg);}
+  65%{opacity:.25;transform:scale(.7) rotate(45deg);}
+}
+#ut-shop .scard .cr-avail{
+  background:linear-gradient(135deg,#35d47f,#11945d);
+  color:#eafff3;
+  border-color:rgba(110,231,183,.55);
+  text-shadow:0 1px 2px rgba(0,0,0,.35);
+}
+
+@media(max-width:430px){
+  .admin-hero{padding:16px;}
+  .admin-hero h1{font-size:18px;}
+  .admin-metrics{gap:5px;}
+  .admin-metric{padding:8px 6px;column-gap:4px;}
+  .admin-metric-icon{font-size:13px;}
+  .admin-metric strong{font-size:13px;}
+  .admin-metric small{font-size:8px;}
+  .admin-form-grid{grid-template-columns:1fr;}
+  .admin-submit-wrap .btn{margin-top:0;}
+}
 </style>
 </head>
 <body>
@@ -1040,25 +1214,54 @@ body{
     <span class="abadge">🔴 ADMIN</span>
   </div>
   <div class="ac">
+    <div class="admin-hero gl">
+      <div class="admin-hero-copy">
+        <span class="admin-eyebrow">GiftFastel Control Center</span>
+        <h1>Управление магазином</h1>
+        <p>Выпускай подарки, настраивай улучшения и управляй пользователями в одном месте.</p>
+      </div>
+      <div class="admin-hero-mark">✦</div>
+    </div>
+    <div class="admin-metrics" aria-label="Сводка каталога">
+      <div class="admin-metric gc"><span class="admin-metric-icon">🎁</span><strong id="a-metric-total">0</strong><small>в каталоге</small></div>
+      <div class="admin-metric gc"><span class="admin-metric-icon">🛒</span><strong id="a-metric-shop">0</strong><small>в магазине</small></div>
+      <div class="admin-metric gc"><span class="admin-metric-icon">∞</span><strong id="a-metric-unlimited">0</strong><small>безлимитных</small></div>
+      <div class="admin-metric gc"><span class="admin-metric-icon">📦</span><strong id="a-metric-stock">0</strong><small>доступно</small></div>
+    </div>
     <div class="atabs">
-      <button class="atab active" onclick="aTab('gifts',this)">🎁 Подарки</button>
-      <button class="atab" onclick="aTab('upgrades',this)">⚡ Улучшения</button>
-      <button class="atab" onclick="aTab('users',this)">👥 Юзеры</button>
+      <button class="atab active" onclick="aTab('gifts',this)"><span>🎁</span> Каталог</button>
+      <button class="atab" onclick="aTab('upgrades',this)"><span>⚡</span> Улучшения</button>
+      <button class="atab" onclick="aTab('users',this)"><span>👥</span> Пользователи</button>
     </div>
     <div id="at-gifts" class="atc active">
       <div class="sc gl">
-        <div class="stitle">✨ Новый подарок</div>
-        <div class="fg"><label class="fl">Название</label><input class="fi" id="a-gname" placeholder="Название"></div>
-        <div class="fg"><label class="fl">Цена (⭐)</label><input class="fi" id="a-gprice" type="number" placeholder="0" min="0" style="letter-spacing:normal;text-align:left;font-size:13px;"></div>
-        <div class="fg"><label class="fl">Количество (пусто = ∞)</label><input class="fi" id="a-gqty" type="number" placeholder="∞" min="1" style="letter-spacing:normal;text-align:left;font-size:13px;"></div>
+        <div class="admin-section-head">
+          <div><div class="stitle">✨ Выпустить подарок</div><div class="admin-section-note">Создай новую позицию для каталога магазина.</div></div>
+          <span class="admin-section-icon">＋</span>
+        </div>
+        <div class="admin-form-grid">
+          <div class="fg admin-field-wide"><label class="fl">Название подарка</label><input class="fi" id="a-gname" placeholder="Например, Космический кот"></div>
+          <div class="fg"><label class="fl">Цена, ⭐</label><input class="fi" id="a-gprice" type="number" placeholder="0" min="0" style="letter-spacing:normal;text-align:left;font-size:13px;"></div>
+        </div>
+        <div class="fg">
+          <label class="fl">Тираж</label>
+          <div class="stock-mode" role="group" aria-label="Тип тиража">
+            <button type="button" class="stock-mode-btn active" id="stock-unlimited" onclick="selectStockMode('unlimited')"><span>∞</span><span><b>Безлимитный</b><small>Всегда доступен</small></span></button>
+            <button type="button" class="stock-mode-btn" id="stock-limited" onclick="selectStockMode('limited')"><span>▣</span><span><b>Ограниченный</b><small>С заданным количеством</small></span></button>
+          </div>
+          <input class="fi" id="a-gqty" type="number" placeholder="Количество подарков" min="1" style="display:none;letter-spacing:normal;text-align:left;font-size:13px;margin-top:8px;">
+          <div class="admin-field-hint" id="stock-mode-hint">Безлимитный подарок не заканчивается и не получает плашку Available в магазине.</div>
+        </div>
         <div class="fg"><label class="fl">Фото</label>
           <label class="file-btn" for="a-gimg" style="display:block;">📷 Выбрать фото</label>
           <input type="file" id="a-gimg" accept="image/*" onchange="prevImg(this,'a-gprev')">
           <img id="a-gprev" class="prev-img" style="display:none;">
         </div>
-        <div class="fg"><label class="fl">В магазине</label>
+        <div class="admin-form-grid">
+        <div class="fg"><label class="fl">Показывать в магазине</label>
           <select class="fi" id="a-gshop"><option value="1">Да</option><option value="0">Нет</option></select></div>
-        <button class="btn bs" onclick="addGift()">+ Добавить</button>
+        <div class="fg admin-submit-wrap"><label class="fl">&nbsp;</label><button class="btn bs" onclick="addGift()">＋ Выпустить подарок</button></div>
+        </div>
       </div>
       <div class="sc gl"><div class="stitle">📋 Все подарки</div>
         <div id="a-glist"><div class="empty"><div class="loader"></div></div></div>
@@ -1066,7 +1269,7 @@ body{
     </div>
     <div id="at-upgrades" class="atc">
       <div class="sc gl">
-        <div class="stitle">⚡ Создать улучшение</div>
+        <div class="admin-section-head"><div><div class="stitle">⚡ Создать улучшение</div><div class="admin-section-note">Добавь визуальные варианты и модели для подарка.</div></div><span class="admin-section-icon">✦</span></div>
         <div class="fg"><label class="fl">Подарок</label><select class="fi" id="upg-gsel"><option value="">— выберите —</option></select></div>
         <div class="fg"><label class="fl">Название улучшения</label><input class="fi" id="upg-nm" placeholder="Название"></div>
         <div class="fg">
@@ -1090,7 +1293,7 @@ body{
       </div>
     </div>
     <div id="at-users" class="atc">
-      <div class="sc gl"><div class="stitle">👥 Пользователи</div>
+      <div class="sc gl"><div class="admin-section-head"><div><div class="stitle">👥 Пользователи</div><div class="admin-section-note">Баланс, подарки и Premium под контролем.</div></div><span class="admin-section-icon">⌁</span></div>
         <div id="a-ulist"><div class="empty"><div class="loader"></div></div></div>
       </div>
     </div>
@@ -1256,6 +1459,7 @@ let premPrice=1000,activeFilter='all',allGifts=[],aucTimer=null;
 let curSellUgId=null,curAucId=null,curAucPrice=0,curUpgAdmId=null;
 let cachedProfile=null;
 let formModels=[];
+let stockMode='unlimited';
 
 // 8 beautiful gradient backgrounds for upgrades
 const SLOT_BGS=[
@@ -1645,10 +1849,13 @@ async function loadShop(){
     const so=g.sold_out;
     const ribbon=so
       ?`<span class="cr cr-sold">SOLD OUT</span>`
-      :'';
+      :(!g.unlimited?`<span class="cr cr-avail">Available</span>`:'');
+    const sparkles='<div class="gift-sparkles" aria-hidden="true">'+
+      ['✦','✧','✦','✧','·'].map(mark=>`<span>${mark}</span>`).join('')+
+      '</div>';
     const imgW=g.image
-      ?`<div class="card-img-wrap" style="position:relative;overflow:hidden;"><img class="card-img" src="/static/uploads/${g.image}">${ribbon}</div>`
-      :`<div class="card-img-wrap" style="position:relative;overflow:hidden;"><div class="card-ph">🎁</div>${ribbon}</div>`;
+      ?`<div class="card-img-wrap" style="position:relative;overflow:hidden;"><img class="card-img" src="/static/uploads/${g.image}">${sparkles}${ribbon}</div>`
+      :`<div class="card-img-wrap" style="position:relative;overflow:hidden;"><div class="card-ph">🎁</div>${sparkles}${ribbon}</div>`;
     return `<div class="scard gc ${so?'so':''}" role="button" tabindex="0"
       onclick="openShopGift(${g.id})"
       onkeydown="if(event.key==='Enter'||event.key===' ')openShopGift(${g.id})">
@@ -1827,6 +2034,18 @@ async function buyMarket(id){
 }
 
 /* ─ ADMIN TABS ─ */
+function selectStockMode(mode){
+  stockMode=mode==='limited'?'limited':'unlimited';
+  const unlimited=stockMode==='unlimited';
+  $('stock-unlimited').classList.toggle('active',unlimited);
+  $('stock-limited').classList.toggle('active',!unlimited);
+  $('a-gqty').style.display=unlimited?'none':'block';
+  $('a-gqty').required=!unlimited;
+  $('a-gqty').value=unlimited?'':$('a-gqty').value;
+  $('stock-mode-hint').textContent=unlimited
+    ?'Безлимитный подарок не заканчивается и не получает плашку Available в магазине.'
+    :'Плашка Available будет показана, пока ограниченный тираж не закончится.';
+}
 function aTab(nm,el){
   document.querySelectorAll('.atab').forEach(b=>b.classList.remove('active'));
   document.querySelectorAll('#pg-admin .atc').forEach(c=>c.classList.remove('active'));
@@ -1840,13 +2059,21 @@ function aTab(nm,el){
 async function loadAdminGifts(){
   const gifts=await fetch('/api/admin/gifts',{headers:{'Cache-Control':'no-cache'}}).then(r=>r.json());
   const el=$('a-glist');
+  const limitedAvailable=gifts.filter(g=>!g.unlimited&&(g.quantity-(g.sold||0))>0).length;
+  $('a-metric-total').textContent=gifts.length;
+  $('a-metric-shop').textContent=gifts.filter(g=>g.in_shop).length;
+  $('a-metric-unlimited').textContent=gifts.filter(g=>g.unlimited).length;
+  $('a-metric-stock').textContent=limitedAvailable;
   if(!gifts.length){el.innerHTML='<div class="empty"><div class="emico">🎁</div>Нет подарков</div>';return;}
   el.innerHTML=gifts.map(g=>{
     const rem=g.quantity!==null?g.quantity-(g.sold||0):null;
-    const stock=rem!==null?`· ${rem}/${g.quantity}`:'· ∞';
+    const stock=rem!==null?`${rem}/${g.quantity}`:'∞';
+    const status=g.unlimited
+      ?'<span class="admin-status is-unlimited">∞ Безлимитный</span>'
+      :(rem>0?`<span class="admin-status is-available">● Available · ${rem} шт.</span>`:'<span class="admin-status is-sold">● Тираж закончился</span>');
     return `<div class="gitem gc"><div class="gleft">
       ${g.image?`<img class="gthumb" src="/static/uploads/${g.image}">`:`<div class="gthumb-ph">🎁</div>`}
-      <div><div class="gname">${g.name}</div><div class="gmeta">⭐${g.price} ${g.in_shop?'· Магазин':''} ${stock}</div></div>
+      <div><div class="gname">${g.name}</div><div class="gmeta">⭐${g.price} ${g.in_shop?'· В магазине':'· Скрыт'} · ${stock}</div>${status}</div>
     </div><button class="btn bd xsm" onclick="delGift(${g.id})">Удалить</button></div>`;
   }).join('');
 }
@@ -1857,10 +2084,16 @@ async function addGift(){
   const fd=new FormData();
   fd.append('name',name);fd.append('price',parseInt($('a-gprice').value)||0);
   fd.append('in_shop',$('a-gshop').value);
-  const qty=$('a-gqty').value.trim();if(qty)fd.append('quantity',qty);
+  fd.append('stock_mode',stockMode);
+  const qty=$('a-gqty').value.trim();
+  if(stockMode==='limited')fd.append('quantity',qty);
   const f=$('a-gimg').files[0];if(f)fd.append('image',f);
   const d=await fetch('/api/admin/gifts',{method:'POST',body:fd}).then(r=>r.json());
-  if(d.success){toast('🎁 Добавлен!');$('a-gname').value='';$('a-gprice').value='';$('a-gqty').value='';$('a-gimg').value='';$('a-gprev').style.display='none';loadAdminGifts();loadUpgGsel();}
+  if(d.success){
+    toast(stockMode==='unlimited'?'∞ Безлимитный подарок выпущен!':'🎁 Подарок выпущен!');
+    $('a-gname').value='';$('a-gprice').value='';$('a-gqty').value='';$('a-gimg').value='';$('a-gprev').style.display='none';
+    selectStockMode('unlimited');loadAdminGifts();loadUpgGsel();
+  }else toast('❌ '+(d.error||d.message||'Не удалось выпустить подарок'),'linear-gradient(135deg,#b91c1c,#7f1d1d)');
 }
 async function delGift(id){
   if(!confirm('Удалить?'))return;

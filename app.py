@@ -581,6 +581,7 @@ def shop():
     gifts = []
     for r in c.fetchall():
         g = dict(r)
+        g["unlimited"] = g["quantity"] is None
         if g["quantity"] is not None:
             g["remaining"] = max(0, g["quantity"] - (g["sold"] or 0))
             g["sold_out"] = g["remaining"] <= 0
@@ -1040,12 +1041,18 @@ def auction_cancel(auc_id):
 # ── ADMIN: GIFTS ──────────────────────────────────────
 @app.route("/api/admin/gifts")
 def get_gifts():
+    if not session.get("admin"):
+        return jsonify({"error": "Нет доступа"}), 403
     conn = get_db()
     c = conn.cursor()
     c.execute(
         "SELECT id,name,price,image,in_shop,quantity,sold FROM gifts ORDER BY id DESC"
     )
-    gifts = [dict(r) for r in c.fetchall()]
+    gifts = []
+    for r in c.fetchall():
+        gift = dict(r)
+        gift["unlimited"] = gift["quantity"] is None
+        gifts.append(gift)
     conn.close()
     return nc(jsonify(gifts))
 
@@ -1059,8 +1066,17 @@ def add_gift():
         return jsonify({"error": "Нет названия"}), 400
     price = int(request.form.get("price", 0) or 0)
     in_shop = 1 if request.form.get("in_shop", "1") == "1" else 0
+    stock_mode = request.form.get("stock_mode", "unlimited").strip().lower()
     qty_raw = request.form.get("quantity", "").strip()
-    quantity = int(qty_raw) if qty_raw else None
+    if stock_mode == "unlimited":
+        quantity = None
+    else:
+        try:
+            quantity = int(qty_raw)
+        except (TypeError, ValueError):
+            return jsonify({"error": "Укажи количество для ограниченного тиража"}), 400
+        if quantity < 1:
+            return jsonify({"error": "Количество должно быть больше нуля"}), 400
     image = None
     if "image" in request.files:
         image = save_upload(request.files["image"], "gift")
