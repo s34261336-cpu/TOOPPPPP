@@ -33,16 +33,16 @@ ENABLE_CODE_SYNC = os.environ.get("ENABLE_CODE_SYNC", "1").strip().lower() not i
 }
 REPLIT_DEV_DOMAIN = os.environ.get("REPLIT_DEV_DOMAIN", "").strip()
 APP_URL = (
-    f"https://{REPLIT_DEV_DOMAIN}" if ENABLE_BOT_POLLING and REPLIT_DEV_DOMAIN else ""
-)
-APP_URL = (
-    APP_URL
-    or
     os.environ.get("WEBAPP_URL")
     or os.environ.get("WEB_APP_URL")
     or os.environ.get("MINI_APP_URL")
     or os.environ.get("APP_URL")
     or os.environ.get("RENDER_EXTERNAL_URL")
+    or (
+        f"https://{REPLIT_DEV_DOMAIN}"
+        if ENABLE_BOT_POLLING and REPLIT_DEV_DOMAIN
+        else ""
+    )
     or ""
 ).strip()
 CODE_SYNC_URL = (

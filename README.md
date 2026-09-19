@@ -21,8 +21,10 @@
 | `SESSION_SECRET` | рекомендуется | Секрет Flask-сессии |
 | `DB_PATH` | нет | Путь к SQLite, по умолчанию `database.db` |
 
-`TELEGRAM_BOT_TOKEN`, `TELEGRAM_TOKEN` и `APP_URL` также поддерживаются как
-совместимые имена переменных.
+`WEBAPP_URL`, `WEB_APP_URL`, `MINI_APP_URL`, `APP_URL` и
+`RENDER_EXTERNAL_URL` поддерживаются как варианты публичного адреса Mini App.
+Если бот включён, эти адреса имеют приоритет над `REPLIT_DEV_DOMAIN`, поэтому
+кнопка Telegram не будет случайно вести на временный Preview-адрес Replit.
 
 Приложение слушает порт из BotHost (или `5000`, если переменная `PORT` не
 передана). Для Mini App Telegram требует публичный HTTPS-адрес. Если BotHost
