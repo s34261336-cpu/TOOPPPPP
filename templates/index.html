@@ -6,7 +6,26 @@
 <title>GiftFastel</title>
 <style>
 *{margin:0;padding:0;box-sizing:border-box;}
-body{min-height:100vh;background:#060410;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;color:#e2e8f0;overflow-x:hidden;}
+html{scroll-behavior:smooth;}
+body{
+  min-height:100vh;
+  background:#060410;
+  font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+  color:#e2e8f0;
+  overflow-x:hidden;
+  -webkit-font-smoothing:antialiased;
+  text-rendering:optimizeLegibility;
+}
+button,a,[role=button]{
+  -webkit-tap-highlight-color:transparent;
+  tap-highlight-color:transparent;
+  touch-action:manipulation;
+}
+button:focus:not(:focus-visible),a:focus:not(:focus-visible),[role=button]:focus:not(:focus-visible){outline:none;}
+@media(prefers-reduced-motion:reduce){
+  html{scroll-behavior:auto;}
+  *,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important;}
+}
 .bg-orbs{position:fixed;inset:0;z-index:0;pointer-events:none;}
 .orb{position:absolute;border-radius:50%;filter:blur(120px);opacity:.16;animation:float 10s ease-in-out infinite;}
 .orb1{width:500px;height:500px;background:#5b21b6;top:-150px;left:-150px;}
@@ -682,8 +701,8 @@ select.fi option{background:#17212b;}
 
 /* ═══ DEEP BLACK / BLUE LIQUID GLASS PALETTE ═══ */
 :root{
-  --tg-bg:#000;
-  --tg-bg-deep:#030405;
+  --tg-bg:#0b0d11;
+  --tg-bg-deep:#080a0e;
   --tg-panel:rgba(30,30,33,.64);
   --tg-panel-strong:rgba(22,22,25,.84);
   --tg-blue:#2498e8;
@@ -696,9 +715,9 @@ select.fi option{background:#17212b;}
 }
 body{
   background:
-    radial-gradient(circle at 50% -12%,rgba(31,106,190,.16),transparent 30%),
-    radial-gradient(circle at 100% 100%,rgba(21,86,145,.1),transparent 32%),
-    #000;
+    radial-gradient(circle at 50% -12%,rgba(31,106,190,.19),transparent 30%),
+    radial-gradient(circle at 100% 100%,rgba(21,86,145,.13),transparent 32%),
+    linear-gradient(180deg,#10131a 0%,#0b0d11 58%,#080a0e 100%);
 }
 .bg-orbs{opacity:.34;}
 .orb{opacity:.1;filter:blur(145px);}
