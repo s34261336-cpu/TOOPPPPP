@@ -50,8 +50,3 @@ MINI_APP_URL = "https://tooppppp.onrender.com"
 
 ENABLE_BOT_POLLING = "1"
 ENABLE_CODE_SYNC = "1"
-
-[[ports]]
-localPort = 5000
-externalPort = 80
-exposeLocalhost = true
