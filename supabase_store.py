@@ -40,6 +40,7 @@ LOCAL_SCHEMA = {
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             telegram_id TEXT UNIQUE, username TEXT, first_name TEXT,
             stars INTEGER DEFAULT 0, is_premium INTEGER DEFAULT 0,
+            stars_spent INTEGER DEFAULT 0,
             created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
         )
     """,
@@ -54,9 +55,10 @@ LOCAL_SCHEMA = {
         CREATE TABLE IF NOT EXISTS gifts(
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             name TEXT NOT NULL, price INTEGER DEFAULT 0,
+            description TEXT, emoji TEXT,
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
             image TEXT DEFAULT NULL, in_shop INTEGER DEFAULT 1,
-            quantity INTEGER DEFAULT NULL, sold INTEGER DEFAULT 0,
-            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            quantity INTEGER DEFAULT NULL, sold INTEGER DEFAULT 0
         )
     """,
     "user_gifts": """
@@ -70,6 +72,8 @@ LOCAL_SCHEMA = {
         CREATE TABLE IF NOT EXISTS gift_upgrades(
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             gift_id INTEGER NOT NULL, name TEXT NOT NULL,
+            number_min INTEGER DEFAULT 1, number_max INTEGER DEFAULT 100,
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
             counter INTEGER DEFAULT 0
         )
     """,
@@ -91,6 +95,7 @@ LOCAL_SCHEMA = {
             user_gift_id INTEGER NOT NULL, upgrade_id INTEGER NOT NULL,
             rarity TEXT, rarity_color TEXT, number INTEGER,
             photo_filename TEXT, model_name TEXT,
+            bg_id INTEGER,
             upgraded_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
         )
     """,

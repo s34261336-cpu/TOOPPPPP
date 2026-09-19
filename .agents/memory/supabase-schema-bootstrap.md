@@ -7,4 +7,4 @@ The Supabase REST API key can read and write existing tables but cannot create t
 
 **Why:** A missing table returns HTTP 404 from PostgREST, so the application cannot safely initialize the database from `SUPABASE_URL` and `SUPABASE_KEY` alone.
 
-**How to apply:** Run the project's `supabase_schema.sql` once, then restart the application; its first successful commit imports the existing local catalog into Supabase.
+**How to apply:** Run the project's `supabase_schema.sql` once, and rerun it after schema drift; its idempotent `alter table ... add column if not exists` clauses keep Supabase aligned before restarting the application.
