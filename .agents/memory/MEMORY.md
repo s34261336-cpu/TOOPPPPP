@@ -1,3 +1,4 @@
+- [Legacy import preview routing](legacy-import-preview.md) — verify workflow port and shared preview route separately for imported non-artifact apps.
 - [Python uv projects](python-uv-projects.md) — запуск должен сначала синхронизировать зависимости из lock-файла, а post-merge не должен выполнять чужие Node/DB-шаги.
 - [Project import transition](project-import-transition.md) — после переноса проверь, что корень проекта действительно содержит импортированный репозиторий.
 - [Supabase schema bootstrap](supabase-schema-bootstrap.md) — REST-ключ не создаёт таблицы; сначала применяй SQL-схему через Supabase SQL Editor.
