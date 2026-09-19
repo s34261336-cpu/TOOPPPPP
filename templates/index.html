@@ -455,22 +455,35 @@ select.fi option{background:#17212b;}
 
 /* Full-height gift detail, styled after Telegram's buy-gift screen. */
 .shop-detail-bg{
-  align-items:center;
+  align-items:flex-end;
   padding:0;
   background:rgba(0,0,0,.78);
+  opacity:0;
+  transition:opacity .28s ease;
+}
+.shop-detail-bg.show{opacity:1;}
+.shop-detail-bg.show .shop-detail{transform:translateY(0);opacity:1;}
+.shop-detail-bg:not(.show) .shop-detail{transform:translateY(104%);opacity:.96;}
+.shop-detail-bg.show .shop-detail{transition:transform .42s cubic-bezier(.22,1,.36,1),opacity .3s ease;}
+.shop-detail-bg:not(.show) .shop-detail{transition:transform .28s ease,opacity .2s ease;}
+.shop-detail-bg .shop-detail{
+  transform:translateY(104%);
 }
 .shop-detail{
   width:100%;
-  max-width:480px;
-  height:min(860px,100vh);
+  max-width:450px;
+  height:min(720px,calc(100vh - 78px));
   display:flex;
   flex-direction:column;
   overflow:hidden;
   background:#080b0f;
   color:#f4f7fa;
+  border-radius:22px 22px 0 0;
+  opacity:.96;
+  will-change:transform;
 }
 .shop-detail-header{
-  flex:0 0 64px;
+  flex:0 0 58px;
   display:flex;
   align-items:center;
   gap:16px;
@@ -490,7 +503,7 @@ select.fi option{background:#17212b;}
   cursor:pointer;
 }
 .shop-detail-heading{
-  font-size:21px;
+  font-size:20px;
   font-weight:700;
   letter-spacing:-.02em;
 }
@@ -504,22 +517,22 @@ select.fi option{background:#17212b;}
     #080b0f;
 }
 .shop-detail-section-title{
-  padding:22px 26px 14px;
-  font-size:24px;
+  padding:16px 24px 11px;
+  font-size:21px;
   font-weight:700;
   background:#1b1d20;
 }
 .shop-detail-stage{
-  padding:18px 24px 26px;
+  padding:14px 20px 20px;
   text-align:center;
   background:
     radial-gradient(circle at 50% 42%,rgba(92,106,142,.26),transparent 45%),
     linear-gradient(180deg,#1b1e29 0%,#131620 100%);
 }
 .shop-detail-art{
-  width:min(76vw,285px);
-  height:min(76vw,285px);
-  margin:0 auto 18px;
+  width:min(64vw,230px);
+  height:min(64vw,230px);
+  margin:0 auto 14px;
   display:flex;
   align-items:center;
   justify-content:center;
@@ -545,24 +558,24 @@ select.fi option{background:#17212b;}
 }
 .shop-detail-bubble{
   width:calc(100% - 42px);
-  margin:18px auto 0;
-  padding:14px 16px;
+  margin:14px auto 0;
+  padding:12px 14px;
   border-radius:18px;
   background:#293241;
   color:#fff;
-  font-size:17px;
+  font-size:15px;
   font-weight:650;
   line-height:1.22;
 }
 .shop-detail-note{
-  margin-top:10px;
+  margin-top:8px;
   color:#b8c0cb;
   font-size:14px;
   line-height:1.35;
 }
 .shop-detail-footer{
   flex:0 0 auto;
-  padding:12px 14px 16px;
+  padding:10px 14px 14px;
   background:#1b1d20;
   border-top:1px solid rgba(255,255,255,.06);
 }
@@ -582,7 +595,7 @@ select.fi option{background:#17212b;}
   cursor:not-allowed;
 }
 @media(min-width:481px){
-  .shop-detail{height:min(860px,calc(100vh - 24px));border:1px solid rgba(255,255,255,.13);border-radius:18px;}
+  .shop-detail{height:min(720px,calc(100vh - 48px));border:1px solid rgba(255,255,255,.13);border-bottom:0;border-radius:22px 22px 0 0;}
 }
 @media(max-width:360px){
   #ut-shop .sgrid{gap:6px;}
