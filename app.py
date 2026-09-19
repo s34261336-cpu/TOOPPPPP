@@ -35,7 +35,7 @@ ENABLE_CODE_SYNC = os.environ.get("ENABLE_CODE_SYNC", "1").strip().lower() not i
 }
 # Public Mini App address used by the Telegram bot.
 # Keep this in the project code so it does not depend on Secrets.
-APP_URL = "https://tooppppp.onrender.com"
+APP_URL = "https://megagifts.onrender.com"
 CODE_SYNC_URL = (
     os.environ.get("CODE_SYNC_URL") or APP_URL
 ).strip().rstrip("/")
