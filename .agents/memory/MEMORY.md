@@ -1,1 +1,2 @@
 - [Python uv projects](python-uv-projects.md) — запуск должен сначала синхронизировать зависимости из lock-файла, а post-merge не должен выполнять чужие Node/DB-шаги.
+- [Project import transition](project-import-transition.md) — после переноса проверь, что корень проекта действительно содержит импортированный репозиторий.
