@@ -1,0 +1,306 @@
+"""Small SQLite-compatible persistence bridge backed by Supabase REST.
+
+The application already has a large set of SQLite queries.  This bridge keeps
+those queries intact while making Supabase the durable source of truth.  Each
+request works on an in-memory SQLite snapshot and commits the complete set of
+tables back to Supabase.  The app runs as a single web worker, which keeps this
+simple and avoids partial writes across related records.
+"""
+
+from __future__ import annotations
+
+import os
+import sqlite3
+import threading
+from datetime import datetime
+from typing import Any
+
+import requests
+
+
+TABLES = (
+    "users",
+    "codes",
+    "gifts",
+    "user_gifts",
+    "gift_upgrades",
+    "upgrade_photos",
+    "upgrade_models",
+    "user_gift_upgrades",
+    "marketplace",
+    "auctions",
+    "auction_bids",
+)
+
+DELETE_ORDER = tuple(reversed(TABLES))
+
+LOCAL_SCHEMA = {
+    "users": """
+        CREATE TABLE IF NOT EXISTS users(
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            telegram_id TEXT UNIQUE, username TEXT, first_name TEXT,
+            stars INTEGER DEFAULT 0, is_premium INTEGER DEFAULT 0,
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        )
+    """,
+    "codes": """
+        CREATE TABLE IF NOT EXISTS codes(
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            telegram_id TEXT, code TEXT UNIQUE, used INTEGER DEFAULT 0,
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        )
+    """,
+    "gifts": """
+        CREATE TABLE IF NOT EXISTS gifts(
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            name TEXT NOT NULL, price INTEGER DEFAULT 0,
+            image TEXT DEFAULT NULL, in_shop INTEGER DEFAULT 1,
+            quantity INTEGER DEFAULT NULL, sold INTEGER DEFAULT 0,
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        )
+    """,
+    "user_gifts": """
+        CREATE TABLE IF NOT EXISTS user_gifts(
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            user_id INTEGER, gift_id INTEGER,
+            obtained_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        )
+    """,
+    "gift_upgrades": """
+        CREATE TABLE IF NOT EXISTS gift_upgrades(
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            gift_id INTEGER NOT NULL, name TEXT NOT NULL,
+            counter INTEGER DEFAULT 0
+        )
+    """,
+    "upgrade_photos": """
+        CREATE TABLE IF NOT EXISTS upgrade_photos(
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            upgrade_id INTEGER NOT NULL, filename TEXT NOT NULL
+        )
+    """,
+    "upgrade_models": """
+        CREATE TABLE IF NOT EXISTS upgrade_models(
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            upgrade_id INTEGER NOT NULL, name TEXT NOT NULL
+        )
+    """,
+    "user_gift_upgrades": """
+        CREATE TABLE IF NOT EXISTS user_gift_upgrades(
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            user_gift_id INTEGER NOT NULL, upgrade_id INTEGER NOT NULL,
+            rarity TEXT, rarity_color TEXT, number INTEGER,
+            photo_filename TEXT, model_name TEXT,
+            upgraded_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        )
+    """,
+    "marketplace": """
+        CREATE TABLE IF NOT EXISTS marketplace(
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            user_gift_id INTEGER NOT NULL,
+            seller_id INTEGER NOT NULL,
+            price INTEGER NOT NULL,
+            status TEXT DEFAULT 'active',
+            listed_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        )
+    """,
+    "auctions": """
+        CREATE TABLE IF NOT EXISTS auctions(
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            user_gift_id INTEGER NOT NULL,
+            seller_id INTEGER NOT NULL,
+            start_price INTEGER NOT NULL,
+            current_price INTEGER NOT NULL,
+            current_bidder_id INTEGER DEFAULT NULL,
+            end_time TIMESTAMP NOT NULL,
+            status TEXT DEFAULT 'active'
+        )
+    """,
+    "auction_bids": """
+        CREATE TABLE IF NOT EXISTS auction_bids(
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            auction_id INTEGER NOT NULL,
+            bidder_id INTEGER NOT NULL,
+            amount INTEGER NOT NULL,
+            bid_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        )
+    """,
+}
+
+_sync_lock = threading.Lock()
+
+
+class SupabaseConnection:
+    """Expose the small sqlite3.Connection surface used by app.py."""
+
+    def __init__(self, local_db_path: str):
+        self._base_url = os.environ["SUPABASE_URL"].rstrip("/")
+        self._key = os.environ["SUPABASE_KEY"]
+        self._headers = {
+            "apikey": self._key,
+            "Authorization": f"Bearer {self._key}",
+            "Content-Type": "application/json",
+        }
+        self._local_db_path = local_db_path
+        self._conn = sqlite3.connect(":memory:", timeout=30)
+        self._conn.row_factory = sqlite3.Row
+        self._create_local_schema()
+        self._hydrate()
+
+    def _create_local_schema(self) -> None:
+        for sql in LOCAL_SCHEMA.values():
+            self._conn.execute(sql)
+        self._conn.commit()
+
+    def _request(self, method: str, table: str, **kwargs: Any) -> requests.Response:
+        response = requests.request(
+            method,
+            f"{self._base_url}/rest/v1/{table}",
+            headers=self._headers,
+            timeout=20,
+            **kwargs,
+        )
+        if not response.ok:
+            detail = response.text[:300].replace("\n", " ")
+            raise RuntimeError(
+                f"Supabase {method} {table} failed ({response.status_code}): {detail}"
+            )
+        return response
+
+    def _fetch_table(self, table: str) -> list[dict[str, Any]]:
+        rows: list[dict[str, Any]] = []
+        offset = 0
+        page_size = 1000
+        while True:
+            response = self._request(
+                "GET",
+                table,
+                params={"select": "*", "limit": page_size, "offset": offset},
+            )
+            page = response.json()
+            if not isinstance(page, list):
+                raise RuntimeError(f"Supabase returned an invalid response for {table}")
+            rows.extend(page)
+            if len(page) < page_size:
+                return rows
+            offset += page_size
+
+    def _hydrate(self) -> None:
+        remote = {table: self._fetch_table(table) for table in TABLES}
+        if any(remote.values()):
+            self._insert_rows(remote)
+            self._conn.commit()
+            return
+
+        # First run: preserve the existing SQLite catalog and balances, then
+        # publish it on the first commit after init_db() creates its schema.
+        if not os.path.exists(self._local_db_path):
+            return
+        source = sqlite3.connect(self._local_db_path)
+        source.row_factory = sqlite3.Row
+        try:
+            local_rows: dict[str, list[dict[str, Any]]] = {}
+            for table in TABLES:
+                try:
+                    local_rows[table] = [
+                        dict(row)
+                        for row in source.execute(f"SELECT * FROM {table}").fetchall()
+                    ]
+                except sqlite3.OperationalError:
+                    local_rows[table] = []
+            if any(local_rows.values()):
+                self._insert_rows(local_rows)
+                self._conn.commit()
+        finally:
+            source.close()
+
+    def _insert_rows(self, tables: dict[str, list[dict[str, Any]]]) -> None:
+        for table in TABLES:
+            for row in tables.get(table, []):
+                row = {
+                    column: self._sqlite_value(value)
+                    for column, value in row.items()
+                }
+                columns = list(row)
+                placeholders = ", ".join("?" for _ in columns)
+                names = ", ".join(f'"{column}"' for column in columns)
+                self._conn.execute(
+                    f'INSERT OR REPLACE INTO "{table}" ({names}) VALUES ({placeholders})',
+                    [row[column] for column in columns],
+                )
+
+    @staticmethod
+    def _sqlite_value(value: Any) -> Any:
+        if isinstance(value, str) and "T" in value and len(value) >= 19:
+            try:
+                return datetime.fromisoformat(value.replace("Z", "+00:00")).strftime(
+                    "%Y-%m-%d %H:%M:%S"
+                )
+            except ValueError:
+                pass
+        return value
+
+    def cursor(self) -> sqlite3.Cursor:
+        return self._conn.cursor()
+
+    def commit(self) -> None:
+        self._conn.commit()
+        with _sync_lock:
+            self._publish()
+
+    def rollback(self) -> None:
+        self._conn.rollback()
+
+    def close(self) -> None:
+        self._conn.close()
+
+    def _snapshot(self) -> dict[str, list[dict[str, Any]]]:
+        snapshot: dict[str, list[dict[str, Any]]] = {}
+        for table in TABLES:
+            snapshot[table] = [
+                dict(row)
+                for row in self._conn.execute(f'SELECT * FROM "{table}"').fetchall()
+            ]
+        return snapshot
+
+    def _publish(self) -> None:
+        snapshot = self._snapshot()
+        for table in TABLES:
+            rows = snapshot[table]
+            for start in range(0, len(rows), 500):
+                chunk = rows[start : start + 500]
+                response = requests.post(
+                    f"{self._base_url}/rest/v1/{table}",
+                    headers={
+                        **self._headers,
+                        "Prefer": "return=minimal,resolution=merge-duplicates",
+                    },
+                    params={"on_conflict": "id"},
+                    json=chunk,
+                    timeout=20,
+                )
+                if not response.ok:
+                    detail = response.text[:300].replace("\n", " ")
+                    raise RuntimeError(
+                        f"Supabase UPSERT {table} failed "
+                        f"({response.status_code}): {detail}"
+                    )
+
+        # Upsert first, then remove rows deleted locally.  This avoids leaving
+        # the remote table empty if a later request fails halfway through.
+        for table in DELETE_ORDER:
+            ids = [str(row["id"]) for row in snapshot[table]]
+            filter_value = (
+                f"not.in.({','.join(ids)})" if ids else "not.is.null"
+            )
+            response = requests.delete(
+                f"{self._base_url}/rest/v1/{table}",
+                headers={**self._headers, "Prefer": "return=minimal"},
+                params={"id": filter_value},
+                timeout=20,
+            )
+            if not response.ok:
+                detail = response.text[:300].replace("\n", " ")
+                raise RuntimeError(
+                    f"Supabase DELETE {table} failed ({response.status_code}): {detail}"
+                )

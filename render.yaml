@@ -15,6 +15,10 @@ services:
         sync: false
       - key: CODE_SYNC_SECRET
         sync: false
+      - key: SUPABASE_URL
+        sync: false
+      - key: SUPABASE_KEY
+        sync: false
       - key: SESSION_SECRET
         generateValue: true
       - key: DB_PATH

@@ -1,6 +1,7 @@
 import hashlib, hmac, os, sqlite3, random, string, threading, time, secrets, requests
 from flask import Flask, render_template, request, jsonify, session, send_from_directory
 from flask_cors import CORS
+from supabase_store import SupabaseConnection
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 app = Flask(__name__, template_folder=os.path.join(BASE_DIR, "templates"))
@@ -94,6 +95,10 @@ def nc(resp):
 
 
 def get_db():
+    if os.environ.get("SUPABASE_URL", "").strip() and os.environ.get(
+        "SUPABASE_KEY", ""
+    ).strip():
+        return SupabaseConnection(DB_PATH)
     conn = sqlite3.connect(DB_PATH, timeout=30)
     conn.row_factory = sqlite3.Row
     return conn
