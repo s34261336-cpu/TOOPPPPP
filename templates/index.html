@@ -76,16 +76,16 @@ select.fi option{background:#0d0b1e;}
   z-index:80;
   display:flex;
   gap:2px;
-  width:calc(100% - 20px);
+  width:calc(100% - 28px);
   max-width:680px;
-  height:68px;
+  height:60px;
   margin:0;
-  padding:5px;
+  padding:4px;
   transform:translateX(-50%);
   overflow:hidden;
   background:rgba(31,33,39,.74);
   border:1px solid rgba(255,255,255,.13);
-  border-radius:36px;
+  border-radius:32px;
   box-shadow:0 18px 45px rgba(0,0,0,.42),inset 0 1px 0 rgba(255,255,255,.1);
   backdrop-filter:blur(28px) saturate(145%);
   -webkit-backdrop-filter:blur(28px) saturate(145%);
@@ -99,10 +99,10 @@ select.fi option{background:#0d0b1e;}
 }
 .nav-pill-indicator{
   position:absolute;
-  top:5px;
+  top:4px;
   left:0;
-  width:48px;
-  height:48px;
+  width:42px;
+  height:42px;
   border-radius:50%;
   background:linear-gradient(145deg,#35aaf3,#1688dc);
   box-shadow:0 8px 22px rgba(30,150,235,.38),inset 0 1px 0 rgba(255,255,255,.28);
@@ -115,7 +115,7 @@ select.fi option{background:#0d0b1e;}
   z-index:1;
   flex:1;
   min-width:0;
-  height:56px;
+  height:50px;
   display:flex;
   flex-direction:column;
   align-items:center;
@@ -123,7 +123,7 @@ select.fi option{background:#0d0b1e;}
   gap:1px;
   padding:0 2px 1px;
   border:none;
-  border-radius:28px;
+  border-radius:25px;
   background:transparent;
   color:rgba(255,255,255,.68);
   font-size:11px;
@@ -134,12 +134,12 @@ select.fi option{background:#0d0b1e;}
 .ntab-icon{
   position:relative;
   z-index:2;
-  width:34px;
-  height:34px;
+  width:30px;
+  height:30px;
   display:flex;
   align-items:center;
   justify-content:center;
-  font-size:20px;
+  font-size:18px;
   line-height:1;
   filter:grayscale(1) brightness(1.65);
   opacity:.82;
@@ -186,8 +186,23 @@ select.fi option{background:#0d0b1e;}
 
 /* ═══ INVENTORY CARDS ═══ */
 .igrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(144px,1fr));gap:10px;}
-.icard{border-radius:14px;overflow:hidden;position:relative;display:flex;flex-direction:column;transition:transform .25s;}
+.icard{
+  border-radius:18px;
+  overflow:hidden;
+  position:relative;
+  display:flex;
+  flex-direction:column;
+  cursor:pointer;
+  border:1px solid rgba(255,255,255,.12);
+  background:linear-gradient(145deg,rgba(55,58,68,.68),rgba(15,17,23,.72));
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.12),0 10px 28px rgba(0,0,0,.3);
+  backdrop-filter:blur(18px) saturate(130%);
+  -webkit-backdrop-filter:blur(18px) saturate(130%);
+  transition:transform .25s,box-shadow .25s;
+}
 .icard:hover{transform:translateY(-3px);}
+.icard:active{transform:scale(.985);}
+.icard .card-img-wrap{border-radius:17px 17px 0 0;}
 .card-img-wrap{width:100%;aspect-ratio:1;overflow:hidden;position:relative;}
 .card-img{width:100%;height:100%;object-fit:cover;display:block;}
 .card-ph{width:100%;height:100%;display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,rgba(109,40,217,.12),rgba(14,116,144,.08));font-size:48px;}
@@ -198,11 +213,17 @@ select.fi option{background:#0d0b1e;}
 .card-name{font-size:12px;font-weight:600;margin-bottom:5px;color:#e2e8f0;}
 
 /* ═══ UPGRADE CARD (collectible) ═══ */
-.upg-card{border-radius:12px;overflow:hidden;margin-top:0;border:1px solid;}
+.upg-card{
+  border-radius:17px;
+  overflow:hidden;
+  margin-top:0;
+  border:1px solid;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.18),0 10px 25px rgba(0,0,0,.28);
+}
 .upg-card-bg{width:100%;aspect-ratio:1;display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden;}
 .upg-card-photo{width:75%;height:75%;object-fit:contain;filter:drop-shadow(0 4px 16px rgba(0,0,0,.7));position:relative;z-index:1;}
 .upg-card-rar-badge{position:absolute;top:7px;right:7px;padding:3px 9px;border-radius:20px;font-size:10px;font-weight:800;z-index:2;backdrop-filter:blur(6px);}
-.upg-card-foot{padding:8px 9px;background:rgba(0,0,0,.55);}
+.upg-card-foot{padding:8px 9px;background:rgba(14,16,22,.48);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);}
 .upg-card-rar{font-size:12px;font-weight:800;margin-bottom:2px;}
 .upg-card-mod{font-size:10px;color:rgba(226,232,240,.5);}
 .upg-card-num{font-size:10px;color:rgba(226,232,240,.4);margin-top:1px;}
@@ -655,8 +676,8 @@ select.fi option{background:#17212b;}
     linear-gradient(180deg,#1b1e29 0%,#131620 100%);
 }
 .shop-detail-art{
-  width:min(52vw,180px);
-  height:min(52vw,180px);
+  width:min(55vw,194px);
+  height:min(55vw,194px);
   flex:0 0 auto;
   margin:0 auto 8px;
   display:flex;
@@ -673,6 +694,10 @@ select.fi option{background:#17212b;}
   filter:drop-shadow(0 9px 18px rgba(0,0,0,.45));
 }
 .shop-detail-art .card-ph{background:transparent;font-size:94px;}
+.shop-detail-art.profile-detail-art{
+  background-size:cover;
+  border:1px solid rgba(255,255,255,.16);
+}
 .shop-detail-name{
   font-size:20px;
   font-weight:700;
@@ -793,7 +818,7 @@ body{
   -webkit-backdrop-filter:blur(30px) saturate(135%);
 }
 .shop-detail-bg{
-  background:rgba(0,0,0,.58);
+  background:linear-gradient(180deg,rgba(5,13,24,.16),rgba(5,10,18,.3));
   backdrop-filter:blur(16px) saturate(115%);
   -webkit-backdrop-filter:blur(16px) saturate(115%);
   transition:opacity .42s ease;
@@ -814,6 +839,7 @@ body{
     linear-gradient(145deg,rgba(61,63,70,.76),rgba(12,13,17,.88));
   border:1px solid rgba(255,255,255,.16);
   border-bottom:0;
+  border-radius:26px 26px 0 0;
   box-shadow:
     0 -18px 70px rgba(0,0,0,.5),
     inset 0 1px 0 rgba(255,255,255,.14);
@@ -862,7 +888,7 @@ body{
   .shop-detail-heading{font-size:17px;}
   .shop-detail-section-title{padding:8px 18px 5px;font-size:16px;}
   .shop-detail-stage{padding:6px 14px 8px;}
-  .shop-detail-art{width:min(44vw,150px);height:min(44vw,150px);}
+  .shop-detail-art{width:min(48vw,160px);height:min(48vw,160px);}
   .shop-detail-name{font-size:17px;margin-bottom:3px;}
   .shop-detail-price{font-size:13px;}
   .shop-detail-bubble{margin-top:6px;padding:8px 10px;font-size:13px;}
@@ -1050,16 +1076,16 @@ body{
   <div class="shop-detail" role="dialog" aria-modal="true" aria-label="Подарок">
     <div class="shop-detail-header">
       <button class="shop-detail-back" onclick="closeShopGift()" aria-label="Назад">‹</button>
-      <div class="shop-detail-heading">Купить подарок</div>
+      <div class="shop-detail-heading" id="shop-detail-heading">Купить подарок</div>
     </div>
     <div class="shop-detail-content">
-      <div class="shop-detail-section-title">Подарок себе</div>
+      <div class="shop-detail-section-title" id="shop-detail-section-title">Подарок себе</div>
       <div class="shop-detail-stage">
         <div class="shop-detail-art" id="shop-detail-art"></div>
         <div class="shop-detail-name" id="shop-detail-name"></div>
         <div class="shop-detail-price" id="shop-detail-price"></div>
         <div class="shop-detail-bubble" id="shop-detail-bubble">Вы можете купить этот подарок для себя.</div>
-        <div class="shop-detail-note">Подарок будет сохранён в вашем профиле.</div>
+        <div class="shop-detail-note" id="shop-detail-note">Подарок будет сохранён в вашем профиле.</div>
       </div>
     </div>
     <div class="shop-detail-footer">
@@ -1261,7 +1287,7 @@ function fmtNum(n){return n>=1000000?(n/1000000).toFixed(1)+'M':n>=1000?(n/1000)
 function moveNavIndicator(btn,instant){
   const nav=document.querySelector('.nav-tabs'),indicator=document.querySelector('.nav-pill-indicator');
   if(!nav||!indicator||!btn)return;
-  const size=48;
+  const size=42;
   const left=btn.offsetLeft+(btn.offsetWidth-size)/2;
   if(instant){
     indicator.style.transition='none';
@@ -1404,7 +1430,9 @@ function renderInv(gifts){
         </div>`;
     }
     const showName=!g.upgrade_result;
-    return `<div class="icard gc">
+    return `<div class="icard gc" role="button" tabindex="0"
+      onclick="if(!event.target.closest('button'))openProfileGift(${g.ug_id})"
+      onkeydown="if(event.key==='Enter'||event.key===' ')openProfileGift(${g.ug_id})">
       ${imgSection}
       <div class="card-body">
         ${showName?`<div class="card-name">${g.name}</div>`:''}
@@ -1661,15 +1689,21 @@ function openShopGift(gid){
   if(!gift)return;
   curShopGift=gift;
   const art=$('shop-detail-art');
+  art.className='shop-detail-art';
+  art.style.background='';
   art.innerHTML=gift.image
     ?`<img src="/static/uploads/${gift.image}" alt="${gift.name}">`
     :'<div class="card-ph">🎁</div>';
+  $('shop-detail-heading').textContent='Купить подарок';
+  $('shop-detail-section-title').textContent='Подарок себе';
   $('shop-detail-name').textContent=gift.name;
   $('shop-detail-price').textContent=gift.price>0?`Стоимость: ⭐ ${gift.price}`:'Бесплатный подарок';
   $('shop-detail-bubble').textContent=gift.sold_out
     ?'Этот подарок сейчас закончился.'
     :'Вы можете купить этот подарок для себя.';
+  $('shop-detail-note').textContent='Подарок будет сохранён в вашем профиле.';
   const buy=$('shop-detail-buy');
+  buy.onclick=confirmShopGift;
   buy.disabled=!!gift.sold_out;
   buy.textContent=gift.sold_out
     ?'Нет в наличии'
@@ -1677,10 +1711,52 @@ function openShopGift(gid){
   document.body.classList.add('shop-detail-open');
   $('shop-detail-modal').classList.add('show');
 }
+function openProfileGift(ugId){
+  const gift=(cachedProfile?.gifts||[]).find(item=>item.ug_id===ugId);
+  if(!gift)return;
+  curShopGift=null;
+  const art=$('shop-detail-art');
+  art.className='shop-detail-art profile-detail-art';
+  if(gift.upgrade_result){
+    const r=gift.upgrade_result;
+    art.style.background=`linear-gradient(145deg,${r.rarity_color||'#64748b'}66,rgba(15,18,28,.88))`;
+    art.innerHTML=r.photo
+      ?`<img src="/static/uploads/${r.photo}" alt="${gift.name}">`
+      :'<div class="card-ph">🎁</div>';
+  }else{
+    art.style.background='';
+    art.innerHTML=gift.image
+      ?`<img src="/static/uploads/${gift.image}" alt="${gift.name}">`
+      :'<div class="card-ph">🎁</div>';
+  }
+  const upgraded=!!gift.upgrade_result;
+  const canUpgrade=!!gift.has_upgrade&&!upgraded;
+  $('shop-detail-heading').textContent='Подарок';
+  $('shop-detail-section-title').textContent='Подарок вам';
+  $('shop-detail-name').textContent=gift.name;
+  $('shop-detail-price').textContent=gift.price>0?`Стоимость: ⭐ ${gift.price}`:'Подарок из коллекции';
+  $('shop-detail-bubble').textContent=canUpgrade
+    ?'Вы можете улучшить этот подарок.'
+    :upgraded
+      ?`${rIcon(gift.upgrade_result.rarity)} ${gift.upgrade_result.rarity} · подарок уже улучшен.`
+      :'Подарок сохранён в вашем профиле.';
+  $('shop-detail-note').textContent=upgraded
+    ?(gift.upgrade_result.model?`Модель: ${gift.upgrade_result.model}`:'Подарок виден в вашем профиле.')
+    :'Подарок виден в вашем профиле.';
+  const buy=$('shop-detail-buy');
+  buy.disabled=false;
+  buy.onclick=canUpgrade
+    ?()=>{closeShopGift();openUpg(gift.ug_id,gift.name);}
+    :closeShopGift;
+  buy.textContent=canUpgrade?'⚡ Улучшить':'ОК';
+  document.body.classList.add('shop-detail-open');
+  $('shop-detail-modal').classList.add('show');
+}
 function closeShopGift(){
   $('shop-detail-modal').classList.remove('show');
   document.body.classList.remove('shop-detail-open');
   curShopGift=null;
+  $('shop-detail-buy').onclick=confirmShopGift;
 }
 async function confirmShopGift(){
   if(!curShopGift||curShopGift.sold_out)return;

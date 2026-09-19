@@ -494,7 +494,7 @@ def profile():
         """
         SELECT ug.id as ug_id, g.id as g_id, g.name, g.image,
                gu.id as upg_id,
-               ugu.rarity, ugu.rarity_color, ugu.number, ugu.photo_filename, ugu.model_name,
+               g.price, ugu.rarity, ugu.rarity_color, ugu.number, ugu.photo_filename, ugu.model_name,
                ml.id as market_id, ml.price as market_price,
                auc.id as auc_id
         FROM user_gifts ug
@@ -518,6 +518,7 @@ def profile():
                 "id": r["g_id"],
                 "name": r["name"],
                 "image": r["image"],
+                "price": r["price"] or 0,
                 "has_upgrade": r["upg_id"] is not None,
                 "upgrade_result": None,
                 "on_market": r["market_id"] is not None,
