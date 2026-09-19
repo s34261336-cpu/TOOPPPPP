@@ -387,6 +387,208 @@ select.fi option{background:#17212b;}
   .card-name,.scard-name,.mcard-name,.acard-name{font-size:10px;}
   .scard-price,.mcard-price,.acard-price{font-size:11px;}
 }
+
+/* ═══ TELEGRAM GIFT SHOP ═══ */
+#ut-shop .sc{
+  padding:0;
+  background:transparent;
+  border:0;
+  box-shadow:none;
+}
+#ut-shop .stitle{display:none;}
+#ut-shop .sgrid{gap:10px;}
+#ut-shop .scard{
+  cursor:pointer;
+  background:#171b20;
+  border:1px solid rgba(255,255,255,.045);
+  border-radius:14px;
+  box-shadow:0 3px 12px rgba(0,0,0,.32);
+  transition:transform .18s ease,box-shadow .18s ease;
+}
+#ut-shop .scard:hover{
+  transform:translateY(-2px);
+  box-shadow:0 7px 18px rgba(0,0,0,.4);
+}
+#ut-shop .scard:active{transform:scale(.97);}
+#ut-shop .scard .card-img-wrap{
+  aspect-ratio:1;
+  background:#1b1f24;
+}
+#ut-shop .scard .card-img{
+  object-fit:contain;
+  padding:8px;
+}
+#ut-shop .scard .card-ph{
+  background:#1b1f24;
+  font-size:48px;
+}
+#ut-shop .scard-body{
+  padding:8px 7px 10px;
+  background:transparent;
+  align-items:center;
+}
+#ut-shop .scard-name,#ut-shop .scard-qty{display:none;}
+#ut-shop .scard-footer{width:100%;margin:0;text-align:center;}
+#ut-shop .scard-price{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  min-width:58px;
+  min-height:28px;
+  margin:0;
+  padding:4px 10px;
+  border-radius:18px;
+  background:linear-gradient(180deg,#403522,#2b251b);
+  border:1px solid rgba(214,159,57,.18);
+  color:#f6c85f;
+  font-size:13px;
+  line-height:1;
+  white-space:nowrap;
+}
+#ut-shop .scard.so .scard-price{filter:grayscale(.7);opacity:.62;}
+#ut-shop .cr{
+  top:11px;
+  right:-29px;
+  font-size:9px;
+  padding:3px 34px;
+}
+
+/* Full-height gift detail, styled after Telegram's buy-gift screen. */
+.shop-detail-bg{
+  align-items:center;
+  padding:0;
+  background:rgba(0,0,0,.78);
+}
+.shop-detail{
+  width:100%;
+  max-width:480px;
+  height:min(860px,100vh);
+  display:flex;
+  flex-direction:column;
+  overflow:hidden;
+  background:#080b0f;
+  color:#f4f7fa;
+}
+.shop-detail-header{
+  flex:0 0 64px;
+  display:flex;
+  align-items:center;
+  gap:16px;
+  padding:0 18px;
+  background:#17191c;
+  border-bottom:1px solid rgba(255,255,255,.04);
+}
+.shop-detail-back{
+  width:32px;
+  height:38px;
+  border:0;
+  background:transparent;
+  color:#e6e9ed;
+  font-size:36px;
+  font-weight:300;
+  line-height:1;
+  cursor:pointer;
+}
+.shop-detail-heading{
+  font-size:21px;
+  font-weight:700;
+  letter-spacing:-.02em;
+}
+.shop-detail-content{
+  flex:1;
+  min-height:0;
+  overflow:auto;
+  padding:0 0 22px;
+  background:
+    radial-gradient(circle at 50% 26%,rgba(42,171,238,.08),transparent 34%),
+    #080b0f;
+}
+.shop-detail-section-title{
+  padding:22px 26px 14px;
+  font-size:24px;
+  font-weight:700;
+  background:#1b1d20;
+}
+.shop-detail-stage{
+  padding:18px 24px 26px;
+  text-align:center;
+  background:
+    radial-gradient(circle at 50% 42%,rgba(92,106,142,.26),transparent 45%),
+    linear-gradient(180deg,#1b1e29 0%,#131620 100%);
+}
+.shop-detail-art{
+  width:min(76vw,285px);
+  height:min(76vw,285px);
+  margin:0 auto 18px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  border-radius:28px;
+  background:rgba(89,102,139,.22);
+  box-shadow:0 18px 45px rgba(0,0,0,.3),inset 0 1px 0 rgba(255,255,255,.1);
+}
+.shop-detail-art img{
+  width:88%;
+  height:88%;
+  object-fit:contain;
+  filter:drop-shadow(0 9px 18px rgba(0,0,0,.45));
+}
+.shop-detail-art .card-ph{background:transparent;font-size:94px;}
+.shop-detail-name{
+  font-size:20px;
+  font-weight:700;
+  margin-bottom:6px;
+}
+.shop-detail-price{
+  color:#d3d8df;
+  font-size:15px;
+}
+.shop-detail-bubble{
+  width:calc(100% - 42px);
+  margin:18px auto 0;
+  padding:14px 16px;
+  border-radius:18px;
+  background:#293241;
+  color:#fff;
+  font-size:17px;
+  font-weight:650;
+  line-height:1.22;
+}
+.shop-detail-note{
+  margin-top:10px;
+  color:#b8c0cb;
+  font-size:14px;
+  line-height:1.35;
+}
+.shop-detail-footer{
+  flex:0 0 auto;
+  padding:12px 14px 16px;
+  background:#1b1d20;
+  border-top:1px solid rgba(255,255,255,.06);
+}
+.shop-detail-buy{
+  min-height:54px;
+  border-radius:28px;
+  background:#2aabee;
+  color:white;
+  font-size:16px;
+  font-weight:700;
+  box-shadow:0 5px 18px rgba(42,171,238,.22);
+}
+.shop-detail-buy:disabled{
+  background:#56616b;
+  color:#c4cbd1;
+  box-shadow:none;
+  cursor:not-allowed;
+}
+@media(min-width:481px){
+  .shop-detail{height:min(860px,calc(100vh - 24px));border:1px solid rgba(255,255,255,.13);border-radius:18px;}
+}
+@media(max-width:360px){
+  #ut-shop .sgrid{gap:6px;}
+  #ut-shop .scard-body{padding:7px 4px 8px;}
+  #ut-shop .scard-price{min-width:50px;min-height:25px;padding:4px 7px;font-size:11px;}
+}
 </style>
 </head>
 <body>
@@ -550,6 +752,29 @@ select.fi option{background:#17212b;}
   </div>
 </div>
 
+<!-- ─── TELEGRAM-STYLE SHOP GIFT DETAIL ─── -->
+<div class="modal-bg shop-detail-bg" id="shop-detail-modal" onclick="if(event.target===this)closeShopGift()">
+  <div class="shop-detail" role="dialog" aria-modal="true" aria-label="Подарок">
+    <div class="shop-detail-header">
+      <button class="shop-detail-back" onclick="closeShopGift()" aria-label="Назад">‹</button>
+      <div class="shop-detail-heading">Купить подарок</div>
+    </div>
+    <div class="shop-detail-content">
+      <div class="shop-detail-section-title">Подарок себе</div>
+      <div class="shop-detail-stage">
+        <div class="shop-detail-art" id="shop-detail-art"></div>
+        <div class="shop-detail-name" id="shop-detail-name"></div>
+        <div class="shop-detail-price" id="shop-detail-price"></div>
+        <div class="shop-detail-bubble" id="shop-detail-bubble">Вы можете купить этот подарок для себя.</div>
+        <div class="shop-detail-note">Подарок будет сохранён в вашем профиле.</div>
+      </div>
+    </div>
+    <div class="shop-detail-footer">
+      <button class="btn shop-detail-buy" id="shop-detail-buy" onclick="confirmShopGift()"></button>
+    </div>
+  </div>
+</div>
+
 <!-- ─── UPGRADE SLOT MODAL ─── -->
 <div class="modal-bg" id="upg-modal">
   <div class="modal">
@@ -656,23 +881,6 @@ select.fi option{background:#17212b;}
       <input class="fi" id="nm-inp" placeholder="Название модели" style="flex:1;">
       <button class="btn bs sm" onclick="addModel()">+ Мод</button>
     </div>
-  </div>
-</div>
-
-<!-- ─── SEND GIFT FROM SHOP ─── -->
-<div class="modal-bg" id="send-shop-modal">
-  <div class="modal" style="max-width:300px;">
-    <button class="modal-x" onclick="$('send-shop-modal').classList.remove('show')">×</button>
-    <div style="font-size:22px;margin-bottom:4px;">🎁</div>
-    <div style="font-size:16px;font-weight:700;margin-bottom:3px;">Подарить</div>
-    <div style="font-size:12px;color:rgba(226,232,240,.35);margin-bottom:14px;" id="send-shop-lbl"></div>
-    <div class="fg">
-      <label class="fl">Юзернейм в Telegram</label>
-      <input class="fi" id="send-shop-un" placeholder="@username" style="letter-spacing:normal;font-size:14px;margin-bottom:0;" autocomplete="off">
-    </div>
-    <div style="font-size:11px;color:rgba(226,232,240,.3);margin:6px 0 12px;">Получатель должен сначала написать боту</div>
-    <button class="btn bs" onclick="confirmSendShop()" style="margin-bottom:6px;">🎁 Отправить</button>
-    <div style="font-size:11px;color:#fbbf24;" id="send-shop-price"></div>
   </div>
 </div>
 
@@ -1108,60 +1316,75 @@ function launchConfetti(){
 }
 
 /* ─ SHOP ─ */
-let curSendShopGid=null;
+let shopCatalog=[];
+let curShopGift=null;
 async function loadShop(){
   const gifts=await fetch('/api/shop',{headers:{'Cache-Control':'no-cache'}}).then(r=>r.json());
+  shopCatalog=gifts;
   const el=$('shop-list');
   if(!gifts.length){el.innerHTML='<div class="empty"><div class="emico">🛒</div>Магазин пуст</div>';return;}
   el.innerHTML='<div class="sgrid">'+gifts.map(g=>{
     const so=g.sold_out;
-    const few=!so&&g.remaining!==null&&g.remaining<=5;
     const ribbon=so
       ?`<span class="cr cr-sold">SOLD OUT</span>`
-      :(few?`<span class="cr cr-few">Мало!</span>`:`<span class="cr cr-avail">Available</span>`);
+      :'';
     const imgW=g.image
       ?`<div class="card-img-wrap" style="position:relative;overflow:hidden;"><img class="card-img" src="/static/uploads/${g.image}">${ribbon}</div>`
       :`<div class="card-img-wrap" style="position:relative;overflow:hidden;"><div class="card-ph">🎁</div>${ribbon}</div>`;
-    const qty=g.remaining!==null?`<div class="scard-qty${g.remaining<=5?' low':''}">Осталось: ${g.remaining}</div>`:'';
-    const btns=so
-      ?`<button class="btn bsec" style="padding:8px;font-size:12px;" disabled>Нет в наличии</button>`
-      :`<div style="display:flex;gap:5px;">
-          <button class="btn bp" style="padding:7px 6px;font-size:11px;flex:1;" onclick="shopBuy(${g.id},'${esc(g.name)}')">🛒 Купить</button>
-          <button class="btn bs" style="padding:7px 6px;font-size:11px;flex:1;" onclick="openSendShop(${g.id},'${esc(g.name)}',${g.price})">🎁 Дарить</button>
-        </div>`;
-    return `<div class="scard gc ${so?'so':''}">
+    return `<div class="scard gc ${so?'so':''}" role="button" tabindex="0"
+      onclick="openShopGift(${g.id})"
+      onkeydown="if(event.key==='Enter'||event.key===' ')openShopGift(${g.id})">
       ${imgW}<div class="scard-body">
         <div class="scard-name">${g.name}</div>
         <div class="scard-footer">
-          <div class="scard-price">${g.price>0?'⭐ '+g.price:'Бесплатно'}</div>${qty}
-          ${btns}
+          <div class="scard-price">${g.price>0?'⭐ '+g.price:'Бесплатно'}</div>
         </div>
       </div>
     </div>`;
   }).join('')+'</div>';
 }
-async function shopBuy(gid,name){
-  const d=await fetch(`/api/shop/buy/${gid}`,{method:'POST'}).then(r=>r.json());
-  if(d.success){toast(`🎁 ${name} получен!`);launchConfetti();await loadShop();await loadProfile();}
-  else toast('❌ '+(d.message||'Ошибка'),'linear-gradient(135deg,#b91c1c,#7f1d1d)');
+function openShopGift(gid){
+  const gift=shopCatalog.find(item=>item.id===gid);
+  if(!gift)return;
+  curShopGift=gift;
+  const art=$('shop-detail-art');
+  art.innerHTML=gift.image
+    ?`<img src="/static/uploads/${gift.image}" alt="${gift.name}">`
+    :'<div class="card-ph">🎁</div>';
+  $('shop-detail-name').textContent=gift.name;
+  $('shop-detail-price').textContent=gift.price>0?`Стоимость: ⭐ ${gift.price}`:'Бесплатный подарок';
+  $('shop-detail-bubble').textContent=gift.sold_out
+    ?'Этот подарок сейчас закончился.'
+    :'Вы можете купить этот подарок для себя.';
+  const buy=$('shop-detail-buy');
+  buy.disabled=!!gift.sold_out;
+  buy.textContent=gift.sold_out
+    ?'Нет в наличии'
+    :(gift.price>0?`Купить подарок за ⭐ ${gift.price}`:'Получить подарок');
+  $('shop-detail-modal').classList.add('show');
 }
-function openSendShop(gid,name,price){
-  curSendShopGid=gid;
-  $('send-shop-lbl').textContent=name;
-  $('send-shop-price').textContent=price>0?`Стоимость: ⭐ ${price}`:'Бесплатно';
-  $('send-shop-un').value='';
-  $('send-shop-modal').classList.add('show');
+function closeShopGift(){
+  $('shop-detail-modal').classList.remove('show');
+  curShopGift=null;
 }
-async function confirmSendShop(){
-  const un=$('send-shop-un').value.trim().replace(/^@/,'');
-  if(!un){toast('❌ Введи юзернейм','linear-gradient(135deg,#b91c1c,#7f1d1d)');return;}
-  const d=await fetch(`/api/shop/gift_send/${curSendShopGid}`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({username:un})}).then(r=>r.json());
+async function confirmShopGift(){
+  if(!curShopGift||curShopGift.sold_out)return;
+  const gift=curShopGift;
+  const buy=$('shop-detail-buy');
+  buy.disabled=true;
+  buy.textContent='Покупаем...';
+  const d=await fetch(`/api/shop/buy/${gift.id}`,{method:'POST'}).then(r=>r.json());
   if(d.success){
-    $('send-shop-modal').classList.remove('show');
-    toast(d.message||'🎁 Подарок отправлен!');
+    closeShopGift();
+    toast(`🎁 ${gift.name} получен!`);
     launchConfetti();
-    await loadShop();await loadProfile();
-  }else toast('❌ '+(d.message||'Ошибка'),'linear-gradient(135deg,#b91c1c,#7f1d1d)');
+    await loadShop();
+    await loadProfile();
+  }else{
+    buy.disabled=false;
+    buy.textContent=gift.price>0?`Купить подарок за ⭐ ${gift.price}`:'Получить подарок';
+    toast('❌ '+(d.message||'Ошибка'),'linear-gradient(135deg,#b91c1c,#7f1d1d)');
+  }
 }
 
 /* ─ TRANSFER GIFT ─ */
