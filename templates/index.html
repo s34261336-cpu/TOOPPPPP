@@ -265,7 +265,6 @@ select.fi option{background:#0d0b1e;}
 .agrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px;}
 .acard{border-radius:14px;overflow:hidden;display:flex;flex-direction:column;transition:transform .25s;position:relative;}
 .acard:hover{transform:translateY(-3px);}
-.auc-ribbon{position:absolute;top:10px;right:-22px;background:linear-gradient(135deg,#d97706,#92400e);color:#fef3c7;font-size:10px;font-weight:800;padding:3px 28px;transform:rotate(35deg);letter-spacing:.5px;box-shadow:0 2px 8px rgba(0,0,0,.4);z-index:5;}
 .acard-body{padding:10px 9px;flex:1;display:flex;flex-direction:column;}
 .acard-name{font-size:12px;font-weight:600;margin-bottom:3px;color:#e2e8f0;}
 .acard-seller{font-size:10px;color:rgba(226,232,240,.3);margin-bottom:4px;}
@@ -336,7 +335,6 @@ body.shop-detail-open{overflow:hidden;}
 
 /* SELL MODAL */
 .sell-modal{max-width:300px;}
-.bid-modal{max-width:300px;}
 
 /* PHOTO MODAL */
 .photo-modal{max-height:88vh;overflow-y:auto;max-width:360px;}
@@ -730,6 +728,11 @@ select.fi option{background:#17212b;}
   background:#1b1d20;
   border-top:1px solid rgba(255,255,255,.06);
 }
+.shop-detail-secondary{
+  min-height:44px;
+  margin-bottom:7px;
+  border-radius:24px;
+}
 .shop-detail-buy{
   min-height:48px;
   border-radius:28px;
@@ -747,6 +750,29 @@ select.fi option{background:#17212b;}
 }
 @media(min-width:481px){
   .shop-detail{height:min(720px,calc(100vh - 48px));border:1px solid rgba(255,255,255,.13);border-bottom:0;border-radius:22px 22px 0 0;}
+}
+
+/* Glass controls and rounded surfaces */
+.gl,.gc,.sc,.phero,.premcard,.modal,.nav-tabs,.atabs,.shop-detail{
+  border-radius:24px;
+  border-color:rgba(255,255,255,.15);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.13),0 18px 48px rgba(0,0,0,.22);
+  backdrop-filter:blur(28px) saturate(145%);
+  -webkit-backdrop-filter:blur(28px) saturate(145%);
+}
+.nav-tabs{
+  padding:6px;
+  background:rgba(24,43,59,.56);
+}
+.ntab{
+  border-radius:18px;
+}
+.icard,.scard,.mcard{
+  border-radius:22px;
+  border-color:rgba(255,255,255,.15);
+}
+.card-body,.scard-body,.mcard-body{
+  border-radius:0 0 20px 20px;
 }
 @media(max-width:360px){
   #ut-shop .sgrid{gap:6px;}
@@ -937,8 +963,8 @@ body{
     <button class="ntab" onclick="uTab('market',this)">
       <span class="ntab-icon">💱</span><span class="ntab-label">Маркет</span>
     </button>
-    <button class="ntab" onclick="uTab('auction',this)">
-      <span class="ntab-icon">🔨</span><span class="ntab-label">Аукцион</span>
+    <button class="ntab" onclick="uTab('settings',this)">
+      <span class="ntab-icon">⚙️</span><span class="ntab-label">Настройки</span>
     </button>
   </div>
   <div class="pc">
@@ -954,22 +980,6 @@ body{
           <div class="lvlbadge" id="u-lvlb" style="display:none;"></div>
         </div>
         <div class="tap-hint">Нажми для просмотра аккаунта</div>
-      </div>
-      <div class="premcard" id="prem-buy" style="display:none;">
-        <div class="pctitle">👑 PREMIUM</div>
-        <div class="pcsub">Разблокируй особый статус и эксклюзивный вид</div>
-        <div class="perks">
-          <div class="perk">👑 <span>Золотой значок Premium</span></div>
-          <div class="perk">✨ <span>Эксклюзивное оформление</span></div>
-          <div class="perk">🎁 <span>Доступ к особым подаркам</span></div>
-          <div class="perk">⚡ <span>Приоритет в списке</span></div>
-        </div>
-        <div class="plabel">⭐ <span id="prem-p">1000</span> звёзд</div>
-        <button class="btn bprem" id="prem-btn" onclick="buyPremium()">Купить Премиум</button>
-      </div>
-      <div class="premcard" id="prem-on" style="display:none;background:linear-gradient(135deg,rgba(217,119,6,.08),rgba(109,40,217,.08));">
-        <div class="pctitle">✨ Премиум активен!</div>
-        <div class="pcsub">Ты пользуешься всеми преимуществами Premium!</div>
       </div>
       <div class="sc gl">
         <div class="stitle">🎁 Мои подарки</div>
@@ -996,11 +1006,27 @@ body{
         <div id="market-list"><div class="empty"><div class="loader"></div></div></div>
       </div>
     </div>
-    <!-- AUCTION -->
-    <div id="ut-auction" class="atc">
+    <!-- SETTINGS -->
+    <div id="ut-settings" class="atc">
       <div class="sc gl">
-        <div class="stitle">🔨 Аукцион</div>
-        <div id="auc-list"><div class="empty"><div class="loader"></div></div></div>
+        <div class="stitle">⚙️ Настройки</div>
+        <div class="pcsub" style="margin-bottom:14px;">Управляй статусом аккаунта и возможностями профиля.</div>
+      </div>
+      <div class="premcard" id="prem-buy" style="display:none;">
+        <div class="pctitle">👑 PREMIUM</div>
+        <div class="pcsub">Разблокируй особый статус и эксклюзивный вид</div>
+        <div class="perks">
+          <div class="perk">👑 <span>Золотой значок Premium</span></div>
+          <div class="perk">✨ <span>Эксклюзивное оформление</span></div>
+          <div class="perk">🎁 <span>Доступ к особым подаркам</span></div>
+          <div class="perk">⚡ <span>Приоритет в списке</span></div>
+        </div>
+        <div class="plabel">⭐ <span id="prem-p">50</span> звёзд</div>
+        <button class="btn bprem" id="prem-btn" onclick="buyPremium()">Купить Премиум</button>
+      </div>
+      <div class="premcard" id="prem-on" style="display:none;background:linear-gradient(135deg,rgba(217,119,6,.08),rgba(109,40,217,.08));">
+        <div class="pctitle">✨ Премиум активен!</div>
+        <div class="pcsub">Ты пользуешься всеми преимуществами Premium!</div>
       </div>
     </div>
   </div>
@@ -1089,6 +1115,7 @@ body{
       </div>
     </div>
     <div class="shop-detail-footer">
+      <button class="btn bsec shop-detail-secondary" id="shop-detail-secondary" style="display:none;"></button>
       <button class="btn shop-detail-buy" id="shop-detail-buy" onclick="confirmShopGift()"></button>
     </div>
   </div>
@@ -1157,30 +1184,8 @@ body{
     <div class="fg"><label class="fl">Цена (⭐)</label>
       <input class="fi" id="sell-price" type="number" min="1" placeholder="Цена" style="letter-spacing:normal;text-align:left;font-size:13px;margin-bottom:0;"></div>
     <div style="display:flex;gap:8px;margin-top:10px;">
-      <button class="btn bs" onclick="listOnMarket()" style="flex:1;">💱 Маркет</button>
-      <button class="btn bgold" onclick="toggleAucForm()" style="flex:1;">🔨 Аукцион</button>
+      <button class="btn bs" onclick="listOnMarket()" style="width:100%;">💱 Выставить на маркет</button>
     </div>
-    <div id="auc-form-wrap" style="display:none;margin-top:10px;">
-      <div class="fg"><label class="fl">Длительность</label>
-        <select class="fi" id="auc-dur">
-          <option value="1">1 час</option><option value="6">6 часов</option>
-          <option value="24" selected>24 часа</option><option value="72">3 дня</option><option value="168">7 дней</option>
-        </select></div>
-      <button class="btn bgold" onclick="confirmAuction()">Выставить на аукцион</button>
-    </div>
-  </div>
-</div>
-
-<!-- ─── BID MODAL ─── -->
-<div class="modal-bg" id="bid-modal">
-  <div class="modal bid-modal">
-    <button class="modal-x" onclick="$('bid-modal').classList.remove('show')">×</button>
-    <div style="font-size:16px;font-weight:700;margin-bottom:3px;">🔨 Сделать ставку</div>
-    <div style="font-size:12px;color:rgba(226,232,240,.35);margin-bottom:3px;" id="bid-lbl"></div>
-    <div style="font-size:13px;color:#fbbf24;margin-bottom:12px;">Текущая: ⭐ <span id="bid-cur">0</span></div>
-    <div class="fg"><label class="fl">Ваша ставка (⭐)</label>
-      <input class="fi" id="bid-amount" type="number" min="1" placeholder="Ставка" style="letter-spacing:normal;text-align:left;font-size:13px;margin-bottom:0;"></div>
-    <button class="btn bgold" onclick="placeBid()" style="margin-top:10px;">Поставить</button>
   </div>
 </div>
 
@@ -1335,10 +1340,9 @@ function uTab(nm,el){
   document.querySelectorAll('#pg-user .atc').forEach(c=>c.classList.remove('active'));
   el.classList.add('active');$('ut-'+nm).classList.add('active');
   moveNavIndicator(el,false);
-  $('u-title').textContent={profile:'Профиль',shop:'Магазин',market:'Маркет',auction:'Аукцион'}[nm];
+  $('u-title').textContent={profile:'Профиль',shop:'Магазин',market:'Маркет',settings:'Настройки'}[nm];
   if(nm==='shop')loadShop();
   if(nm==='market')loadMarket();
-  if(nm==='auction')loadAuctions();
 }
 
 /* ─ FILTER ─ */
@@ -1376,14 +1380,13 @@ function renderInv(gifts){
   let filtered=gifts;
   if(activeFilter==='upgraded')filtered=gifts.filter(g=>g.upgrade_result);
   else if(activeFilter==='plain')filtered=gifts.filter(g=>!g.upgrade_result);
-  else if(activeFilter==='selling')filtered=gifts.filter(g=>g.on_market||g.on_auction);
+  else if(activeFilter==='selling')filtered=gifts.filter(g=>g.on_market);
   const el=$('u-gifts');
   if(!filtered.length){el.innerHTML='<div class="empty"><div class="emico">🎁</div>Нет подарков</div>';return;}
   el.innerHTML='<div class="igrid">'+filtered.map(g=>{
     let imgSection='';
     let corners='';
     if(g.on_market)corners+=`<span class="badge-corner badge-selling">Продаётся</span>`;
-    if(g.on_auction)corners+=`<span class="badge-corner badge-auc">AUCTION</span>`;
     if(g.upgrade_result){
       // Beautiful collectible card
       const r=g.upgrade_result;const bg=SLOT_BGS[r.bg_id||0].css;
@@ -1407,28 +1410,9 @@ function renderInv(gifts){
         ${corners}
       </div>`;
     }
-    let actions='';
-    if(g.upgrade_result){
-      if(!g.on_market&&!g.on_auction)actions=`
-        <div style="display:flex;gap:4px;margin-top:5px;">
-          <button class="btn bs" style="padding:5px;font-size:10px;border-radius:8px;flex:1;" onclick="openSell(${g.ug_id},'${esc(g.name)}')">💱 Продать</button>
-          <button class="btn bsec" style="padding:5px;font-size:10px;border-radius:8px;flex:1;" onclick="openTransfer(${g.ug_id},'${esc(g.name)}')">📤</button>
-        </div>`;
-      else if(g.on_market)actions=`<button class="btn bd" style="padding:5px;font-size:11px;border-radius:8px;width:100%;margin-top:5px;" onclick="cancelMarket(${g.market_id})">✕ Снять</button>`;
-      else if(g.on_auction)actions=`<button class="btn bd" style="padding:5px;font-size:11px;border-radius:8px;width:100%;margin-top:5px;" onclick="cancelAuction(${g.auc_id})">✕ Аукцион</button>`;
-    }else if(g.has_upgrade){
-      actions=`
-        <div style="display:flex;gap:4px;margin-top:5px;">
-          <button class="btn bupg" style="padding:6px;font-size:10px;border-radius:8px;flex:1;" onclick="openUpg(${g.ug_id},'${esc(g.name)}')">⚡ Улучшить</button>
-          <button class="btn bsec" style="padding:6px;font-size:10px;border-radius:8px;" onclick="openTransfer(${g.ug_id},'${esc(g.name)}')">📤</button>
-        </div>`;
-    }else{
-      actions=`
-        <div style="display:flex;gap:4px;margin-top:5px;align-items:center;">
-          <div class="no-upg" style="flex:1;">нет улучшений</div>
-          <button class="btn bsec" style="padding:5px 8px;font-size:10px;border-radius:8px;" onclick="openTransfer(${g.ug_id},'${esc(g.name)}')">📤</button>
-        </div>`;
-    }
+    const actions=g.on_market
+      ?'<div class="card-status">На продаже</div>'
+      :'<div class="tap-hint">Нажми, чтобы открыть</div>';
     const showName=!g.upgrade_result;
     return `<div class="icard gc" role="button" tabindex="0"
       onclick="if(!event.target.closest('button'))openProfileGift(${g.ug_id})"
@@ -1510,11 +1494,19 @@ async function openUpg(ugId,name){
   $('upg-modal-x').style.display='none';
   $('upg-modal').classList.add('show');
 
-  // Fetch options and result in parallel
-  const [optR,upgR]=await Promise.all([
-    fetch(`/api/upgrade_options/${ugId}`,{headers:{'Cache-Control':'no-cache'}}).then(r=>r.json()),
-    fetch(`/api/upgrade/${ugId}`,{method:'POST'}).then(r=>r.json()),
-  ]);
+  let optR,upgR;
+  try{
+    // Fetch options and result in parallel so the slot can render immediately.
+    [optR,upgR]=await Promise.all([
+      fetch(`/api/upgrade_options/${ugId}`,{headers:{'Cache-Control':'no-cache'}}).then(r=>r.json()),
+      fetch(`/api/upgrade/${ugId}`,{method:'POST'}).then(r=>r.json()),
+    ]);
+  }catch{
+    $('upg-modal').classList.remove('show');
+    $('upg-modal-x').style.display='';
+    toast('❌ Не удалось загрузить улучшение','linear-gradient(135deg,#b91c1c,#7f1d1d)');
+    return;
+  }
 
   if(!upgR.success){
     $('upg-modal').classList.remove('show');
@@ -1605,10 +1597,7 @@ function closeUpg(){$('upg-modal').classList.remove('show');}
 /* ─ SELL ─ */
 function openSell(ugId,name){
   curSellUgId=ugId;$('sell-lbl').textContent=name;$('sell-price').value='';
-  $('auc-form-wrap').style.display='none';$('sell-modal').classList.add('show');
-}
-function toggleAucForm(){
-  const w=$('auc-form-wrap');w.style.display=w.style.display==='none'?'block':'none';
+  $('sell-modal').classList.add('show');
 }
 async function listOnMarket(){
   const price=parseInt($('sell-price').value)||0;
@@ -1617,21 +1606,9 @@ async function listOnMarket(){
   if(d.success){toast('💱 На маркете!');$('sell-modal').classList.remove('show');await loadProfile();}
   else toast('❌ '+(d.message||'Ошибка'),'linear-gradient(135deg,#b91c1c,#7f1d1d)');
 }
-async function confirmAuction(){
-  const price=parseInt($('sell-price').value)||0;const dur=parseInt($('auc-dur').value)||24;
-  if(price<1){toast('❌ Укажи стартовую цену','linear-gradient(135deg,#b91c1c,#7f1d1d)');return;}
-  const d=await fetch('/api/auction/create',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({user_gift_id:curSellUgId,start_price:price,duration_hours:dur})}).then(r=>r.json());
-  if(d.success){toast('🔨 Аукцион создан!','linear-gradient(135deg,#d97706,#b45309)');$('sell-modal').classList.remove('show');await loadProfile();}
-  else toast('❌ '+(d.message||'Ошибка'),'linear-gradient(135deg,#b91c1c,#7f1d1d)');
-}
 async function cancelMarket(id){
   const d=await fetch(`/api/market/cancel/${id}`,{method:'POST'}).then(r=>r.json());
   if(d.success){toast('✅ Снято');await loadProfile();}
-}
-async function cancelAuction(id){
-  const d=await fetch(`/api/auction/cancel/${id}`,{method:'POST'}).then(r=>r.json());
-  if(d.success){toast('✅ Отменён');await loadProfile();}
-  else toast('❌ '+(d.message||'Ошибка'),'linear-gradient(135deg,#b91c1c,#7f1d1d)');
 }
 
 /* ─ CONFETTI ─ */
@@ -1703,6 +1680,9 @@ function openShopGift(gid){
     :'Вы можете купить этот подарок для себя.';
   $('shop-detail-note').textContent='Подарок будет сохранён в вашем профиле.';
   const buy=$('shop-detail-buy');
+  const secondary=$('shop-detail-secondary');
+  secondary.style.display='none';
+  secondary.onclick=null;
   buy.onclick=confirmShopGift;
   buy.disabled=!!gift.sold_out;
   buy.textContent=gift.sold_out
@@ -1744,11 +1724,29 @@ function openProfileGift(ugId){
     ?(gift.upgrade_result.model?`Модель: ${gift.upgrade_result.model}`:'Подарок виден в вашем профиле.')
     :'Подарок виден в вашем профиле.';
   const buy=$('shop-detail-buy');
+  const secondary=$('shop-detail-secondary');
+  secondary.style.display='none';
+  secondary.onclick=null;
   buy.disabled=false;
-  buy.onclick=canUpgrade
-    ?()=>{closeShopGift();openUpg(gift.ug_id,gift.name);}
-    :closeShopGift;
-  buy.textContent=canUpgrade?'⚡ Улучшить':'ОК';
+  if(canUpgrade){
+    buy.onclick=()=>{closeShopGift();openUpg(gift.ug_id,gift.name);};
+    buy.textContent='⚡ Улучшить';
+  }else if(gift.upgrade_result&&!gift.on_market){
+    buy.onclick=()=>{closeShopGift();openSell(gift.ug_id,gift.name);};
+    buy.textContent='💱 Продать';
+    secondary.style.display='block';
+    secondary.textContent='📤 Передать';
+    secondary.onclick=()=>{closeShopGift();openTransfer(gift.ug_id,gift.name);};
+  }else if(gift.on_market){
+    buy.onclick=closeShopGift;
+    buy.textContent='ОК';
+    secondary.style.display='block';
+    secondary.textContent='✕ Снять с продажи';
+    secondary.onclick=()=>{closeShopGift();cancelMarket(gift.market_id);};
+  }else{
+    buy.onclick=closeShopGift;
+    buy.textContent='ОК';
+  }
   document.body.classList.add('shop-detail-open');
   $('shop-detail-modal').classList.add('show');
 }
@@ -1756,6 +1754,8 @@ function closeShopGift(){
   $('shop-detail-modal').classList.remove('show');
   document.body.classList.remove('shop-detail-open');
   curShopGift=null;
+  $('shop-detail-secondary').style.display='none';
+  $('shop-detail-secondary').onclick=null;
   $('shop-detail-buy').onclick=confirmShopGift;
 }
 async function confirmShopGift(){
@@ -1823,49 +1823,6 @@ async function loadMarket(){
 async function buyMarket(id){
   const d=await fetch(`/api/market/buy/${id}`,{method:'POST'}).then(r=>r.json());
   if(d.success){toast('🎁 Куплено!');await loadMarket();await loadProfile();}
-  else toast('❌ '+(d.message||'Ошибка'),'linear-gradient(135deg,#b91c1c,#7f1d1d)');
-}
-
-/* ─ AUCTIONS ─ */
-async function loadAuctions(){
-  const items=await fetch('/api/auctions',{headers:{'Cache-Control':'no-cache'}}).then(r=>r.json());
-  const el=$('auc-list');
-  if(!items.length){el.innerHTML='<div class="empty"><div class="emico">🔨</div>Нет аукционов</div>';return;}
-  el.innerHTML='<div class="agrid">'+items.map(it=>{
-    const bg=SLOT_BGS[it.bg_id||0].css;
-    const tl=timeLeft(it.end_time);const urgent=new Date(it.end_time+'Z')-new Date()<300000;
-    return `<div class="acard gc">
-      <div style="position:relative;overflow:hidden;">
-        <div style="width:100%;aspect-ratio:1;background:${bg};display:flex;align-items:center;justify-content:center;">
-          ${it.photo_filename?`<img src="/static/uploads/${it.photo_filename}" style="width:72%;height:72%;object-fit:contain;filter:drop-shadow(0 4px 12px rgba(0,0,0,.7));">`:`<span style="font-size:42px;">🎁</span>`}
-        </div>
-        <div class="auc-ribbon">AUCTION</div>
-      </div>
-      <div class="acard-body">
-        <div class="acard-name">${it.name}</div>
-        <div class="acard-seller">от ${it.seller_name}</div>
-        ${it.rarity?`<div style="font-size:10px;font-weight:700;color:${it.rarity_color};margin-bottom:3px;">${rIcon(it.rarity)} ${it.rarity} #${it.number}</div>`:''}
-        <div class="acard-price">⭐ ${it.current_price}</div>
-        <div class="acard-bids">Ставок: ${it.bid_count}</div>
-        <div class="acard-timer${urgent?' urgent':{}}">⏱ ${tl}</div>
-        <button class="btn bgold" style="padding:8px;font-size:12px;" onclick="openBid(${it.id},'${esc(it.name)}',${it.current_price})">🔨 Ставка</button>
-      </div></div>`;
-  }).join('')+'</div>';
-  if(aucTimer)clearInterval(aucTimer);
-  aucTimer=setInterval(()=>{
-    document.querySelectorAll('.acard-timer').forEach((el,i)=>{
-      if(items[i]){const tl=timeLeft(items[i].end_time);el.textContent='⏱ '+tl;el.className='acard-timer'+(new Date(items[i].end_time+'Z')-new Date()<300000?' urgent':'');}
-    });
-  },1000);
-}
-function openBid(aid,name,cur){
-  curAucId=aid;curAucPrice=cur;$('bid-lbl').textContent=name;$('bid-cur').textContent=cur;$('bid-amount').value=cur+1;$('bid-modal').classList.add('show');
-}
-async function placeBid(){
-  const amount=parseInt($('bid-amount').value)||0;
-  if(amount<=curAucPrice){toast(`❌ Ставка > ${curAucPrice} ⭐`,'linear-gradient(135deg,#b91c1c,#7f1d1d)');return;}
-  const d=await fetch(`/api/auction/bid/${curAucId}`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({amount})}).then(r=>r.json());
-  if(d.success){toast(`🔨 Ставка ${amount} ⭐!`,'linear-gradient(135deg,#d97706,#b45309)');$('bid-modal').classList.remove('show');loadAuctions();}
   else toast('❌ '+(d.message||'Ошибка'),'linear-gradient(135deg,#b91c1c,#7f1d1d)');
 }
 

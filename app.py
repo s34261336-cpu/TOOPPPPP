@@ -361,7 +361,6 @@ def start_background_workers():
         init_db()
         if BOT_TOKEN and ENABLE_BOT_POLLING:
             threading.Thread(target=poll_bot, daemon=True).start()
-        threading.Thread(target=process_auctions, daemon=True).start()
         _workers_started = True
 
 
@@ -495,14 +494,12 @@ def profile():
         SELECT ug.id as ug_id, g.id as g_id, g.name, g.image,
                gu.id as upg_id,
                g.price, ugu.rarity, ugu.rarity_color, ugu.number, ugu.photo_filename, ugu.model_name,
-               ml.id as market_id, ml.price as market_price,
-               auc.id as auc_id
+               ml.id as market_id, ml.price as market_price
         FROM user_gifts ug
         INNER JOIN gifts g ON g.id=ug.gift_id
         LEFT JOIN gift_upgrades gu ON gu.gift_id=g.id
         LEFT JOIN user_gift_upgrades ugu ON ugu.user_gift_id=ug.id
         LEFT JOIN marketplace ml ON ml.user_gift_id=ug.id AND ml.status='active'
-        LEFT JOIN auctions auc ON auc.user_gift_id=ug.id AND auc.status='active'
         WHERE ug.user_id=?
         ORDER BY ug.obtained_at DESC""",
         (uid,),
@@ -524,8 +521,6 @@ def profile():
                 "on_market": r["market_id"] is not None,
                 "market_id": r["market_id"],
                 "market_price": r["market_price"],
-                "on_auction": r["auc_id"] is not None,
-                "auc_id": r["auc_id"],
             }
         if r["upg_id"]:
             gifts_map[key]["has_upgrade"] = True
@@ -629,6 +624,38 @@ def shop_buy(gid):
 
 
 # ── UPGRADE ──────────────────────────────────────────
+@app.route("/api/upgrade_options/<int:ug_id>")
+def upgrade_options(ug_id):
+    uid = session.get("user_id")
+    if not uid:
+        return nc(jsonify({"error": "Не авторизован"})), 401
+    conn = get_db()
+    c = conn.cursor()
+    c.execute(
+        """SELECT gu.id
+           FROM gift_upgrades gu
+           JOIN user_gifts ug ON ug.gift_id=gu.gift_id
+           WHERE ug.id=? AND ug.user_id=?""",
+        (ug_id, uid),
+    )
+    upg = c.fetchone()
+    if not upg:
+        conn.close()
+        return nc(jsonify({"success": False, "message": "Улучшение недоступно"})), 404
+    c.execute(
+        "SELECT filename FROM upgrade_photos WHERE upgrade_id=? ORDER BY id",
+        (upg["id"],),
+    )
+    photos = [r["filename"] for r in c.fetchall()]
+    c.execute(
+        "SELECT name FROM upgrade_models WHERE upgrade_id=? ORDER BY id",
+        (upg["id"],),
+    )
+    models = [r["name"] for r in c.fetchall()]
+    conn.close()
+    return nc(jsonify({"photos": photos, "models": models}))
+
+
 @app.route("/api/upgrade/<int:ug_id>", methods=["POST"])
 def do_upgrade(ug_id):
     uid = session.get("user_id")
@@ -679,7 +706,76 @@ def do_upgrade(ug_id):
                     "number": number,
                     "photo": photo,
                     "model": model,
+                    "bg_id": {"Common": 0, "Epic": 3, "Mythic": 5, "Legendary": 7}.get(
+                        rarity, 0
+                    ),
                 },
+            }
+        )
+    )
+
+
+# ── GIFT TRANSFER ─────────────────────────────────────
+@app.route("/api/gift/transfer", methods=["POST"])
+def transfer_gift():
+    uid = session.get("user_id")
+    if not uid:
+        return nc(jsonify({"error": "Не авторизован"})), 401
+    data = request.json or {}
+    ug_id = data.get("user_gift_id")
+    username = str(data.get("username", "")).strip().lstrip("@")
+    if not ug_id or not username:
+        return nc(jsonify({"success": False, "message": "Укажи получателя"}))
+    conn = get_db()
+    c = conn.cursor()
+    c.execute(
+        "SELECT * FROM user_gifts WHERE id=? AND user_id=?",
+        (ug_id, uid),
+    )
+    gift = c.fetchone()
+    if not gift:
+        conn.close()
+        return nc(jsonify({"success": False, "message": "Подарок не найден"}))
+    c.execute(
+        "SELECT id FROM user_gift_upgrades WHERE user_gift_id=?",
+        (ug_id,),
+    )
+    if not c.fetchone():
+        conn.close()
+        return nc(
+            jsonify(
+                {
+                    "success": False,
+                    "message": "Передать можно только улучшенный подарок",
+                }
+            )
+        )
+    c.execute(
+        "SELECT id, first_name FROM users WHERE lower(username)=lower(?)",
+        (username,),
+    )
+    recipient = c.fetchone()
+    if not recipient:
+        conn.close()
+        return nc(jsonify({"success": False, "message": "Получатель не найден"}))
+    if recipient["id"] == uid:
+        conn.close()
+        return nc(jsonify({"success": False, "message": "Нельзя передать себе"}))
+    c.execute(
+        "SELECT id FROM marketplace WHERE user_gift_id=? AND status='active'",
+        (ug_id,),
+    )
+    if c.fetchone():
+        conn.close()
+        return nc(jsonify({"success": False, "message": "Сначала снимите подарок с продажи"}))
+    c.execute("UPDATE user_gifts SET user_id=? WHERE id=?", (recipient["id"], ug_id))
+    conn.commit()
+    conn.close()
+    return nc(
+        jsonify(
+            {
+                "success": True,
+                "message": f"Подарок передан пользователю @{username}",
             }
         )
     )
@@ -741,12 +837,6 @@ def market_list():
     if c.fetchone():
         conn.close()
         return nc(jsonify({"success": False, "message": "Уже на продаже"}))
-    c.execute(
-        "SELECT * FROM auctions WHERE user_gift_id=? AND status='active'", (ug_id,)
-    )
-    if c.fetchone():
-        conn.close()
-        return nc(jsonify({"success": False, "message": "Подарок на аукционе"}))
     c.execute(
         "INSERT INTO marketplace(user_gift_id,seller_id,price) VALUES(?,?,?)",
         (ug_id, uid, price),
