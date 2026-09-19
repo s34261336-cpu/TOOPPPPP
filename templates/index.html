@@ -17,7 +17,7 @@ body{min-height:100vh;background:#060410;font-family:-apple-system,BlinkMacSyste
 .gc{background:rgba(0,0,0,.38);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border:1px solid rgba(255,255,255,.07);border-radius:14px;}
 .page{display:none;position:relative;z-index:1;min-height:100vh;padding:14px;}
 .page.active{display:flex;flex-direction:column;align-items:center;justify-content:center;}
-.page.ptop{justify-content:flex-start;}
+.page.ptop{justify-content:flex-start;padding-bottom:calc(112px + env(safe-area-inset-bottom));}
 
 /* LOGIN */
 .lc{width:100%;max-width:360px;padding:36px 28px;text-align:center;}
@@ -50,9 +50,86 @@ select.fi option{background:#0d0b1e;}
 .logoutbtn{display:flex;align-items:center;gap:5px;padding:7px 12px;background:rgba(0,0,0,.4);border:1px solid rgba(255,255,255,.1);border-radius:11px;color:rgba(226,232,240,.6);font-size:12px;cursor:pointer;transition:all .3s;font-weight:500;}
 .logoutbtn:hover{background:rgba(185,28,28,.2);border-color:rgba(185,28,28,.3);color:#f87171;}
 .ttitle{font-size:16px;font-weight:700;background:linear-gradient(135deg,#e2e8f0,#a78bfa);-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
-.nav-tabs{display:flex;gap:4px;width:100%;max-width:680px;margin-bottom:12px;padding:4px;background:rgba(0,0,0,.35);border:1px solid rgba(255,255,255,.07);border-radius:14px;}
-.ntab{flex:1;padding:8px 4px;border:none;border-radius:10px;background:transparent;color:rgba(226,232,240,.4);font-size:11px;font-weight:600;cursor:pointer;transition:all .3s;}
-.ntab.active{background:linear-gradient(135deg,#6d28d9,#0e7490);color:#fff;box-shadow:0 3px 12px rgba(109,40,217,.3);}
+.nav-tabs{
+  position:fixed;
+  left:50%;
+  bottom:calc(12px + env(safe-area-inset-bottom));
+  z-index:80;
+  display:flex;
+  gap:2px;
+  width:calc(100% - 20px);
+  max-width:680px;
+  height:82px;
+  margin:0;
+  padding:7px;
+  transform:translateX(-50%);
+  overflow:hidden;
+  background:rgba(31,33,39,.74);
+  border:1px solid rgba(255,255,255,.13);
+  border-radius:42px;
+  box-shadow:0 18px 45px rgba(0,0,0,.42),inset 0 1px 0 rgba(255,255,255,.1);
+  backdrop-filter:blur(28px) saturate(145%);
+  -webkit-backdrop-filter:blur(28px) saturate(145%);
+}
+.nav-tabs::before{
+  content:'';
+  position:absolute;
+  inset:0;
+  background:linear-gradient(180deg,rgba(255,255,255,.08),transparent 42%);
+  pointer-events:none;
+}
+.nav-pill-indicator{
+  position:absolute;
+  top:7px;
+  left:0;
+  width:58px;
+  height:58px;
+  border-radius:50%;
+  background:linear-gradient(145deg,#35aaf3,#1688dc);
+  box-shadow:0 8px 22px rgba(30,150,235,.38),inset 0 1px 0 rgba(255,255,255,.28);
+  pointer-events:none;
+  transition:left .45s cubic-bezier(.22,1,.36,1);
+  will-change:left;
+}
+.ntab{
+  position:relative;
+  z-index:1;
+  flex:1;
+  min-width:0;
+  height:68px;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:flex-end;
+  gap:2px;
+  padding:0 2px 2px;
+  border:none;
+  border-radius:34px;
+  background:transparent;
+  color:rgba(255,255,255,.68);
+  font-size:11px;
+  font-weight:600;
+  cursor:pointer;
+  transition:color .3s ease,transform .3s ease;
+}
+.ntab-icon{
+  position:relative;
+  z-index:2;
+  width:42px;
+  height:42px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:24px;
+  line-height:1;
+  filter:grayscale(1) brightness(1.65);
+  opacity:.82;
+  transition:filter .35s ease,opacity .35s ease,transform .35s ease;
+}
+.ntab-label{position:relative;z-index:2;white-space:nowrap;line-height:14px;}
+.ntab.active{color:#fff;transform:translateY(-1px);}
+.ntab.active .ntab-icon{filter:none;opacity:1;transform:scale(1.04);}
+.ntab:active{transform:translateY(1px) scale(.98);}
 
 /* PROFILE HERO */
 .pc{width:100%;max-width:680px;}
@@ -761,10 +838,19 @@ body{
     <div style="width:68px;"></div>
   </div>
   <div class="nav-tabs">
-    <button class="ntab active" onclick="uTab('profile',this)">👤 Профиль</button>
-    <button class="ntab" onclick="uTab('shop',this)">🛒 Магазин</button>
-    <button class="ntab" onclick="uTab('market',this)">💱 Маркет</button>
-    <button class="ntab" onclick="uTab('auction',this)">🔨 Аукцион</button>
+    <span class="nav-pill-indicator" aria-hidden="true"></span>
+    <button class="ntab active" onclick="uTab('profile',this)">
+      <span class="ntab-icon">👤</span><span class="ntab-label">Профиль</span>
+    </button>
+    <button class="ntab" onclick="uTab('shop',this)">
+      <span class="ntab-icon">🛒</span><span class="ntab-label">Магазин</span>
+    </button>
+    <button class="ntab" onclick="uTab('market',this)">
+      <span class="ntab-icon">💱</span><span class="ntab-label">Маркет</span>
+    </button>
+    <button class="ntab" onclick="uTab('auction',this)">
+      <span class="ntab-icon">🔨</span><span class="ntab-label">Аукцион</span>
+    </button>
   </div>
   <div class="pc">
     <!-- PROFILE -->
@@ -1109,7 +1195,26 @@ function getLevel(spent){
 function fmtNum(n){return n>=1000000?(n/1000000).toFixed(1)+'M':n>=1000?(n/1000).toFixed(1)+'K':n.toString();}
 
 /* ─ UTILS ─ */
-function showPage(p){document.querySelectorAll('.page').forEach(x=>x.classList.remove('active'));$(p).classList.add('active');window.scrollTo(0,0);}
+function moveNavIndicator(btn,instant){
+  const nav=document.querySelector('.nav-tabs'),indicator=document.querySelector('.nav-pill-indicator');
+  if(!nav||!indicator||!btn)return;
+  const size=58;
+  const left=btn.offsetLeft+(btn.offsetWidth-size)/2;
+  if(instant){
+    indicator.style.transition='none';
+    indicator.style.left=`${left}px`;
+    requestAnimationFrame(()=>{indicator.style.transition='';});
+  }else{
+    indicator.style.left=`${left}px`;
+  }
+}
+function showPage(p){
+  document.querySelectorAll('.page').forEach(x=>x.classList.remove('active'));
+  $(p).classList.add('active');
+  window.scrollTo(0,0);
+  if(p==='pg-user')requestAnimationFrame(()=>moveNavIndicator(document.querySelector('.ntab.active'),true));
+}
+window.addEventListener('resize',()=>moveNavIndicator(document.querySelector('.ntab.active'),true));
 function toast(msg,col){const t=$('toast');t.textContent=msg;t.style.background=col||'linear-gradient(135deg,#047857,#065f46)';t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2800);}
 function esc(s){return String(s).replace(/'/g,"\\'");}
 function rIcon(r){return{Legendary:'🌟',Mythic:'🔮',Epic:'💜',Common:'⬜'}[r]||'🎁';}
@@ -1140,6 +1245,7 @@ function uTab(nm,el){
   document.querySelectorAll('.ntab').forEach(b=>b.classList.remove('active'));
   document.querySelectorAll('#pg-user .atc').forEach(c=>c.classList.remove('active'));
   el.classList.add('active');$('ut-'+nm).classList.add('active');
+  moveNavIndicator(el,false);
   $('u-title').textContent={profile:'Профиль',shop:'Магазин',market:'Маркет',auction:'Аукцион'}[nm];
   if(nm==='shop')loadShop();
   if(nm==='market')loadMarket();
