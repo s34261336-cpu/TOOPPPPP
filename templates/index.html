@@ -602,6 +602,137 @@ select.fi option{background:#17212b;}
   #ut-shop .scard-body{padding:7px 4px 8px;}
   #ut-shop .scard-price{min-width:50px;min-height:25px;padding:4px 7px;font-size:11px;}
 }
+
+/* ═══ DEEP BLACK / BLUE LIQUID GLASS PALETTE ═══ */
+:root{
+  --tg-bg:#000;
+  --tg-bg-deep:#030405;
+  --tg-panel:rgba(30,30,33,.64);
+  --tg-panel-strong:rgba(22,22,25,.84);
+  --tg-blue:#2498e8;
+  --tg-blue-deep:#1678c8;
+  --tg-cyan:#62b8ff;
+  --tg-text:#f4f4f5;
+  --tg-muted:#8d8e94;
+  --tg-border:rgba(255,255,255,.12);
+  --tg-glow:rgba(36,152,232,.32);
+}
+body{
+  background:
+    radial-gradient(circle at 50% -12%,rgba(31,106,190,.16),transparent 30%),
+    radial-gradient(circle at 100% 100%,rgba(21,86,145,.1),transparent 32%),
+    #000;
+}
+.bg-orbs{opacity:.34;}
+.orb{opacity:.1;filter:blur(145px);}
+.orb1,.orb2,.orb3{background:#087ddd;}
+.gl,.gc{
+  background:
+    linear-gradient(145deg,rgba(52,54,60,.6),rgba(14,15,18,.68));
+  border-color:rgba(255,255,255,.14);
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.12),
+    inset 0 -1px 0 rgba(0,0,0,.28),
+    0 14px 42px rgba(0,0,0,.34);
+  backdrop-filter:blur(26px) saturate(125%);
+  -webkit-backdrop-filter:blur(26px) saturate(125%);
+}
+.gc{background:rgba(25,26,29,.66);}
+.nav-tabs,.atabs{
+  background:rgba(27,28,31,.58);
+  backdrop-filter:blur(22px) saturate(125%);
+  -webkit-backdrop-filter:blur(22px) saturate(125%);
+}
+.scard,.icard,.mcard,.acard{
+  background:
+    linear-gradient(145deg,rgba(42,43,47,.68),rgba(16,17,20,.72));
+  border-color:rgba(255,255,255,.1);
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.1),
+    0 8px 24px rgba(0,0,0,.36);
+  backdrop-filter:blur(20px) saturate(120%);
+  -webkit-backdrop-filter:blur(20px) saturate(120%);
+}
+.card-body,.scard-body,.mcard-body,.acard-body{
+  background:rgba(15,16,19,.26);
+}
+.modal-bg{
+  background:rgba(0,0,0,.66);
+  backdrop-filter:blur(10px);
+  -webkit-backdrop-filter:blur(10px);
+}
+.modal{
+  background:linear-gradient(145deg,rgba(53,55,61,.82),rgba(13,14,18,.9));
+  backdrop-filter:blur(30px) saturate(135%);
+  -webkit-backdrop-filter:blur(30px) saturate(135%);
+}
+.shop-detail-bg{
+  background:rgba(0,0,0,.58);
+  backdrop-filter:blur(16px) saturate(115%);
+  -webkit-backdrop-filter:blur(16px) saturate(115%);
+  transition:opacity .42s ease;
+}
+.shop-detail-bg.show .shop-detail{
+  transition:
+    transform .62s cubic-bezier(.16,1,.3,1),
+    opacity .48s ease;
+}
+.shop-detail-bg:not(.show) .shop-detail{
+  transition:
+    transform .42s cubic-bezier(.4,0,1,1),
+    opacity .3s ease;
+}
+.shop-detail{
+  height:min(640px,calc(100vh - 128px));
+  background:
+    linear-gradient(145deg,rgba(61,63,70,.76),rgba(12,13,17,.88));
+  border:1px solid rgba(255,255,255,.16);
+  border-bottom:0;
+  box-shadow:
+    0 -18px 70px rgba(0,0,0,.5),
+    inset 0 1px 0 rgba(255,255,255,.14);
+  backdrop-filter:blur(34px) saturate(140%);
+  -webkit-backdrop-filter:blur(34px) saturate(140%);
+}
+.shop-detail-header,.shop-detail-footer{
+  background:rgba(28,29,33,.54);
+  backdrop-filter:blur(24px) saturate(135%);
+  -webkit-backdrop-filter:blur(24px) saturate(135%);
+}
+.shop-detail-content{
+  background:
+    radial-gradient(circle at 50% 24%,rgba(39,149,235,.13),transparent 39%),
+    rgba(6,7,10,.42);
+}
+.shop-detail-section-title{
+  background:rgba(35,36,40,.48);
+}
+.shop-detail-stage{
+  background:
+    radial-gradient(circle at 50% 38%,rgba(82,119,174,.22),transparent 45%),
+    rgba(20,22,29,.32);
+}
+.shop-detail-art{
+  background:rgba(106,125,168,.18);
+  border:1px solid rgba(255,255,255,.1);
+  box-shadow:
+    0 18px 45px rgba(0,0,0,.32),
+    inset 0 1px 0 rgba(255,255,255,.16);
+}
+.shop-detail-bubble{
+  background:rgba(62,75,101,.62);
+  border:1px solid rgba(255,255,255,.1);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.1);
+  backdrop-filter:blur(18px);
+  -webkit-backdrop-filter:blur(18px);
+}
+.shop-detail-buy{
+  background:linear-gradient(180deg,#2c9eea,#1682d0);
+  box-shadow:0 6px 24px rgba(36,152,232,.3);
+}
+@media(min-width:481px){
+  .shop-detail{height:min(640px,calc(100vh - 92px));}
+}
 </style>
 </head>
 <body>
