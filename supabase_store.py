@@ -149,6 +149,9 @@ class SupabaseConnection:
         self._local_db_path = local_db_path
         self._conn = sqlite3.connect(":memory:", timeout=30)
         self._conn.row_factory = sqlite3.Row
+        self._synced_snapshot: dict[str, list[dict[str, Any]]] = {
+            table: [] for table in TABLES
+        }
         self._create_local_schema()
         self._hydrate()
 
@@ -195,6 +198,7 @@ class SupabaseConnection:
         if any(remote.values()):
             self._insert_rows(remote)
             self._conn.commit()
+            self._synced_snapshot = self._snapshot()
             return
 
         # First run: preserve the existing SQLite catalog and balances, then
@@ -250,8 +254,17 @@ class SupabaseConnection:
 
     def commit(self) -> None:
         self._conn.commit()
+        snapshot = self._snapshot()
+        changed_tables = {
+            table
+            for table in TABLES
+            if snapshot[table] != self._synced_snapshot[table]
+        }
+        if not changed_tables:
+            return
         with _sync_lock:
-            self._publish()
+            self._publish(snapshot, changed_tables)
+        self._synced_snapshot = snapshot
 
     def rollback(self) -> None:
         self._conn.rollback()
@@ -264,13 +277,18 @@ class SupabaseConnection:
         for table in TABLES:
             snapshot[table] = [
                 dict(row)
-                for row in self._conn.execute(f'SELECT * FROM "{table}"').fetchall()
+                for row in self._conn.execute(
+                    f'SELECT * FROM "{table}" ORDER BY id'
+                ).fetchall()
             ]
         return snapshot
 
-    def _publish(self) -> None:
-        snapshot = self._snapshot()
+    def _publish(
+        self, snapshot: dict[str, list[dict[str, Any]]], changed_tables: set[str]
+    ) -> None:
         for table in TABLES:
+            if table not in changed_tables:
+                continue
             rows = snapshot[table]
             for start in range(0, len(rows), 500):
                 chunk = rows[start : start + 500]
@@ -294,6 +312,8 @@ class SupabaseConnection:
         # Upsert first, then remove rows deleted locally.  This avoids leaving
         # the remote table empty if a later request fails halfway through.
         for table in DELETE_ORDER:
+            if table not in changed_tables:
+                continue
             ids = [str(row["id"]) for row in snapshot[table]]
             filter_value = (
                 f"not.in.({','.join(ids)})" if ids else "not.is.null"

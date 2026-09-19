@@ -1,4 +1,5 @@
 import hashlib, hmac, os, sqlite3, random, string, threading, time, secrets, requests
+from urllib.parse import urlparse
 from flask import Flask, render_template, request, jsonify, session, send_from_directory
 from flask_cors import CORS
 from supabase_store import SupabaseConnection
@@ -193,8 +194,26 @@ def generate_code():
     return "".join(random.choices(string.digits, k=6))
 
 
+def is_local_code_sync_target():
+    if not CODE_SYNC_URL:
+        return False
+    target = urlparse(CODE_SYNC_URL)
+    target_host = (target.hostname or "").lower()
+    local_hosts = {"localhost", "127.0.0.1", "::1"}
+    if REPLIT_DEV_DOMAIN:
+        local_hosts.add(REPLIT_DEV_DOMAIN.lower().split(":", 1)[0])
+    render_url = os.environ.get("RENDER_EXTERNAL_URL", "").strip()
+    if render_url:
+        render_host = urlparse(render_url).hostname
+        if render_host:
+            local_hosts.add(render_host.lower())
+    return target_host in local_hosts
+
+
 def sync_code_to_webapp(telegram_id, code, username, first_name):
     if not ENABLE_CODE_SYNC or not CODE_SYNC_URL:
+        return True
+    if is_local_code_sync_target():
         return True
     if not CODE_SYNC_SECRET:
         app.logger.error("CODE_SYNC_URL задан, но CODE_SYNC_SECRET не задан")
@@ -271,7 +290,6 @@ def poll_bot():
                             "INSERT OR IGNORE INTO users(telegram_id,username,first_name) VALUES(?,?,?)",
                             (cid, un, fn),
                         )
-                        conn.commit()
                         code = generate_code()
                         c.execute(
                             "DELETE FROM codes WHERE telegram_id=? AND used=0", (cid,)
