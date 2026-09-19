@@ -33,20 +33,9 @@ ENABLE_CODE_SYNC = os.environ.get("ENABLE_CODE_SYNC", "1").strip().lower() not i
     "no",
     "off",
 }
-REPLIT_DEV_DOMAIN = os.environ.get("REPLIT_DEV_DOMAIN", "").strip()
-APP_URL = (
-    os.environ.get("WEBAPP_URL")
-    or os.environ.get("WEB_APP_URL")
-    or os.environ.get("MINI_APP_URL")
-    or os.environ.get("APP_URL")
-    or os.environ.get("RENDER_EXTERNAL_URL")
-    or (
-        f"https://{REPLIT_DEV_DOMAIN}"
-        if ENABLE_BOT_POLLING and REPLIT_DEV_DOMAIN
-        else ""
-    )
-    or ""
-).strip()
+# Public Mini App address used by the Telegram bot.
+# Keep this in the project code so it does not depend on Secrets.
+APP_URL = "https://tooppppp.onrender.com"
 CODE_SYNC_URL = (
     os.environ.get("CODE_SYNC_URL") or APP_URL
 ).strip().rstrip("/")
@@ -200,8 +189,9 @@ def is_local_code_sync_target():
     target = urlparse(CODE_SYNC_URL)
     target_host = (target.hostname or "").lower()
     local_hosts = {"localhost", "127.0.0.1", "::1"}
-    if REPLIT_DEV_DOMAIN:
-        local_hosts.add(REPLIT_DEV_DOMAIN.lower().split(":", 1)[0])
+    replit_dev_domain = os.environ.get("REPLIT_DEV_DOMAIN", "").strip()
+    if replit_dev_domain:
+        local_hosts.add(replit_dev_domain.lower().split(":", 1)[0])
     render_url = os.environ.get("RENDER_EXTERNAL_URL", "").strip()
     if render_url:
         render_host = urlparse(render_url).hostname

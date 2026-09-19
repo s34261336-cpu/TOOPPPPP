@@ -31,7 +31,6 @@ Supabase является постоянным хранилищем прилож
 | Переменная | Обязательно | Назначение |
 | --- | --- | --- |
 | `BOT_TOKEN` | да | Токен из BotFather |
-| `MINI_APP_URL` | да для кнопки Mini App | Публичный HTTPS-адрес этого приложения |
 | `BOT_USERNAME` | нет | Username бота без символа `@`, для ссылки в интерфейсе |
 | `ADMIN_CODE` | для админ-панели | Код входа администратора |
 | `SESSION_SECRET` | рекомендуется | Секрет Flask-сессии |
@@ -39,16 +38,13 @@ Supabase является постоянным хранилищем прилож
 | `SUPABASE_KEY` | да | Серверный ключ Supabase из Secrets |
 | `DB_PATH` | нет | Локальная база для первоначального переноса |
 
-`WEBAPP_URL`, `WEB_APP_URL`, `MINI_APP_URL`, `APP_URL` и
-`RENDER_EXTERNAL_URL` поддерживаются как варианты публичного адреса Mini App.
-Если бот включён, эти адреса имеют приоритет над `REPLIT_DEV_DOMAIN`, поэтому
-кнопка Telegram не будет случайно вести на временный Preview-адрес Replit.
+Адрес Mini App для кнопки Telegram задан в `app.py` константой `APP_URL`.
+Он не берётся из Secrets и не меняется из-за временного Preview-адреса Replit.
 
 Приложение слушает порт из BotHost (или `5000`, если переменная `PORT` не
 передана). Для Mini App Telegram требует публичный HTTPS-адрес. Если BotHost
 не выдаёт веб-адрес для Python-процесса, оставьте бот на BotHost, а папку с
-Mini App разместите на любом HTTPS-хостинге и укажите его адрес в
-`MINI_APP_URL`.
+Mini App разместите на любом HTTPS-хостинге и обновите `APP_URL` в `app.py`.
 
 ## Локальный запуск
 
@@ -57,7 +53,6 @@ python3 -m venv .venv
 . .venv/bin/activate
 pip install -r requirements.txt
 export BOT_TOKEN="токен_бота"
-export MINI_APP_URL="https://ваш-домен.example"
 export ADMIN_CODE="ваш-код"
 python app.py
 ```
@@ -72,8 +67,8 @@ polling не включается.
 синхронизацию кодов:
 
 1. На Render добавьте `CODE_SYNC_SECRET`.
-2. На BotHost добавьте такой же `CODE_SYNC_SECRET`, а `WEBAPP_URL` укажите
-   точным адресом Render без завершающего `/`.
+2. На BotHost добавьте такой же `CODE_SYNC_SECRET`. Ссылка Mini App уже задана
+   в `app.py` и одинакова для обоих процессов.
 3. На BotHost запускайте этот `app.py` с `BOT_TOKEN` и `ADMIN_CODE`.
 4. На Render оставьте `BOT_TOKEN` пустым, чтобы два сервера не конкурировали
    за Telegram polling.
@@ -87,9 +82,8 @@ polling не включается.
 
 В текущей конфигурации Replit polling включён для тестирования. Перед запуском
 остановите бота на BotHost: Telegram разрешает получать обновления только
-одному процессу с одним `BOT_TOKEN`. В Replit кнопка Mini App использует
-текущий Replit-домен, а синхронизация в Render отключена, поэтому код можно
-проверять прямо в предпросмотре Replit.
+одному процессу с одним `BOT_TOKEN`. Кнопка Mini App использует публичный адрес,
+заданный в `app.py`.
 
 ## Render Free
 
@@ -100,8 +94,8 @@ polling не включается.
 3. Заполните `BOT_TOKEN`, `ADMIN_CODE` и `BOT_USERNAME`.
 4. `SESSION_SECRET` Render создаст автоматически.
 5. После первого запуска Render выдаст адрес вида
-   `https://имя-сервиса.onrender.com`. Если `MINI_APP_URL` не задан, приложение
-   само использует `RENDER_EXTERNAL_URL` и отправит этот адрес кнопкой Mini App.
+   `https://имя-сервиса.onrender.com`. Если адрес изменится, обновите константу
+   `APP_URL` в `app.py` и перезапустите приложение.
 6. В BotFather укажите домен Render в настройках Telegram Mini App, если
    Telegram попросит подтвердить домен.
 
