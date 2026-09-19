@@ -141,7 +141,12 @@ def init_db():
     c.execute("""CREATE TABLE IF NOT EXISTS user_gifts(
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         user_id INTEGER, gift_id INTEGER,
+        worn INTEGER DEFAULT 0,
         obtained_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP)""")
+    try:
+        c.execute("ALTER TABLE user_gifts ADD COLUMN worn INTEGER DEFAULT 0")
+    except:
+        pass
     c.execute("""CREATE TABLE IF NOT EXISTS gift_upgrades(
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         gift_id INTEGER NOT NULL, name TEXT NOT NULL,
@@ -530,7 +535,8 @@ def profile():
                gu.id as upg_id,
                g.price, ugu.rarity, ugu.rarity_color, ugu.number, ugu.photo_filename,
                ugu.model_name, ugu.bg_id,
-               ml.id as market_id, ml.price as market_price
+               ml.id as market_id, ml.price as market_price,
+               ug.worn
         FROM user_gifts ug
         INNER JOIN gifts g ON g.id=ug.gift_id
         LEFT JOIN gift_upgrades gu ON gu.gift_id=g.id
@@ -557,6 +563,7 @@ def profile():
                 "on_market": r["market_id"] is not None,
                 "market_id": r["market_id"],
                 "market_price": r["market_price"],
+                "worn": bool(r["worn"]),
             }
         if r["upg_id"]:
             gifts_map[key]["has_upgrade"] = True
@@ -582,6 +589,50 @@ def profile():
             }
         )
     )
+
+
+@app.route("/api/gift/wear", methods=["POST"])
+def wear_gift():
+    uid = session.get("user_id")
+    if not uid:
+        return nc(jsonify({"error": "Не авторизован"})), 401
+    data = request.get_json(silent=True) or {}
+    try:
+        ug_id = int(data.get("user_gift_id"))
+    except (TypeError, ValueError):
+        return nc(jsonify({"success": False, "message": "Подарок не найден"})), 400
+    want_worn = bool(data.get("worn", True))
+
+    conn = get_db()
+    c = conn.cursor()
+    c.execute(
+        """SELECT ug.id, ugu.id AS upgrade_id, ml.id AS market_id
+           FROM user_gifts ug
+           LEFT JOIN user_gift_upgrades ugu ON ugu.user_gift_id=ug.id
+           LEFT JOIN marketplace ml ON ml.user_gift_id=ug.id AND ml.status='active'
+           WHERE ug.id=? AND ug.user_id=?""",
+        (ug_id, uid),
+    )
+    gift = c.fetchone()
+    if not gift:
+        conn.close()
+        return nc(jsonify({"success": False, "message": "Подарок не найден"})), 404
+    if not gift["upgrade_id"]:
+        conn.close()
+        return nc(jsonify({"success": False, "message": "Носить можно только улучшенный подарок"}))
+    if gift["market_id"] and want_worn:
+        conn.close()
+        return nc(jsonify({"success": False, "message": "Снимите подарок с продажи"}))
+
+    if want_worn:
+        c.execute("UPDATE user_gifts SET worn=0 WHERE user_id=?", (uid,))
+    c.execute(
+        "UPDATE user_gifts SET worn=? WHERE id=? AND user_id=?",
+        (1 if want_worn else 0, ug_id, uid),
+    )
+    conn.commit()
+    conn.close()
+    return nc(jsonify({"success": True, "worn": want_worn}))
 
 
 @app.route("/api/buy_premium", methods=["POST"])

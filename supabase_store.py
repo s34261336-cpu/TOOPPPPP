@@ -67,6 +67,7 @@ LOCAL_SCHEMA = {
         CREATE TABLE IF NOT EXISTS user_gifts(
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             user_id INTEGER, gift_id INTEGER,
+            worn INTEGER DEFAULT 0,
             obtained_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
         )
     """,

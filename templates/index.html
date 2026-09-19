@@ -162,6 +162,54 @@ select.fi option{background:#0d0b1e;}
 .bdrow{display:flex;align-items:center;justify-content:center;gap:8px;flex-wrap:wrap;margin-bottom:8px;}
 .sbadge{display:inline-flex;align-items:center;gap:6px;padding:8px 16px;background:rgba(217,119,6,.12);border:1px solid rgba(217,119,6,.25);border-radius:18px;font-size:14px;font-weight:600;color:#fbbf24;}
 .prembadge{display:inline-flex;align-items:center;gap:4px;padding:6px 12px;background:rgba(217,119,6,.15);border:1px solid rgba(217,119,6,.3);border-radius:18px;font-size:12px;font-weight:700;color:#fbbf24;}
+.equipped-gift-badge{
+  position:relative;
+  display:inline-flex;
+  align-items:center;
+  gap:5px;
+  max-width:210px;
+  min-height:30px;
+  padding:3px 9px 3px 4px;
+  overflow:hidden;
+  border:1px solid color-mix(in srgb,var(--gift-accent,#60a5fa) 48%,rgba(255,255,255,.2));
+  border-radius:18px;
+  color:#f8fbff;
+  background:
+    linear-gradient(135deg,color-mix(in srgb,var(--gift-accent,#60a5fa) 33%,transparent),rgba(20,24,31,.82));
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.24),0 5px 18px color-mix(in srgb,var(--gift-accent,#60a5fa) 24%,transparent);
+  backdrop-filter:blur(18px) saturate(145%);
+  -webkit-backdrop-filter:blur(18px) saturate(145%);
+  font-size:10px;
+  font-weight:700;
+  white-space:nowrap;
+}
+.equipped-gift-badge::after{
+  content:'';
+  position:absolute;
+  inset:0;
+  background:linear-gradient(115deg,transparent 24%,rgba(255,255,255,.2) 48%,transparent 66%);
+  transform:translateX(-120%);
+  animation:equippedShine 4.8s ease-in-out infinite;
+  pointer-events:none;
+}
+@keyframes equippedShine{55%,100%{transform:translateX(120%);}}
+.equipped-gift-mini{
+  position:relative;
+  z-index:1;
+  width:23px;
+  height:23px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  overflow:hidden;
+  border-radius:8px;
+  background:var(--gift-bg,rgba(255,255,255,.12));
+  border:1px solid rgba(255,255,255,.22);
+}
+.equipped-gift-mini-media{width:100%;height:100%;object-fit:cover;display:block;position:relative;z-index:2;}
+.equipped-gift-mini .equipped-pattern{position:absolute;inset:-20%;opacity:.5;z-index:1;pointer-events:none;}
+.equipped-gift-copy{position:relative;z-index:1;overflow:hidden;text-overflow:ellipsis;}
+.equipped-gift-copy small{display:block;margin-top:1px;color:rgba(255,255,255,.58);font-size:8px;font-weight:600;}
 .lvlbadge{display:inline-flex;align-items:center;gap:4px;padding:5px 11px;border-radius:18px;font-size:12px;font-weight:700;border:1px solid;cursor:pointer;}
 .tap-hint{font-size:11px;color:rgba(226,232,240,.25);margin-top:4px;}
 
@@ -237,6 +285,7 @@ select.fi option{background:#0d0b1e;}
 .card-ph{width:100%;height:100%;display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,rgba(109,40,217,.12),rgba(14,116,144,.08));font-size:48px;}
 .badge-corner{position:absolute;top:7px;left:7px;padding:3px 8px;border-radius:20px;font-size:10px;font-weight:700;backdrop-filter:blur(8px);z-index:2;}
 .badge-selling{background:rgba(5,150,105,.85);color:#6ee7b7;border:1px solid rgba(16,185,129,.4);}
+.badge-equipped{top:34px;background:color-mix(in srgb,var(--gift-accent,#60a5fa) 58%,rgba(8,12,18,.8));color:#fff;border:1px solid color-mix(in srgb,var(--gift-accent,#60a5fa) 66%,rgba(255,255,255,.25));}
 .badge-auc{background:rgba(180,83,9,.9);color:#fcd34d;border:1px solid rgba(217,119,6,.5);font-style:italic;}
 .card-body{padding:9px 9px;}
 .card-name{font-size:12px;font-weight:600;margin-bottom:5px;color:#e2e8f0;}
@@ -826,6 +875,51 @@ select.fi option{background:#17212b;}
   box-shadow:none;
   cursor:not-allowed;
 }
+.shop-detail-tertiary{display:none;}
+.profile-gift-meta{
+  display:grid;
+  width:calc(100% - 42px);
+  margin:8px auto 0;
+  overflow:hidden;
+  border:1px solid rgba(255,255,255,.11);
+  border-radius:14px;
+  background:rgba(6,10,16,.36);
+  text-align:left;
+}
+.profile-gift-meta-row{
+  display:flex;
+  justify-content:space-between;
+  gap:14px;
+  padding:6px 10px;
+  border-bottom:1px solid rgba(255,255,255,.08);
+  font-size:11px;
+}
+.profile-gift-meta-row:last-child{border-bottom:0;}
+.profile-gift-meta-row span:first-child{color:rgba(255,255,255,.48);}
+.profile-gift-meta-row span:last-child{color:#f3f7fb;text-align:right;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.profile-gift-actions{display:none;grid-template-columns:repeat(3,minmax(0,1fr));gap:7px;}
+.profile-gift-actions .btn{min-height:44px;padding:7px 4px;border-radius:16px;font-size:11px;line-height:1.1;}
+.profile-gift-actions .gift-action-icon{display:block;margin-bottom:3px;font-size:17px;}
+.profile-gift-actions #profile-gift-wear{
+  background:linear-gradient(180deg,color-mix(in srgb,var(--gift-accent,#2aabee) 82%,#fff 4%),color-mix(in srgb,var(--gift-accent,#2aabee) 76%,#07131c 24%));
+  border:1px solid color-mix(in srgb,var(--gift-accent,#2aabee) 68%,rgba(255,255,255,.3));
+  box-shadow:0 6px 22px color-mix(in srgb,var(--gift-accent,#2aabee) 28%,transparent),inset 0 1px 0 rgba(255,255,255,.24);
+}
+.profile-gift-actions .bsec{background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.14);color:#f2f5f8;}
+.shop-detail.profile-gift-detail .shop-detail-content{
+  background:
+    radial-gradient(circle at 50% 25%,color-mix(in srgb,var(--gift-accent,#5b8f70) 36%,transparent),transparent 48%),
+    rgba(6,7,10,.42);
+}
+.shop-detail.profile-gift-detail .shop-detail-stage{
+  background:
+    linear-gradient(180deg,color-mix(in srgb,var(--gift-accent,#5b8f70) 28%,transparent),transparent 65%),
+    rgba(20,22,29,.32);
+}
+.shop-detail.profile-gift-detail .shop-detail-art{
+  border-color:color-mix(in srgb,var(--gift-accent,#5b8f70) 62%,rgba(255,255,255,.25));
+  box-shadow:0 18px 45px color-mix(in srgb,var(--gift-accent,#5b8f70) 27%,rgba(0,0,0,.55)),inset 0 1px 0 rgba(255,255,255,.2);
+}
 @media(min-width:481px){
   .shop-detail{height:min(720px,calc(100vh - 48px));border:1px solid rgba(255,255,255,.13);border-bottom:0;border-radius:22px 22px 0 0;}
 }
@@ -999,6 +1093,8 @@ body{
   .shop-detail-note{margin-top:4px;font-size:11px;}
   .shop-detail-footer{padding:6px 10px 8px;}
   .shop-detail-buy{min-height:44px;font-size:14px;}
+  .profile-gift-meta-row{padding:5px 8px;font-size:10px;}
+  .profile-gift-actions .btn{min-height:40px;font-size:10px;}
 }
 @media(min-width:481px){
   .shop-detail{height:min(640px,calc(100vh - 92px));}
@@ -1230,6 +1326,7 @@ body{
           <div class="sbadge">⭐ <span id="u-stars">0</span></div>
           <div class="prembadge" id="u-premb" style="display:none;">👑 PREMIUM</div>
           <div class="lvlbadge" id="u-lvlb" style="display:none;"></div>
+          <div class="equipped-gift-badge" id="u-equipped-gift" style="display:none;"></div>
         </div>
         <div class="tap-hint">Нажми для просмотра аккаунта</div>
       </div>
@@ -1415,11 +1512,18 @@ body{
         <div class="shop-detail-name" id="shop-detail-name"></div>
         <div class="shop-detail-price" id="shop-detail-price"></div>
         <div class="shop-detail-bubble" id="shop-detail-bubble">Вы можете купить этот подарок для себя.</div>
+        <div class="profile-gift-meta" id="profile-gift-meta" style="display:none;"></div>
         <div class="shop-detail-note" id="shop-detail-note">Подарок будет сохранён в вашем профиле.</div>
       </div>
     </div>
     <div class="shop-detail-footer">
+      <div class="profile-gift-actions" id="profile-gift-actions">
+        <button class="btn bsec" id="profile-gift-transfer" type="button"></button>
+        <button class="btn shop-detail-buy" id="profile-gift-wear" type="button"></button>
+        <button class="btn bsec" id="profile-gift-sell" type="button"></button>
+      </div>
       <button class="btn bsec shop-detail-secondary" id="shop-detail-secondary" style="display:none;"></button>
+      <button class="btn bsec shop-detail-tertiary" id="shop-detail-tertiary" style="display:none;"></button>
       <button class="btn shop-detail-buy" id="shop-detail-buy" onclick="confirmShopGift()"></button>
     </div>
   </div>
@@ -1757,7 +1861,33 @@ async function loadProfile(){
   const lb=$('u-lvlb');
   lb.style.display='inline-flex';lb.textContent=`${lvl.icon} Ур. ${lvl.level}`;
   lb.style.background=lvl.color+'22';lb.style.borderColor=lvl.color+'55';lb.style.color=lvl.color;
-  allGifts=u.gifts||[];renderInv(allGifts);
+  allGifts=u.gifts||[];
+  renderEquippedGift(allGifts.find(g=>g.worn&&g.upgrade_result));
+  renderInv(allGifts);
+}
+
+function renderEquippedGift(gift){
+  const badge=$('u-equipped-gift');
+  if(!badge)return;
+  if(!gift?.upgrade_result){
+    badge.style.display='none';
+    badge.innerHTML='';
+    return;
+  }
+  const r=gift.upgrade_result;
+  const accent=r.rarity_color||'#60a5fa';
+  const bg=SLOT_BGS[Number(r.bg_id||0)%SLOT_BGS.length];
+  const pattern=patternUrl(resultPatternId(r));
+  badge.style.display='inline-flex';
+  badge.style.setProperty('--gift-accent',accent);
+  badge.style.setProperty('--gift-bg',bg.css);
+  badge.innerHTML=`
+    <span class="equipped-gift-mini">
+      ${pattern?`<span class="equipped-pattern upg-card-pattern" data-pattern-id="${resultPatternId(r)}" aria-hidden="true"></span>`:''}
+      ${r.photo?mediaMarkup(r.photo,'equipped-gift-mini-media',gift.name):'<span style="position:relative;z-index:2;font-size:14px;">🎁</span>'}
+    </span>
+    <span class="equipped-gift-copy">${escHtml(gift.name)}<small>${rIcon(r.rarity)} ${escHtml(r.model||r.rarity||'Коллекционный')}</small></span>`;
+  mountPatterns(badge);
 }
 
 /* ─ INVENTORY RENDER ─ */
@@ -1772,6 +1902,7 @@ function renderInv(gifts){
     let imgSection='';
     let corners='';
     if(g.on_market)corners+=`<span class="badge-corner badge-selling">Продаётся</span>`;
+    if(g.worn)corners+=`<span class="badge-corner badge-equipped">Надет</span>`;
     if(g.upgrade_result){
        // Telegram-style collectible card with the selected random pattern.
        const r=g.upgrade_result;const bg=SLOT_BGS[Number(r.bg_id||0)%SLOT_BGS.length].css;
@@ -2068,6 +2199,14 @@ function openShopGift(gid){
   const gift=shopCatalog.find(item=>item.id===gid);
   if(!gift)return;
   curShopGift=gift;
+  const detail=document.querySelector('#shop-detail-modal .shop-detail');
+  detail.classList.remove('profile-gift-detail');
+  detail.style.removeProperty('--gift-accent');
+  detail.style.removeProperty('--gift-bg');
+  $('profile-gift-meta').style.display='none';
+  $('profile-gift-meta').innerHTML='';
+  $('profile-gift-actions').style.display='none';
+  $('shop-detail-tertiary').style.display='none';
   const art=$('shop-detail-art');
   art.className='shop-detail-art';
   art.style.background='';
@@ -2098,12 +2237,23 @@ function openProfileGift(ugId){
   const gift=(cachedProfile?.gifts||[]).find(item=>item.ug_id===ugId);
   if(!gift)return;
   curShopGift=null;
+  const detail=document.querySelector('#shop-detail-modal .shop-detail');
+  detail.classList.add('profile-gift-detail');
   const art=$('shop-detail-art');
   art.className='shop-detail-art profile-detail-art';
   art.style.position='relative';
+  const upgraded=!!gift.upgrade_result;
+  const canUpgrade=!!gift.has_upgrade&&!upgraded;
+  const meta=$('profile-gift-meta');
+  const profileActions=$('profile-gift-actions');
+  const tertiary=$('shop-detail-tertiary');
   if(gift.upgrade_result){
     const r=gift.upgrade_result;
-    art.style.background=`linear-gradient(145deg,${r.rarity_color||'#64748b'}66,rgba(15,18,28,.88))`;
+    const accent=r.rarity_color||'#64748b';
+    const bg=SLOT_BGS[Number(r.bg_id||0)%SLOT_BGS.length];
+    detail.style.setProperty('--gift-accent',accent);
+    detail.style.setProperty('--gift-bg',bg.css);
+    art.style.background=`linear-gradient(145deg,${accent}bb,rgba(15,18,28,.88)),${bg.css}`;
     const pattern=patternUrl(resultPatternId(r));
     art.innerHTML=
       (pattern?`<div class="upg-card-pattern" data-pattern-id="${resultPatternId(r)}" aria-hidden="true"></div>`:'')+
@@ -2111,15 +2261,27 @@ function openProfileGift(ugId){
         ?mediaMarkup(r.photo,'shop-detail-media',gift.name,true)
         :'<div class="card-ph">🎁</div>');
     mountPatterns(art);
+    const owner=cachedProfile?.first_name||'Вы';
+    meta.innerHTML=[
+      ['Владелец',owner],
+      ['Модель',r.model||'—'],
+      ['Узор',`№${resultPatternId(r)}`],
+      ['Фон',bg.name],
+      ['Номер',`#${r.number||'—'}`],
+      ['Редкость',`${rIcon(r.rarity)} ${r.rarity||'Коллекционный'}`],
+    ].map(([label,value])=>`<div class="profile-gift-meta-row"><span>${escHtml(label)}</span><span>${escHtml(value)}</span></div>`).join('');
+    meta.style.display='grid';
   }else{
+    detail.style.removeProperty('--gift-accent');
+    detail.style.removeProperty('--gift-bg');
     art.style.background='';
     art.style.position='';
     art.innerHTML=gift.image
       ?mediaMarkup(gift.image,'shop-detail-media',gift.name,true)
       :'<div class="card-ph">🎁</div>';
+    meta.style.display='none';
+    meta.innerHTML='';
   }
-  const upgraded=!!gift.upgrade_result;
-  const canUpgrade=!!gift.has_upgrade&&!upgraded;
   $('shop-detail-heading').textContent='Подарок';
   $('shop-detail-section-title').textContent='Подарок вам';
   $('shop-detail-name').textContent=gift.name;
@@ -2136,36 +2298,82 @@ function openProfileGift(ugId){
   const secondary=$('shop-detail-secondary');
   secondary.style.display='none';
   secondary.onclick=null;
+  tertiary.style.display='none';
+  tertiary.onclick=null;
+  profileActions.style.display='none';
+  $('profile-gift-wear').disabled=false;
   buy.disabled=false;
-  if(canUpgrade){
+  if(upgraded&&!gift.on_market){
+    profileActions.style.display='grid';
+    $('profile-gift-transfer').innerHTML='<span class="gift-action-icon">♢</span>Передать';
+    $('profile-gift-transfer').onclick=()=>{closeShopGift();openTransfer(gift.ug_id,gift.name);};
+    $('profile-gift-wear').innerHTML=gift.worn
+      ?'<span class="gift-action-icon">✓</span>Снять'
+      :'<span class="gift-action-icon">♕</span>Носить';
+    $('profile-gift-wear').onclick=()=>toggleGiftWear(gift);
+    $('profile-gift-sell').innerHTML='<span class="gift-action-icon">♢</span>Продать';
+    $('profile-gift-sell').onclick=()=>{closeShopGift();openSell(gift.ug_id,gift.name);};
+    buy.style.display='none';
+    secondary.style.display='none';
+  }else if(canUpgrade){
+    buy.style.display='';
     buy.onclick=()=>{closeShopGift();openUpg(gift.ug_id,gift.name);};
     buy.textContent='⚡ Улучшить';
   }else if(gift.upgrade_result&&!gift.on_market){
+    buy.style.display='';
     buy.onclick=()=>{closeShopGift();openSell(gift.ug_id,gift.name);};
     buy.textContent='💱 Продать';
     secondary.style.display='block';
     secondary.textContent='📤 Передать';
     secondary.onclick=()=>{closeShopGift();openTransfer(gift.ug_id,gift.name);};
   }else if(gift.on_market){
+    buy.style.display='';
     buy.onclick=closeShopGift;
     buy.textContent='ОК';
     secondary.style.display='block';
     secondary.textContent='✕ Снять с продажи';
     secondary.onclick=()=>{closeShopGift();cancelMarket(gift.market_id);};
   }else{
+    buy.style.display='';
     buy.onclick=closeShopGift;
     buy.textContent='ОК';
   }
   document.body.classList.add('shop-detail-open');
   $('shop-detail-modal').classList.add('show');
 }
+async function toggleGiftWear(gift){
+  const button=$('profile-gift-wear');
+  button.disabled=true;
+  const d=await fetch('/api/gift/wear',{
+    method:'POST',
+    headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({user_gift_id:gift.ug_id,worn:!gift.worn})
+  }).then(r=>r.json());
+  if(d.success){
+    closeShopGift();
+    toast(d.worn?'🎁 Подарок надет!':'Подарок снят');
+    await loadProfile();
+  }else{
+    button.disabled=false;
+    toast('❌ '+(d.message||'Не удалось изменить подарок'),'linear-gradient(135deg,#b91c1c,#7f1d1d)');
+  }
+}
 function closeShopGift(){
   $('shop-detail-modal').classList.remove('show');
   document.body.classList.remove('shop-detail-open');
   curShopGift=null;
+  const detail=document.querySelector('#shop-detail-modal .shop-detail');
+  detail.classList.remove('profile-gift-detail');
+  detail.style.removeProperty('--gift-accent');
+  detail.style.removeProperty('--gift-bg');
+  $('profile-gift-meta').style.display='none';
+  $('profile-gift-meta').innerHTML='';
+  $('profile-gift-actions').style.display='none';
+  $('shop-detail-tertiary').style.display='none';
   $('shop-detail-secondary').style.display='none';
   $('shop-detail-secondary').onclick=null;
   $('shop-detail-buy').onclick=confirmShopGift;
+  $('shop-detail-buy').style.display='';
 }
 async function confirmShopGift(){
   if(!curShopGift||curShopGift.sold_out)return;
