@@ -6,6 +6,7 @@ from supabase_store import SupabaseConnection
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 app = Flask(__name__, template_folder=os.path.join(BASE_DIR, "templates"))
+app.config["MAX_CONTENT_LENGTH"] = 100 * 1024 * 1024
 app.secret_key = (
     os.environ.get("SESSION_SECRET")
     or os.environ.get("FLASK_SECRET_KEY")
@@ -44,7 +45,11 @@ CODE_SYNC_CONNECT_TIMEOUT = 5
 CODE_SYNC_READ_TIMEOUT = 30
 PREMIUM_PRICE = 50
 UPLOAD_FOLDER = os.path.join(BASE_DIR, "static", "uploads")
-ALLOWED_EXT = {"png", "jpg", "jpeg", "gif", "webp"}
+ALLOWED_EXT = {
+    "png", "jpg", "jpeg", "gif", "webp", "avif", "svg",
+    "mp4", "webm", "mov", "m4v", "ogv",
+    "mp3", "wav", "ogg", "m4a",
+}
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 PATTERN_FOLDER = os.path.join(BASE_DIR, "static", "patterns")
 PATTERN_FILES = sorted(

@@ -205,6 +205,35 @@ select.fi option{background:#0d0b1e;}
 .icard .card-img-wrap{border-radius:17px 17px 0 0;}
 .card-img-wrap{width:100%;aspect-ratio:1;overflow:hidden;position:relative;}
 .card-img{width:100%;height:100%;object-fit:cover;display:block;}
+.media-video{background:#050509;}
+.media-audio{
+  width:100%;
+  height:100%;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  gap:8px;
+  background:linear-gradient(145deg,rgba(109,40,217,.22),rgba(14,116,144,.16));
+  padding:12px;
+  box-sizing:border-box;
+}
+.media-audio-icon{font-size:28px;}
+.media-audio audio{width:100%;max-width:220px;height:34px;}
+.media-file{
+  width:100%;
+  height:100%;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  padding:12px;
+  box-sizing:border-box;
+  color:#c4b5fd;
+  font-size:12px;
+  text-align:center;
+  text-decoration:none;
+  background:rgba(109,40,217,.12);
+}
 .card-ph{width:100%;height:100%;display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,rgba(109,40,217,.12),rgba(14,116,144,.08));font-size:48px;}
 .badge-corner{position:absolute;top:7px;left:7px;padding:3px 8px;border-radius:20px;font-size:10px;font-weight:700;backdrop-filter:blur(8px);z-index:2;}
 .badge-selling{background:rgba(5,150,105,.85);color:#6ee7b7;border:1px solid rgba(16,185,129,.4);}
@@ -247,6 +276,7 @@ select.fi option{background:#0d0b1e;}
   position:relative;
   z-index:1;
 }
+.upg-card-media{width:76%;height:76%;object-fit:contain;filter:drop-shadow(0 5px 13px rgba(0,0,0,.52));position:relative;z-index:1;}
 .upg-card-rar-badge{position:absolute;top:7px;right:7px;padding:3px 9px;border-radius:20px;font-size:10px;font-weight:800;z-index:2;backdrop-filter:blur(6px);}
 .upg-card-foot{display:none;}
 .upg-card-rar,.upg-card-mod,.upg-card-num{display:none;}
@@ -334,7 +364,7 @@ body.shop-detail-open{overflow:hidden;}
 .slot-window::after{content:'';position:absolute;bottom:0;left:0;right:0;height:50%;background:linear-gradient(to top,rgba(0,0,0,.4),transparent);z-index:3;pointer-events:none;}
 .slot-reel{display:flex;flex-direction:column;will-change:transform;}
 .si{width:80px;height:80px;flex-shrink:0;display:flex;align-items:center;justify-content:center;overflow:hidden;}
-.si img{width:100%;height:100%;object-fit:cover;}
+.si img,.si video{width:100%;height:100%;object-fit:cover;}
 .si-text{font-size:11px;font-weight:600;color:#e2e8f0;padding:6px;text-align:center;word-break:break-all;line-height:1.3;}
 .slot-tick{font-size:16px;transition:all .3s;}
 .slot-status{font-size:11px;color:rgba(226,232,240,.3);margin-top:4px;animation:blink 1s ease-in-out infinite;}
@@ -345,7 +375,8 @@ body.shop-detail-open{overflow:hidden;}
 .upg-res-card{border-radius:16px;overflow:hidden;border:2px solid;margin:10px auto;max-width:220px;animation:revpop .6s cubic-bezier(.34,1.56,.64,1) forwards;}
 @keyframes revpop{0%{opacity:0;transform:scale(.5) rotate(-6deg);}60%{transform:scale(1.05) rotate(1deg);}100%{opacity:1;transform:scale(1) rotate(0);}}
 .upg-res-bg{width:100%;height:140px;display:flex;align-items:center;justify-content:center;position:relative;}
-.upg-res-photo{height:80%;width:80%;object-fit:contain;filter:drop-shadow(0 4px 20px rgba(0,0,0,.8));position:relative;z-index:1;}
+.upg-res-photo{height:80%;width:80%;display:flex;align-items:center;justify-content:center;position:relative;z-index:1;}
+.upg-res-media{height:100%;width:100%;object-fit:contain;filter:drop-shadow(0 4px 20px rgba(0,0,0,.8));}
 .upg-res-rar-label{position:absolute;top:8px;right:8px;padding:3px 9px;border-radius:20px;font-size:11px;font-weight:800;backdrop-filter:blur(6px);z-index:2;}
 .upg-res-foot{padding:10px 12px;background:rgba(0,0,0,.6);}
 .upg-res-rar{font-size:18px;font-weight:900;animation:rglo 1.5s ease-in-out infinite;}
@@ -363,6 +394,8 @@ body.shop-detail-open{overflow:hidden;}
 .photo-modal{max-height:88vh;overflow-y:auto;max-width:360px;}
 .ph-grid{display:flex;flex-wrap:wrap;gap:7px;margin-top:8px;justify-content:center;}
 .ph-thumb{width:50px;height:50px;object-fit:cover;border-radius:8px;border:1px solid rgba(255,255,255,.12);cursor:pointer;}
+.ph-thumb-wrap{display:inline-flex;width:50px;height:50px;border-radius:8px;overflow:hidden;cursor:pointer;}
+.ph-thumb-wrap .ph-thumb{width:100%;height:100%;}
 .mltag{padding:3px 9px;background:rgba(109,40,217,.18);border:1px solid rgba(109,40,217,.3);border-radius:18px;font-size:11px;color:#a78bfa;cursor:pointer;}
 
 /* ACCOUNT MODAL */
@@ -394,7 +427,7 @@ body.shop-detail-open{overflow:hidden;}
 .fl{font-size:11px;color:rgba(226,232,240,.5);margin-bottom:3px;display:block;}
 .gitem{display:flex;align-items:center;justify-content:space-between;padding:10px 12px;margin-bottom:7px;}
 .gleft{display:flex;align-items:center;gap:9px;}
-.gthumb{width:42px;height:42px;object-fit:cover;border-radius:8px;border:1px solid rgba(255,255,255,.08);}
+.gthumb,.gthumb-media{width:42px;height:42px;object-fit:cover;border-radius:8px;border:1px solid rgba(255,255,255,.08);}
 .gthumb-ph{width:42px;height:42px;background:rgba(109,40,217,.12);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:18px;}
 .gname{font-size:12px;font-weight:600;color:#e2e8f0;}
 .gmeta{font-size:10px;color:rgba(226,232,240,.35);margin-top:1px;}
@@ -414,6 +447,10 @@ body.shop-detail-open{overflow:hidden;}
 .file-btn:hover{background:rgba(0,0,0,.6);}
 input[type=file]{display:none;}
 .prev-img{width:64px;height:64px;object-fit:cover;border-radius:9px;margin-top:6px;border:1px solid rgba(255,255,255,.1);}
+.prev-media{display:inline-flex;align-items:center;justify-content:center;overflow:hidden;}
+.prev-media .media-audio{padding:4px;gap:2px;}
+.prev-media .media-audio-icon{font-size:18px;}
+.prev-media audio{height:24px;}
 .prev-imgs{display:flex;flex-wrap:wrap;gap:5px;margin-top:6px;}
 .divider{height:1px;background:rgba(255,255,255,.06);margin:10px 0;}
 .toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(110px);background:linear-gradient(135deg,#047857,#065f46);color:#fff;padding:11px 22px;border-radius:12px;font-size:13px;font-weight:600;z-index:9999;transition:transform .4s cubic-bezier(.34,1.56,.64,1);box-shadow:0 6px 24px rgba(0,0,0,.5);white-space:nowrap;}
@@ -714,6 +751,19 @@ select.fi option{background:#17212b;}
   object-fit:contain;
   filter:drop-shadow(0 9px 18px rgba(0,0,0,.45));
 }
+.shop-detail-art video{
+  width:100%;
+  height:100%;
+  object-fit:contain;
+  border-radius:22px;
+  background:#050509;
+}
+.shop-detail-art .media-audio{
+  width:88%;
+  height:88%;
+  border-radius:18px;
+}
+.shop-detail-art .media-file{width:88%;height:88%;border-radius:18px;}
 .shop-detail-art .card-ph{background:transparent;font-size:94px;}
 .shop-detail-art.profile-detail-art{
   background-size:cover;
@@ -1275,10 +1325,10 @@ body{
           <input class="fi" id="a-gqty" type="number" placeholder="Количество подарков" min="1" style="display:none;letter-spacing:normal;text-align:left;font-size:13px;margin-top:8px;">
           <div class="admin-field-hint" id="stock-mode-hint">Безлимитный подарок не заканчивается и не получает плашку Available в магазине.</div>
         </div>
-        <div class="fg"><label class="fl">Фото</label>
-          <label class="file-btn" for="a-gimg" style="display:block;">📷 Выбрать фото</label>
-          <input type="file" id="a-gimg" accept="image/*" onchange="prevImg(this,'a-gprev')">
-          <img id="a-gprev" class="prev-img" style="display:none;">
+          <div class="fg"><label class="fl">Медиафайл</label>
+           <label class="file-btn" for="a-gimg" style="display:block;">📎 Выбрать файл</label>
+           <input type="file" id="a-gimg" accept="image/*,video/*,audio/*,.svg,.avif,.mov,.m4v,.ogv,.m4a" onchange="prevImg(this,'a-gprev')">
+           <div id="a-gprev" class="prev-img prev-media" style="display:none;"></div>
         </div>
         <div class="admin-form-grid">
         <div class="fg"><label class="fl">Показывать в магазине</label>
@@ -1296,9 +1346,9 @@ body{
         <div class="fg"><label class="fl">Подарок</label><select class="fi" id="upg-gsel"><option value="">— выберите —</option></select></div>
         <div class="fg"><label class="fl">Название улучшения</label><input class="fi" id="upg-nm" placeholder="Название"></div>
         <div class="fg">
-          <label class="fl">Фото улучшений (до 15)</label>
-          <label class="file-btn" for="upg-photos-inp" style="display:block;">📷 Выбрать фото</label>
-          <input type="file" id="upg-photos-inp" accept="image/*" multiple onchange="prevUpgPhotos(this)">
+          <label class="fl">Медиа улучшений (до 15)</label>
+          <label class="file-btn" for="upg-photos-inp" style="display:block;">📎 Выбрать файлы</label>
+          <input type="file" id="upg-photos-inp" accept="image/*,video/*,audio/*,.svg,.avif,.mov,.m4v,.ogv,.m4a" multiple onchange="prevUpgPhotos(this)">
           <div id="upg-prev-imgs" class="prev-imgs"></div>
         </div>
         <div class="fg">
@@ -1333,10 +1383,10 @@ body{
             </div>
           </div>
           <div class="fg">
-            <label class="fl">Фото подарка</label>
-            <label class="file-btn" for="custom-gift-image" style="display:block;">📷 Выбрать фото</label>
-            <input type="file" id="custom-gift-image" accept="image/png,image/jpeg,image/gif,image/webp" onchange="prevImg(this,'custom-gift-preview')">
-            <img id="custom-gift-preview" class="prev-img" style="display:none;">
+              <label class="fl">Медиафайл подарка</label>
+              <label class="file-btn" for="custom-gift-image" style="display:block;">📎 Выбрать файл</label>
+            <input type="file" id="custom-gift-image" accept="image/*,video/*,audio/*,.svg,.avif,.mov,.m4v,.ogv,.m4a" onchange="prevImg(this,'custom-gift-preview')">
+            <div id="custom-gift-preview" class="prev-img prev-media" style="display:none;"></div>
           </div>
           <button class="btn bs" onclick="giveCustomGift()">🎁 Выдать подарок</button>
         </div>
@@ -1409,7 +1459,7 @@ body{
       <div style="font-size:12px;color:rgba(226,232,240,.35);margin-bottom:6px;">✨ Результат улучшения</div>
       <div class="upg-res-card" id="res-full-card">
         <div class="upg-res-bg" id="res-bg">
-          <img id="res-photo-big" class="upg-res-photo" style="display:none;">
+          <div id="res-photo-big" class="upg-res-photo" style="display:none;"></div>
           <div id="res-no-photo" style="font-size:52px;display:none;">🎁</div>
           <div class="upg-res-rar-label" id="res-rar-badge"></div>
         </div>
@@ -1447,7 +1497,7 @@ body{
     <div id="ph-grid" class="ph-grid"></div>
     <div class="divider"></div>
     <label class="file-btn" for="ph-inp" style="display:block;text-align:center;margin-bottom:8px;">📷 Добавить фото</label>
-    <input type="file" id="ph-inp" accept="image/*" multiple onchange="uploadPhots()">
+    <input type="file" id="ph-inp" accept="image/*,video/*,audio/*,.svg,.avif,.mov,.m4v,.ogv,.m4a" multiple onchange="uploadPhots()">
     <div id="ph-models" style="margin-top:8px;"></div>
     <div class="divider"></div>
     <div style="display:flex;gap:7px;">
@@ -1517,6 +1567,57 @@ const resultPatternId=r=>{
   const number=Math.max(1,Number(r?.number)||1);
   return ((number-1)%PATTERN_COUNT)+1;
 };
+const IMAGE_EXTS=new Set(['png','jpg','jpeg','gif','webp','avif','svg']);
+const VIDEO_EXTS=new Set(['mp4','webm','mov','m4v','ogv']);
+const AUDIO_EXTS=new Set(['mp3','wav','ogg','m4a']);
+function fileExt(filename){return String(filename||'').split('.').pop().toLowerCase();}
+function fileKind(filename){
+  const ext=fileExt(filename);
+  return IMAGE_EXTS.has(ext)?'image':VIDEO_EXTS.has(ext)?'video':AUDIO_EXTS.has(ext)?'audio':'file';
+}
+function fileMime(filename){
+  const ext=fileExt(filename);
+  return {
+    svg:'image/svg+xml',avif:'image/avif',mp4:'video/mp4',webm:'video/webm',
+    mov:'video/quicktime',m4v:'video/x-m4v',ogv:'video/ogg',mp3:'audio/mpeg',
+    wav:'audio/wav',ogg:'audio/ogg',m4a:'audio/mp4'
+  }[ext]||'';
+}
+function escHtml(value){
+  return String(value??'').replace(/[&<>"']/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
+}
+function mediaMarkup(filename,className='card-img',alt='Медиафайл',controls=false){
+  const src='/static/uploads/'+encodeURIComponent(filename);
+  const kind=fileKind(filename);
+  const safeAlt=escHtml(alt);
+  const mime=fileMime(filename);
+  if(kind==='image')return `<img class="${className}" src="${src}" alt="${safeAlt}">`;
+  if(kind==='video'){
+    return `<video class="${className} media-video" ${controls?'controls':'autoplay loop muted'} playsinline preload="metadata"><source src="${src}"${mime?` type="${mime}"`:''}></video>`;
+  }
+  if(kind==='audio'){
+    return `<div class="media-audio ${className}"><span class="media-audio-icon">🎵</span><audio controls preload="metadata"><source src="${src}"${mime?` type="${mime}"`:''}></audio></div>`;
+  }
+  return `<a class="media-file ${className}" href="${src}" target="_blank" rel="noopener">📎 Открыть файл</a>`;
+}
+
+function previewMediaNode(file,className='prev-img'){
+  const kind=fileKind(file.name);
+  const url=URL.createObjectURL(file);
+  if(kind==='image'){
+    const node=document.createElement('img');node.className=className;node.src=url;return node;
+  }
+  if(kind==='video'){
+    const node=document.createElement('video');node.className=className+' media-video';node.src=url;
+    node.muted=true;node.loop=true;node.autoplay=true;node.playsInline=true;return node;
+  }
+  if(kind==='audio'){
+    const wrap=document.createElement('div');wrap.className=className+' prev-media media-audio';
+    wrap.innerHTML='<span class="media-audio-icon">🎵</span>';
+    const audio=document.createElement('audio');audio.controls=true;audio.src=url;wrap.appendChild(audio);return wrap;
+  }
+  const link=document.createElement('a');link.className=className+' prev-media media-file';link.href=url;link.target='_blank';link.textContent='📎 Открыть файл';return link;
+}
 
 function mountPatterns(root=document){
   if(!window.lottie)return;
@@ -1676,12 +1777,12 @@ function renderInv(gifts){
              ${pattern?`<div class="upg-card-pattern" data-pattern-id="${resultPatternId(r)}" aria-hidden="true"></div>`:''}
             ${corners}
              <span class="cr cr-num">#${r.number}</span>
-            ${r.photo?`<img src="/static/uploads/${r.photo}" class="upg-card-photo">`:`<div style="font-size:52px;">🎁</div>`}
+             ${r.photo?mediaMarkup(r.photo,'upg-card-media',g.name):`<div style="font-size:52px;">🎁</div>`}
           </div>
         </div>`;
     }else{
       imgSection=`<div style="position:relative;overflow:hidden;">
-        <div class="card-img-wrap">${g.image?`<img class="card-img" src="/static/uploads/${g.image}">`:`<div class="card-ph">🎁</div>`}</div>
+        <div class="card-img-wrap">${g.image?mediaMarkup(g.image,'card-img',g.name):`<div class="card-ph">🎁</div>`}</div>
         ${corners}
       </div>`;
     }
@@ -1808,7 +1909,7 @@ async function openUpg(ugId,name){
   const phList=photos.length?photos:[''];
   const phWin=res.photo?phList.indexOf(res.photo):0;
   buildReel($('sr-ph'),phList,phWin>=0?phWin:0,
-    (fn)=>`<div class="si">${fn?`<img src="/static/uploads/${fn}" style="width:100%;height:100%;object-fit:cover;">`:`<span style="font-size:28px;">🎁</span>`}</div>`);
+    (fn)=>`<div class="si">${fn?mediaMarkup(fn,'slot-media','Улучшение'):``}<span style="${fn?'display:none;':''}font-size:28px;">🎁</span></div>`);
 
   // Build Model reel
   const mdList=models.length?models:['—'];
@@ -1857,8 +1958,15 @@ function showUpgRes(r){
     window.lottie.loadAnimation({container:patternEl,renderer:'svg',loop:true,autoplay:true,path:pattern,rendererSettings:{progressiveLoad:true,preserveAspectRatio:'xMidYMid slice'}});
   }
   const ph=$('res-photo-big');
-  if(r.photo){ph.src='/static/uploads/'+r.photo;ph.style.display='block';$('res-no-photo').style.display='none';}
-  else{ph.style.display='none';$('res-no-photo').style.display='block';}
+  if(r.photo){
+    ph.innerHTML=mediaMarkup(r.photo,'upg-res-media','Результат улучшения',true);
+    ph.style.display='flex';
+    $('res-no-photo').style.display='none';
+  }else{
+    ph.innerHTML='';
+    ph.style.display='none';
+    $('res-no-photo').style.display='block';
+  }
   const rarBadge=$('res-rar-badge');
   rarBadge.textContent=rIcon(r.rarity)+' '+r.rarity;
   rarBadge.style.background=r.rarity_color+'33';rarBadge.style.border=`1px solid ${r.rarity_color}77`;rarBadge.style.color=r.rarity_color;
@@ -1937,7 +2045,7 @@ async function loadShop(){
       ['✦','✧','✦','✧','·'].map(mark=>`<span>${mark}</span>`).join('')+
       '</div>';
     const imgW=g.image
-      ?`<div class="card-img-wrap" style="position:relative;overflow:hidden;"><img class="card-img" src="/static/uploads/${g.image}">${sparkles}${ribbon}</div>`
+      ?`<div class="card-img-wrap" style="position:relative;overflow:hidden;">${mediaMarkup(g.image,'card-img',g.name)}${sparkles}${ribbon}</div>`
       :`<div class="card-img-wrap" style="position:relative;overflow:hidden;"><div class="card-ph">🎁</div>${sparkles}${ribbon}</div>`;
     return `<div class="scard gc ${so?'so':''}" role="button" tabindex="0"
       onclick="openShopGift(${g.id})"
@@ -1959,7 +2067,7 @@ function openShopGift(gid){
   art.className='shop-detail-art';
   art.style.background='';
   art.innerHTML=gift.image
-    ?`<img src="/static/uploads/${gift.image}" alt="${gift.name}">`
+    ?mediaMarkup(gift.image,'shop-detail-media',gift.name,true)
     :'<div class="card-ph">🎁</div>';
   $('shop-detail-heading').textContent='Купить подарок';
   $('shop-detail-section-title').textContent='Подарок себе';
@@ -1995,14 +2103,14 @@ function openProfileGift(ugId){
     art.innerHTML=
       (pattern?`<div class="upg-card-pattern" data-pattern-id="${resultPatternId(r)}" aria-hidden="true"></div>`:'')+
       (r.photo
-        ?`<img src="/static/uploads/${r.photo}" alt="${gift.name}">`
+        ?mediaMarkup(r.photo,'shop-detail-media',gift.name,true)
         :'<div class="card-ph">🎁</div>');
     mountPatterns(art);
   }else{
     art.style.background='';
     art.style.position='';
     art.innerHTML=gift.image
-      ?`<img src="/static/uploads/${gift.image}" alt="${gift.name}">`
+      ?mediaMarkup(gift.image,'shop-detail-media',gift.name,true)
       :'<div class="card-ph">🎁</div>';
   }
   const upgraded=!!gift.upgrade_result;
@@ -2102,10 +2210,10 @@ async function loadMarket(){
     const bg=SLOT_BGS[it.bg_id||0].css;
     const imgSection=it.rarity
       ?`<div style="width:100%;aspect-ratio:1;background:${bg};display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden;">
-          ${it.photo_filename?`<img src="/static/uploads/${it.photo_filename}" style="width:75%;height:75%;object-fit:contain;filter:drop-shadow(0 4px 12px rgba(0,0,0,.7));">`:`<span style="font-size:42px;">🎁</span>`}
+          ${it.photo_filename?mediaMarkup(it.photo_filename,'upg-card-media',it.name):`<span style="font-size:42px;">🎁</span>`}
           <span style="position:absolute;top:6px;right:6px;padding:2px 7px;border-radius:18px;font-size:9px;font-weight:800;background:${it.rarity_color}33;border:1px solid ${it.rarity_color}66;color:${it.rarity_color};">${rIcon(it.rarity)} ${it.rarity}</span>
         </div>`
-      :`<div class="card-img-wrap">${it.image?`<img class="card-img" src="/static/uploads/${it.image}">`:`<div class="card-ph">🎁</div>`}</div>`;
+      :`<div class="card-img-wrap">${it.image?mediaMarkup(it.image,'card-img',it.name):`<div class="card-ph">🎁</div>`}</div>`;
     return `<div class="mcard gc">${imgSection}
       <div class="mcard-body">
         <div class="mcard-name">${it.name}</div>
@@ -2161,12 +2269,15 @@ async function loadAdminGifts(){
       ?'<span class="admin-status is-unlimited">∞ Безлимитный</span>'
       :(rem>0?`<span class="admin-status is-available">● Available · ${rem} шт.</span>`:'<span class="admin-status is-sold">● Тираж закончился</span>');
     return `<div class="gitem gc"><div class="gleft">
-      ${g.image?`<img class="gthumb" src="/static/uploads/${g.image}">`:`<div class="gthumb-ph">🎁</div>`}
+       ${g.image?mediaMarkup(g.image,'gthumb-media',g.name):`<div class="gthumb-ph">🎁</div>`}
       <div><div class="gname">${g.name}</div><div class="gmeta">⭐${g.price} ${g.in_shop?'· В магазине':'· Скрыт'} · ${stock}</div>${status}</div>
     </div><button class="btn bd xsm" onclick="delGift(${g.id})">Удалить</button></div>`;
   }).join('');
 }
-function prevImg(inp,pid){const f=inp.files[0];if(!f)return;const r=new FileReader();r.onload=e=>{const i=$(pid);i.src=e.target.result;i.style.display='block';};r.readAsDataURL(f);}
+function prevImg(inp,pid){
+  const f=inp.files[0];if(!f)return;
+  const target=$(pid);target.innerHTML='';target.appendChild(previewMediaNode(f,'prev-img'));target.style.display='inline-flex';
+}
 async function addGift(){
   const name=$('a-gname').value.trim();
   if(!name){toast('❌ Введи название','linear-gradient(135deg,#b91c1c,#7f1d1d)');return;}
@@ -2180,7 +2291,7 @@ async function addGift(){
   const d=await fetch('/api/admin/gifts',{method:'POST',body:fd}).then(r=>r.json());
   if(d.success){
     toast(stockMode==='unlimited'?'∞ Безлимитный подарок выпущен!':'🎁 Подарок выпущен!');
-    $('a-gname').value='';$('a-gprice').value='';$('a-gqty').value='';$('a-gimg').value='';$('a-gprev').style.display='none';
+    $('a-gname').value='';$('a-gprice').value='';$('a-gqty').value='';$('a-gimg').value='';$('a-gprev').innerHTML='';$('a-gprev').style.display='none';
     selectStockMode('unlimited');loadAdminGifts();loadUpgGsel();
   }else toast('❌ '+(d.error||d.message||'Не удалось выпустить подарок'),'linear-gradient(135deg,#b91c1c,#7f1d1d)');
 }
@@ -2194,9 +2305,7 @@ async function delGift(id){
 function prevUpgPhotos(inp){
   const wrap=$('upg-prev-imgs');wrap.innerHTML='';
   for(const f of inp.files){
-    const r=new FileReader();
-    r.onload=e=>{const img=document.createElement('img');img.className='prev-img';img.src=e.target.result;wrap.appendChild(img);};
-    r.readAsDataURL(f);
+    wrap.appendChild(previewMediaNode(f,'prev-img'));
   }
 }
 function addModelToForm(){
@@ -2237,7 +2346,7 @@ async function loadAdminUpgs(){
         <div style="flex:1;">
           <div class="upg-at">🎁 ${u.gift_name} — ${u.name}</div>
           <div class="upg-as">Выдано: ${u.counter} · Фото: ${u.photo_count}/15 · Моделей: ${u.model_count}</div>
-          ${u.photos.length?`<div class="ph-grid" style="margin-top:7px;">${u.photos.slice(0,5).map(p=>`<img class="ph-thumb" src="/static/uploads/${p}">`).join('')}${u.photos.length>5?`<span style="width:50px;height:50px;display:flex;align-items:center;justify-content:center;background:rgba(255,255,255,.04);border-radius:8px;font-size:11px;">+${u.photos.length-5}</span>`:''}</div>`:''}
+          ${u.photos.length?`<div class="ph-grid" style="margin-top:7px;">${u.photos.slice(0,5).map(p=>mediaMarkup(p,'ph-thumb',u.gift_name)).join('')}${u.photos.length>5?`<span style="width:50px;height:50px;display:flex;align-items:center;justify-content:center;background:rgba(255,255,255,.04);border-radius:8px;font-size:11px;">+${u.photos.length-5}</span>`:''}</div>`:''}
           ${u.models.length?`<div style="display:flex;flex-wrap:wrap;gap:4px;margin-top:6px;">${u.models.map(m=>`<span class="mltag">🔩 ${m}</span>`).join('')}</div>`:''}
         </div>
         <div style="display:flex;flex-direction:column;gap:4px;align-items:flex-end;flex-shrink:0;">
@@ -2252,7 +2361,7 @@ async function refreshPh(){
   if(!curUpgAdmId)return;
   const d=await fetch(`/api/admin/upgrade_photos_list/${curUpgAdmId}`,{headers:{'Cache-Control':'no-cache'}}).then(r=>r.json());
   $('ph-cnt').textContent=d.photos.length;
-  $('ph-grid').innerHTML=d.photos.map(p=>`<img class="ph-thumb" src="/static/uploads/${p.filename}" onclick="delPh(${p.id})" title="Удалить">`).join('');
+  $('ph-grid').innerHTML=d.photos.map(p=>`<span class="ph-thumb-wrap" onclick="delPh(${p.id})" title="Удалить">${mediaMarkup(p.filename,'ph-thumb',p.filename)}</span>`).join('');
   $('ph-models').innerHTML=d.models.length?
     '<div style="font-size:11px;color:rgba(226,232,240,.35);margin-bottom:4px;">Модели:</div><div style="display:flex;flex-wrap:wrap;gap:5px;">'+
     d.models.map(m=>`<span class="mltag" onclick="delMod(${m.id})">🔩 ${m.name} ✕</span>`).join('')+'</div>':'';
@@ -2326,7 +2435,7 @@ async function giveCustomGift(){
     $('custom-gift-user').value='';
     $('custom-gift-name').value='';
     $('custom-gift-image').value='';
-    $('custom-gift-preview').style.display='none';
+    $('custom-gift-preview').innerHTML='';$('custom-gift-preview').style.display='none';
   }else{
     toast('❌ '+(d.error||'Не удалось выдать подарок'),'linear-gradient(135deg,#b91c1c,#7f1d1d)');
   }
