@@ -261,11 +261,16 @@ select.fi option{background:#0d0b1e;}
 }
 .upg-card-pattern{
   position:absolute;
-  inset:0;
-  z-index:0;
-  opacity:.2;
-  mix-blend-mode:multiply;
+  inset:11%;
+  z-index:1;
+  opacity:.5;
+  transform:scale(.78);
+  transform-origin:center;
+  border-radius:24px;
+  overflow:hidden;
   pointer-events:none;
+  mix-blend-mode:normal;
+  filter:saturate(1.15);
 }
 .upg-card-pattern svg{width:100%;height:100%;display:block;}
 .upg-card-photo{
@@ -276,7 +281,7 @@ select.fi option{background:#0d0b1e;}
   position:relative;
   z-index:1;
 }
-.upg-card-media{width:76%;height:76%;object-fit:contain;filter:drop-shadow(0 5px 13px rgba(0,0,0,.52));position:relative;z-index:1;}
+.upg-card-media{width:62%;height:62%;object-fit:contain;filter:drop-shadow(0 5px 13px rgba(0,0,0,.52));position:relative;z-index:2;}
 .upg-card-rar-badge{position:absolute;top:7px;right:7px;padding:3px 9px;border-radius:20px;font-size:10px;font-weight:800;z-index:2;backdrop-filter:blur(6px);}
 .upg-card-foot{display:none;}
 .upg-card-rar,.upg-card-mod,.upg-card-num{display:none;}
@@ -1593,7 +1598,7 @@ function mediaMarkup(filename,className='card-img',alt='Медиафайл',cont
   const mime=fileMime(filename);
   if(kind==='image')return `<img class="${className}" src="${src}" alt="${safeAlt}">`;
   if(kind==='video'){
-    return `<video class="${className} media-video" ${controls?'controls':'autoplay loop muted'} playsinline preload="metadata"><source src="${src}"${mime?` type="${mime}"`:''}></video>`;
+    return `<video class="${className} media-video" autoplay loop muted playsinline preload="metadata"><source src="${src}"${mime?` type="${mime}"`:''}></video>`;
   }
   if(kind==='audio'){
     return `<div class="media-audio ${className}"><span class="media-audio-icon">🎵</span><audio controls preload="metadata"><source src="${src}"${mime?` type="${mime}"`:''}></audio></div>`;
@@ -1953,7 +1958,7 @@ function showUpgRes(r){
   if(pattern&&window.lottie){
     const patternEl=document.createElement('div');
     patternEl.className='result-pattern';
-    patternEl.style.cssText='position:absolute;inset:0;opacity:.2;mix-blend-mode:multiply;pointer-events:none;';
+    patternEl.style.cssText='position:absolute;inset:11%;opacity:.38;transform:scale(.78);transform-origin:center;border-radius:24px;overflow:hidden;pointer-events:none;';
     resBg.appendChild(patternEl);
     window.lottie.loadAnimation({container:patternEl,renderer:'svg',loop:true,autoplay:true,path:pattern,rendererSettings:{progressiveLoad:true,preserveAspectRatio:'xMidYMid slice'}});
   }
