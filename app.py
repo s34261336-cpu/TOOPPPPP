@@ -213,6 +213,12 @@ def is_local_code_sync_target():
 def sync_code_to_webapp(telegram_id, code, username, first_name):
     if not ENABLE_CODE_SYNC or not CODE_SYNC_URL:
         return True
+    # BotHost and the Mini App share Supabase, so the code is already visible
+    # to both processes. Do not block Telegram replies on a second HTTP write.
+    if os.environ.get("SUPABASE_URL", "").strip() and os.environ.get(
+        "SUPABASE_KEY", ""
+    ).strip():
+        return True
     if is_local_code_sync_target():
         return True
     if not CODE_SYNC_SECRET:
