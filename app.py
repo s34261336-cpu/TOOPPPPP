@@ -46,6 +46,12 @@ PREMIUM_PRICE = 50
 UPLOAD_FOLDER = os.path.join(BASE_DIR, "static", "uploads")
 ALLOWED_EXT = {"png", "jpg", "jpeg", "gif", "webp"}
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
+PATTERN_FOLDER = os.path.join(BASE_DIR, "static", "patterns")
+PATTERN_FILES = sorted(
+    filename
+    for filename in os.listdir(PATTERN_FOLDER)
+    if filename.lower().endswith(".json")
+)
 
 
 def roll_rarity():
@@ -150,7 +156,12 @@ def init_db():
         user_gift_id INTEGER NOT NULL, upgrade_id INTEGER NOT NULL,
         rarity TEXT, rarity_color TEXT, number INTEGER,
         photo_filename TEXT, model_name TEXT,
+        bg_id INTEGER,
         upgraded_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP)""")
+    try:
+        c.execute("ALTER TABLE user_gift_upgrades ADD COLUMN bg_id INTEGER")
+    except:
+        pass
     # Marketplace
     c.execute("""CREATE TABLE IF NOT EXISTS marketplace(
         id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -512,7 +523,8 @@ def profile():
         """
         SELECT ug.id as ug_id, g.id as g_id, g.name, g.image,
                gu.id as upg_id,
-               g.price, ugu.rarity, ugu.rarity_color, ugu.number, ugu.photo_filename, ugu.model_name,
+               g.price, ugu.rarity, ugu.rarity_color, ugu.number, ugu.photo_filename,
+               ugu.model_name, ugu.bg_id,
                ml.id as market_id, ml.price as market_price
         FROM user_gifts ug
         INNER JOIN gifts g ON g.id=ug.gift_id
@@ -550,6 +562,7 @@ def profile():
                 "number": r["number"],
                 "photo": r["photo_filename"],
                 "model": r["model_name"],
+                "bg_id": r["bg_id"],
             }
     return nc(
         jsonify(
@@ -702,6 +715,7 @@ def do_upgrade(ug_id):
     c.execute("SELECT counter FROM gift_upgrades WHERE id=?", (upg["id"],))
     number = c.fetchone()["counter"]
     rarity, rarity_color = roll_rarity()
+    pattern_id = random.randint(1, len(PATTERN_FILES)) if PATTERN_FILES else None
     c.execute("SELECT filename FROM upgrade_photos WHERE upgrade_id=?", (upg["id"],))
     photos = [r["filename"] for r in c.fetchall()]
     photo = random.choice(photos) if photos else None
@@ -710,9 +724,9 @@ def do_upgrade(ug_id):
     model = random.choice(models) if models else None
     c.execute(
         """INSERT INTO user_gift_upgrades
-                 (user_gift_id,upgrade_id,rarity,rarity_color,number,photo_filename,model_name)
-                 VALUES(?,?,?,?,?,?,?)""",
-        (ug_id, upg["id"], rarity, rarity_color, number, photo, model),
+                 (user_gift_id,upgrade_id,rarity,rarity_color,number,photo_filename,model_name,bg_id)
+                 VALUES(?,?,?,?,?,?,?,?)""",
+        (ug_id, upg["id"], rarity, rarity_color, number, photo, model, pattern_id),
     )
     conn.commit()
     conn.close()
@@ -726,9 +740,7 @@ def do_upgrade(ug_id):
                     "number": number,
                     "photo": photo,
                     "model": model,
-                    "bg_id": {"Common": 0, "Epic": 3, "Mythic": 5, "Legendary": 7}.get(
-                        rarity, 0
-                    ),
+                    "bg_id": pattern_id,
                 },
             }
         )
@@ -1329,6 +1341,69 @@ def give_gift():
     conn.commit()
     conn.close()
     return nc(jsonify({"success": True}))
+
+
+@app.route("/api/admin/give_custom_gift", methods=["POST"])
+def give_custom_gift():
+    if not session.get("admin"):
+        return jsonify({"error": "Нет доступа"}), 403
+
+    identifier = request.form.get("user_identifier", "").strip().lstrip("@")
+    name = request.form.get("name", "").strip() or "Авторский подарок"
+    image = save_upload(request.files.get("image"), "custom")
+    if not identifier:
+        return jsonify({"error": "Укажи ID или username пользователя"}), 400
+    if not image:
+        return jsonify({"error": "Добавь фото подарка в PNG, JPG, GIF или WEBP"}), 400
+
+    conn = get_db()
+    c = conn.cursor()
+    if identifier.isdigit():
+        c.execute(
+            """SELECT id, username, first_name FROM users
+               WHERE id=? OR telegram_id=? LIMIT 1""",
+            (int(identifier), identifier),
+        )
+    else:
+        c.execute(
+            """SELECT id, username, first_name FROM users
+               WHERE lower(username)=lower(?) LIMIT 1""",
+            (identifier,),
+        )
+    user = c.fetchone()
+    if not user:
+        conn.close()
+        try:
+            os.remove(os.path.join(UPLOAD_FOLDER, image))
+        except OSError:
+            pass
+        return jsonify({"error": "Пользователь с таким ID или username не найден"}), 404
+
+    c.execute(
+        """INSERT INTO gifts(name,price,image,in_shop,quantity,sold)
+           VALUES(?,0,?,0,NULL,0)""",
+        (name, image),
+    )
+    gift_id = c.lastrowid
+    c.execute(
+        "INSERT INTO user_gifts(user_id,gift_id) VALUES(?,?)",
+        (user["id"], gift_id),
+    )
+    conn.commit()
+    conn.close()
+    return nc(
+        jsonify(
+            {
+                "success": True,
+                "gift_id": gift_id,
+                "user": {
+                    "id": user["id"],
+                    "username": user["username"],
+                    "first_name": user["first_name"],
+                },
+            }
+        )
+    )
 
 
 @app.route("/api/admin/set_premium", methods=["POST"])

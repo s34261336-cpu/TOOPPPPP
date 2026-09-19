@@ -220,13 +220,36 @@ select.fi option{background:#0d0b1e;}
   border:1px solid;
   box-shadow:inset 0 1px 0 rgba(255,255,255,.18),0 10px 25px rgba(0,0,0,.28);
 }
-.upg-card-bg{width:100%;aspect-ratio:1;display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden;}
-.upg-card-photo{width:75%;height:75%;object-fit:contain;filter:drop-shadow(0 4px 16px rgba(0,0,0,.7));position:relative;z-index:1;}
+.upg-card-bg{
+  width:100%;
+  aspect-ratio:1;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  position:relative;
+  overflow:hidden;
+  background:linear-gradient(145deg,#5f9d70,#3f7655);
+}
+.upg-card-pattern{
+  position:absolute;
+  inset:0;
+  z-index:0;
+  opacity:.2;
+  mix-blend-mode:multiply;
+  pointer-events:none;
+}
+.upg-card-pattern svg{width:100%;height:100%;display:block;}
+.upg-card-photo{
+  width:76%;
+  height:76%;
+  object-fit:contain;
+  filter:drop-shadow(0 5px 13px rgba(0,0,0,.52));
+  position:relative;
+  z-index:1;
+}
 .upg-card-rar-badge{position:absolute;top:7px;right:7px;padding:3px 9px;border-radius:20px;font-size:10px;font-weight:800;z-index:2;backdrop-filter:blur(6px);}
-.upg-card-foot{padding:8px 9px;background:rgba(14,16,22,.48);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);}
-.upg-card-rar{font-size:12px;font-weight:800;margin-bottom:2px;}
-.upg-card-mod{font-size:10px;color:rgba(226,232,240,.5);}
-.upg-card-num{font-size:10px;color:rgba(226,232,240,.4);margin-top:1px;}
+.upg-card-foot{display:none;}
+.upg-card-rar,.upg-card-mod,.upg-card-num{display:none;}
 .no-upg{text-align:center;font-size:10px;color:rgba(226,232,240,.2);margin-top:4px;}
 
 /* ═══ CORNER RIBBONS ═══ */
@@ -1294,6 +1317,29 @@ body{
     </div>
     <div id="at-users" class="atc">
       <div class="sc gl"><div class="admin-section-head"><div><div class="stitle">👥 Пользователи</div><div class="admin-section-note">Баланс, подарки и Premium под контролем.</div></div><span class="admin-section-icon">⌁</span></div>
+        <div class="admin-custom-gift gl">
+          <div class="admin-section-head">
+            <div><div class="stitle">🎨 Выдать свой подарок</div><div class="admin-section-note">Загрузи фото и укажи ID или username получателя.</div></div>
+            <span class="admin-section-icon">↗</span>
+          </div>
+          <div class="admin-form-grid">
+            <div class="fg admin-field-wide">
+              <label class="fl">ID или username пользователя</label>
+              <input class="fi" id="custom-gift-user" placeholder="@username или 123456" autocomplete="off">
+            </div>
+            <div class="fg">
+              <label class="fl">Название</label>
+              <input class="fi" id="custom-gift-name" placeholder="Авторский подарок">
+            </div>
+          </div>
+          <div class="fg">
+            <label class="fl">Фото подарка</label>
+            <label class="file-btn" for="custom-gift-image" style="display:block;">📷 Выбрать фото</label>
+            <input type="file" id="custom-gift-image" accept="image/png,image/jpeg,image/gif,image/webp" onchange="prevImg(this,'custom-gift-preview')">
+            <img id="custom-gift-preview" class="prev-img" style="display:none;">
+          </div>
+          <button class="btn bs" onclick="giveCustomGift()">🎁 Выдать подарок</button>
+        </div>
         <div id="a-ulist"><div class="empty"><div class="loader"></div></div></div>
       </div>
     </div>
@@ -1453,6 +1499,7 @@ body{
 
 <div id="toast" class="toast"></div>
 
+<script src="/static/vendor/lottie.min.js"></script>
 <script>
 const $=id=>document.getElementById(id);
 let premPrice=1000,activeFilter='all',allGifts=[],aucTimer=null;
@@ -1461,7 +1508,35 @@ let cachedProfile=null;
 let formModels=[];
 let stockMode='unlimited';
 
-// 8 beautiful gradient backgrounds for upgrades
+const PATTERN_COUNT=81;
+const patternFile=id=>id>=1&&id<=PATTERN_COUNT?String(id).padStart(3,'0')+'.json':'';
+const patternUrl=id=>{const file=patternFile(Number(id));return file?`/static/patterns/${file}`:'';};
+const resultPatternId=r=>{
+  const stored=Number(r?.bg_id);
+  if(stored>=1&&stored<=PATTERN_COUNT)return stored;
+  const number=Math.max(1,Number(r?.number)||1);
+  return ((number-1)%PATTERN_COUNT)+1;
+};
+
+function mountPatterns(root=document){
+  if(!window.lottie)return;
+  root.querySelectorAll('.upg-card-pattern[data-pattern-id]').forEach(el=>{
+    if(el.dataset.patternMounted==='1')return;
+    const url=patternUrl(el.dataset.patternId);
+    if(!url)return;
+    el.dataset.patternMounted='1';
+    window.lottie.loadAnimation({
+      container:el,
+      renderer:'svg',
+      loop:true,
+      autoplay:true,
+      path:url,
+      rendererSettings:{progressiveLoad:true,preserveAspectRatio:'xMidYMid slice'}
+    });
+  });
+}
+
+// Gradient fallbacks are used if an older upgraded gift has no pattern yet.
 const SLOT_BGS=[
   {css:'linear-gradient(160deg,#1a0533,#3b0764)',name:'Аметист'},
   {css:'linear-gradient(160deg,#0f1730,#1a3a6e)',name:'Сапфир'},
@@ -1592,20 +1667,16 @@ function renderInv(gifts){
     let corners='';
     if(g.on_market)corners+=`<span class="badge-corner badge-selling">Продаётся</span>`;
     if(g.upgrade_result){
-      // Beautiful collectible card
-      const r=g.upgrade_result;const bg=SLOT_BGS[r.bg_id||0].css;
+       // Telegram-style collectible card with the selected random pattern.
+       const r=g.upgrade_result;const bg=SLOT_BGS[Number(r.bg_id||0)%SLOT_BGS.length].css;
+       const pattern=patternUrl(resultPatternId(r));
       imgSection=`
         <div class="upg-card r-${r.rarity}" style="border-color:${r.rarity_color}44;">
-          <div class="upg-card-bg" style="background:${bg};position:relative;overflow:hidden;">
+           <div class="upg-card-bg" style="background:${pattern?'linear-gradient(145deg,#6b9f76,#477d5d)':bg};">
+             ${pattern?`<div class="upg-card-pattern" data-pattern-id="${resultPatternId(r)}" aria-hidden="true"></div>`:''}
             ${corners}
-            <span class="cr cr-num">#${r.number}</span>
-            <div class="upg-card-rar-badge" style="background:${r.rarity_color}33;border:1px solid ${r.rarity_color}88;color:${r.rarity_color};">${rIcon(r.rarity)} ${r.rarity}</div>
+             <span class="cr cr-num">#${r.number}</span>
             ${r.photo?`<img src="/static/uploads/${r.photo}" class="upg-card-photo">`:`<div style="font-size:52px;">🎁</div>`}
-          </div>
-          <div class="upg-card-foot">
-            <div class="upg-card-rar" style="color:${r.rarity_color};">${r.rarity}</div>
-            ${r.model?`<div class="upg-card-mod">🔩 ${r.model}</div>`:''}
-            <div class="upg-card-num">#${r.number}</div>
           </div>
         </div>`;
     }else{
@@ -1614,20 +1685,23 @@ function renderInv(gifts){
         ${corners}
       </div>`;
     }
-    const actions=g.on_market
-      ?'<div class="card-status">На продаже</div>'
-      :'<div class="tap-hint">Нажми, чтобы открыть</div>';
+    const actions=g.upgrade_result
+      ?''
+      :(g.on_market
+        ?'<div class="card-status">На продаже</div>'
+        :'<div class="tap-hint">Нажми, чтобы открыть</div>');
     const showName=!g.upgrade_result;
     return `<div class="icard gc" role="button" tabindex="0"
       onclick="if(!event.target.closest('button'))openProfileGift(${g.ug_id})"
       onkeydown="if(event.key==='Enter'||event.key===' ')openProfileGift(${g.ug_id})">
       ${imgSection}
-      <div class="card-body">
+      ${g.upgrade_result?'':`<div class="card-body">
         ${showName?`<div class="card-name">${g.name}</div>`:''}
         ${actions}
-      </div>
+      </div>`}
     </div>`;
-  }).join('')+'</div>';
+   }).join('')+'</div>';
+   mountPatterns(el);
 }
 
 /* ─ ACCOUNT MODAL ─ */
@@ -1769,10 +1843,19 @@ async function openUpg(ugId,name){
 }
 
 function showUpgRes(r){
-  const bg=SLOT_BGS[r.bg_id||0].css;
+  const bg=SLOT_BGS[Number(r.bg_id||0)%SLOT_BGS.length].css;
   const card=$('res-full-card');
   card.style.borderColor=r.rarity_color+'66';
   const resBg=$('res-bg');resBg.style.background=bg;
+  resBg.querySelector('.result-pattern')?.remove();
+  const pattern=patternUrl(resultPatternId(r));
+  if(pattern&&window.lottie){
+    const patternEl=document.createElement('div');
+    patternEl.className='result-pattern';
+    patternEl.style.cssText='position:absolute;inset:0;opacity:.2;mix-blend-mode:multiply;pointer-events:none;';
+    resBg.appendChild(patternEl);
+    window.lottie.loadAnimation({container:patternEl,renderer:'svg',loop:true,autoplay:true,path:pattern,rendererSettings:{progressiveLoad:true,preserveAspectRatio:'xMidYMid slice'}});
+  }
   const ph=$('res-photo-big');
   if(r.photo){ph.src='/static/uploads/'+r.photo;ph.style.display='block';$('res-no-photo').style.display='none';}
   else{ph.style.display='none';$('res-no-photo').style.display='block';}
@@ -1904,14 +1987,20 @@ function openProfileGift(ugId){
   curShopGift=null;
   const art=$('shop-detail-art');
   art.className='shop-detail-art profile-detail-art';
+  art.style.position='relative';
   if(gift.upgrade_result){
     const r=gift.upgrade_result;
     art.style.background=`linear-gradient(145deg,${r.rarity_color||'#64748b'}66,rgba(15,18,28,.88))`;
-    art.innerHTML=r.photo
-      ?`<img src="/static/uploads/${r.photo}" alt="${gift.name}">`
-      :'<div class="card-ph">🎁</div>';
+    const pattern=patternUrl(resultPatternId(r));
+    art.innerHTML=
+      (pattern?`<div class="upg-card-pattern" data-pattern-id="${resultPatternId(r)}" aria-hidden="true"></div>`:'')+
+      (r.photo
+        ?`<img src="/static/uploads/${r.photo}" alt="${gift.name}">`
+        :'<div class="card-ph">🎁</div>');
+    mountPatterns(art);
   }else{
     art.style.background='';
+    art.style.position='';
     art.innerHTML=gift.image
       ?`<img src="/static/uploads/${gift.image}" alt="${gift.name}">`
       :'<div class="card-ph">🎁</div>';
@@ -2219,6 +2308,28 @@ async function gGift(uid){
   const sel=$('gs-'+uid);if(!sel)return;
   const d=await fetch('/api/admin/give_gift',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({user_id:uid,gift_id:parseInt(sel.value)})}).then(r=>r.json());
   if(d.success)toast('🎁 Выдан!');
+}
+async function giveCustomGift(){
+  const identifier=$('custom-gift-user').value.trim();
+  const name=$('custom-gift-name').value.trim();
+  const file=$('custom-gift-image').files[0];
+  if(!identifier){toast('❌ Укажи ID или username','linear-gradient(135deg,#b91c1c,#7f1d1d)');return;}
+  if(!file){toast('❌ Добавь фото подарка','linear-gradient(135deg,#b91c1c,#7f1d1d)');return;}
+  const fd=new FormData();
+  fd.append('user_identifier',identifier);
+  fd.append('name',name);
+  fd.append('image',file);
+  const d=await fetch('/api/admin/give_custom_gift',{method:'POST',body:fd}).then(r=>r.json());
+  if(d.success){
+    const target=d.user.username?'@'+d.user.username:(d.user.first_name||('ID '+d.user.id));
+    toast(`🎁 Выдано: ${target}`);
+    $('custom-gift-user').value='';
+    $('custom-gift-name').value='';
+    $('custom-gift-image').value='';
+    $('custom-gift-preview').style.display='none';
+  }else{
+    toast('❌ '+(d.error||'Не удалось выдать подарок'),'linear-gradient(135deg,#b91c1c,#7f1d1d)');
+  }
 }
 async function togPrem(uid,val){
   const d=await fetch('/api/admin/set_premium',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({user_id:uid,premium:!!val})}).then(r=>r.json());
