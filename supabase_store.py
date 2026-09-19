@@ -132,13 +132,16 @@ LOCAL_SCHEMA = {
     """,
 }
 
-_sync_lock = threading.Lock()
+_sync_lock = threading.RLock()
 
 
 class SupabaseConnection:
     """Expose the small sqlite3.Connection surface used by app.py."""
 
     def __init__(self, local_db_path: str):
+        _sync_lock.acquire()
+        self._lock_held = True
+        self._closed = False
         self._base_url = os.environ["SUPABASE_URL"].rstrip("/")
         self._key = os.environ["SUPABASE_KEY"]
         self._headers = {
@@ -152,8 +155,15 @@ class SupabaseConnection:
         self._synced_snapshot: dict[str, list[dict[str, Any]]] = {
             table: [] for table in TABLES
         }
-        self._create_local_schema()
-        self._hydrate()
+        try:
+            self._create_local_schema()
+            self._hydrate()
+        except Exception:
+            self._conn.close()
+            self._closed = True
+            self._lock_held = False
+            _sync_lock.release()
+            raise
 
     def _create_local_schema(self) -> None:
         for sql in LOCAL_SCHEMA.values():
@@ -270,7 +280,13 @@ class SupabaseConnection:
         self._conn.rollback()
 
     def close(self) -> None:
+        if self._closed:
+            return
         self._conn.close()
+        self._closed = True
+        if self._lock_held:
+            self._lock_held = False
+            _sync_lock.release()
 
     def _snapshot(self) -> dict[str, list[dict[str, Any]]]:
         snapshot: dict[str, list[dict[str, Any]]] = {}
