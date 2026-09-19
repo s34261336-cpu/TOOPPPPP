@@ -1121,10 +1121,17 @@ def delete_gift(gid):
         return jsonify({"error": "Нет доступа"}), 403
     conn = get_db()
     c = conn.cursor()
-    c.execute("DELETE FROM gifts WHERE id=?", (gid,))
+    c.execute("SELECT COUNT(*) AS owned FROM user_gifts WHERE gift_id=?", (gid,))
+    owned = c.fetchone()["owned"]
+    if owned:
+        # Keep the catalog row so existing owners can still see their gift.
+        # It is removed from the shop instead of being hard-deleted.
+        c.execute("UPDATE gifts SET in_shop=0 WHERE id=?", (gid,))
+    else:
+        c.execute("DELETE FROM gifts WHERE id=?", (gid,))
     conn.commit()
     conn.close()
-    return nc(jsonify({"success": True}))
+    return nc(jsonify({"success": True, "archived": bool(owned)}))
 
 
 # ── ADMIN: UPGRADES ───────────────────────────────────
