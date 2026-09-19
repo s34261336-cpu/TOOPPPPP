@@ -18,19 +18,19 @@ author = "agent"
 
 [[workflows.workflow.tasks]]
 task = "workflow.run"
-args = "GiftFastel Mini App"
+args = "Start application"
 
 [[workflows.workflow]]
-name = "GiftFastel Mini App"
+name = "Start application"
 author = "agent"
-
-[workflows.workflow.metadata]
-outputType = "webview"
 
 [[workflows.workflow.tasks]]
 task = "shell.exec"
 args = "uv sync --frozen && uv run --no-sync python app.py"
 waitForPort = 5000
+
+[workflows.workflow.metadata]
+outputType = "webview"
 
 [agent]
 stack = "PNPM_WORKSPACE"
@@ -50,3 +50,8 @@ MINI_APP_URL = "https://tooppppp.onrender.com"
 
 ENABLE_BOT_POLLING = "1"
 ENABLE_CODE_SYNC = "1"
+
+[[ports]]
+localPort = 5000
+externalPort = 80
+exposeLocalhost = true
