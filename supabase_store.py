@@ -12,6 +12,8 @@ from __future__ import annotations
 import os
 import sqlite3
 import threading
+import time
+from concurrent.futures import ThreadPoolExecutor
 from datetime import datetime
 from typing import Any
 
@@ -133,17 +135,26 @@ LOCAL_SCHEMA = {
 }
 
 _sync_lock = threading.RLock()
+_CACHE_TTL_SECONDS = 300.0
+_AUTH_CACHE_TTL_SECONDS = 2.0
+_remote_cache: dict[str, list[dict[str, Any]]] | None = None
+_remote_table_at: dict[str, float] = {}
 
 
 class SupabaseConnection:
     """Expose the small sqlite3.Connection surface used by app.py."""
 
-    def __init__(self, local_db_path: str):
+    def __init__(
+        self,
+        local_db_path: str,
+        refresh_tables: set[str] | None = None,
+    ):
         _sync_lock.acquire()
         self._lock_held = True
         self._closed = False
         self._base_url = os.environ["SUPABASE_URL"].rstrip("/")
         self._key = os.environ["SUPABASE_KEY"]
+        self._http = requests.Session()
         self._headers = {
             "apikey": self._key,
             "Authorization": f"Bearer {self._key}",
@@ -157,7 +168,7 @@ class SupabaseConnection:
         }
         try:
             self._create_local_schema()
-            self._hydrate()
+            self._hydrate(refresh_tables)
         except Exception:
             self._conn.close()
             self._closed = True
@@ -171,7 +182,7 @@ class SupabaseConnection:
         self._conn.commit()
 
     def _request(self, method: str, table: str, **kwargs: Any) -> requests.Response:
-        response = requests.request(
+        response = self._http.request(
             method,
             f"{self._base_url}/rest/v1/{table}",
             headers=self._headers,
@@ -203,10 +214,38 @@ class SupabaseConnection:
                 return rows
             offset += page_size
 
-    def _hydrate(self) -> None:
-        remote = {table: self._fetch_table(table) for table in TABLES}
-        if any(remote.values()):
-            self._insert_rows(remote)
+    def _hydrate(self, refresh_tables: set[str] | None = None) -> None:
+        global _remote_cache, _remote_table_at
+
+        now = time.monotonic()
+        if _remote_cache is None:
+            tables_to_fetch = set(TABLES)
+        else:
+            tables_to_fetch = set(refresh_tables or ())
+            tables_to_fetch.update(
+                table
+                for table in TABLES
+                if now - _remote_table_at.get(table, 0.0)
+                >= (
+                    _AUTH_CACHE_TTL_SECONDS
+                    if refresh_tables and table in refresh_tables
+                    else _CACHE_TTL_SECONDS
+                )
+            )
+
+        if tables_to_fetch:
+            with ThreadPoolExecutor(max_workers=len(tables_to_fetch)) as executor:
+                pages = executor.map(self._fetch_table, tables_to_fetch)
+                fresh = dict(zip(tables_to_fetch, pages))
+
+            if _remote_cache is None:
+                _remote_cache = {table: [] for table in TABLES}
+            for table, rows in fresh.items():
+                _remote_cache[table] = rows
+                _remote_table_at[table] = now
+
+        if _remote_cache is not None and any(_remote_cache.values()):
+            self._insert_rows(_remote_cache)
             self._conn.commit()
             self._synced_snapshot = self._snapshot()
             return
@@ -263,6 +302,8 @@ class SupabaseConnection:
         return self._conn.cursor()
 
     def commit(self) -> None:
+        global _remote_cache, _remote_table_at
+
         self._conn.commit()
         snapshot = self._snapshot()
         changed_tables = {
@@ -275,6 +316,13 @@ class SupabaseConnection:
         with _sync_lock:
             self._publish(snapshot, changed_tables)
         self._synced_snapshot = snapshot
+        _remote_cache = {
+            table: [dict(row) for row in rows]
+            for table, rows in snapshot.items()
+        }
+        committed_at = time.monotonic()
+        for table in changed_tables:
+            _remote_table_at[table] = committed_at
 
     def rollback(self) -> None:
         self._conn.rollback()
@@ -283,6 +331,7 @@ class SupabaseConnection:
         if self._closed:
             return
         self._conn.close()
+        self._http.close()
         self._closed = True
         if self._lock_held:
             self._lock_held = False
@@ -308,7 +357,7 @@ class SupabaseConnection:
             rows = snapshot[table]
             for start in range(0, len(rows), 500):
                 chunk = rows[start : start + 500]
-                response = requests.post(
+                response = self._http.post(
                     f"{self._base_url}/rest/v1/{table}",
                     headers={
                         **self._headers,
@@ -334,7 +383,7 @@ class SupabaseConnection:
             filter_value = (
                 f"not.in.({','.join(ids)})" if ids else "not.is.null"
             )
-            response = requests.delete(
+            response = self._http.delete(
                 f"{self._base_url}/rest/v1/{table}",
                 headers={**self._headers, "Prefer": "return=minimal"},
                 params={"id": filter_value},

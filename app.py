@@ -84,11 +84,11 @@ def nc(resp):
     return resp
 
 
-def get_db():
+def get_db(refresh_tables=None):
     if os.environ.get("SUPABASE_URL", "").strip() and os.environ.get(
         "SUPABASE_KEY", ""
     ).strip():
-        return SupabaseConnection(DB_PATH)
+        return SupabaseConnection(DB_PATH, refresh_tables=refresh_tables)
     conn = sqlite3.connect(DB_PATH, timeout=30)
     conn.row_factory = sqlite3.Row
     return conn
@@ -280,7 +280,7 @@ def poll_bot():
                         cid = str(msg["chat"]["id"])
                         fn = msg["from"].get("first_name", "Пользователь")
                         un = msg["from"].get("username", "")
-                        conn = get_db()
+                        conn = get_db(refresh_tables={"codes", "users"})
                         c = conn.cursor()
                         c.execute(
                             "INSERT OR IGNORE INTO users(telegram_id,username,first_name) VALUES(?,?,?)",
@@ -431,7 +431,7 @@ def sync_code():
     if not hmac.compare_digest(signature, expected_signature):
         return nc(jsonify({"success": False, "message": "Недействительная подпись"})), 401
 
-    conn = get_db()
+    conn = get_db(refresh_tables={"codes", "users"})
     c = conn.cursor()
     c.execute(
         "INSERT OR IGNORE INTO users(telegram_id,username,first_name) VALUES(?,?,?)",
@@ -455,7 +455,7 @@ def login():
         session["admin"] = True
         session["user_id"] = None
         return nc(jsonify({"success": True, "role": "admin"}))
-    conn = get_db()
+    conn = get_db(refresh_tables={"codes", "users"})
     c = conn.cursor()
     c.execute("SELECT * FROM codes WHERE code=? AND used=0", (code,))
     row = c.fetchone()
