@@ -902,7 +902,8 @@ def market():
         SELECT ml.id, ml.price, ml.listed_at,
                ug.id as ug_id, g.name, g.image,
                u.first_name as seller_name,
-               ugu.rarity, ugu.rarity_color, ugu.number, ugu.photo_filename, ugu.model_name
+               ugu.rarity, ugu.rarity_color, ugu.number, ugu.photo_filename, ugu.model_name,
+               ugu.bg_id
         FROM marketplace ml
         JOIN user_gifts ug ON ug.id=ml.user_gift_id
         JOIN gifts g ON g.id=ug.gift_id

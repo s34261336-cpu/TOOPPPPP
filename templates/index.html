@@ -253,7 +253,7 @@ select.fi option{background:#0d0b1e;}
 .icard .card-img-wrap{border-radius:17px 17px 0 0;}
 .card-img-wrap{width:100%;aspect-ratio:1;overflow:hidden;position:relative;}
 .card-img{width:100%;height:100%;object-fit:cover;display:block;}
-.media-video{background:#050509;}
+.media-video{display:block;background:transparent;object-fit:contain;}
 .media-audio{
   width:100%;
   height:100%;
@@ -366,12 +366,15 @@ select.fi option{background:#0d0b1e;}
   background:linear-gradient(140deg,rgba(255,255,255,.13),transparent 27%,transparent 72%,rgba(0,0,0,.14));
 }
 .profile-gift-card-face .upg-card-pattern{
-  opacity:.26;
+   opacity:.34;
   z-index:1;
+   inset:-6%;
+   -webkit-mask-image:radial-gradient(ellipse 58% 58% at 50% 50%,transparent 0 43%,#000 58%,#000 100%);
+   mask-image:radial-gradient(ellipse 58% 58% at 50% 50%,transparent 0 43%,#000 58%,#000 100%);
 }
 .profile-gift-card-art{
   position:absolute;
-  inset:10%;
+   inset:13%;
   z-index:3;
   display:flex;
   align-items:center;
@@ -461,6 +464,114 @@ select.fi option{background:#0d0b1e;}
   transform-origin:right center;
   text-shadow:0 1px 2px rgba(0,0,0,.25);
 }
+.gift-card-market-price{
+   position:absolute;
+   left:50%;
+   bottom:9px;
+   z-index:7;
+   display:inline-flex;
+   align-items:center;
+   gap:4px;
+   min-height:25px;
+   max-width:calc(100% - 24px);
+   padding:4px 10px;
+   overflow:hidden;
+   border:1px solid rgba(255,255,255,.22);
+   border-radius:999px;
+   background:linear-gradient(180deg,rgba(20,80,123,.9),rgba(10,44,74,.92));
+   box-shadow:0 5px 14px rgba(0,0,0,.28),inset 0 1px 0 rgba(255,255,255,.22);
+   color:#f8fbff;
+   font-size:11px;
+   font-weight:800;
+   white-space:nowrap;
+   transform:translateX(-50%);
+   text-shadow:0 1px 2px rgba(0,0,0,.35);
+ }
+.gift-card-market-price::first-letter{color:#dbeafe;}
+
+/* Telegram-style market card treatment */
+.market-gift-card-face{
+   position:relative;
+   width:100%;
+   aspect-ratio:1;
+   overflow:hidden;
+   border-radius:20px 20px 0 0;
+   isolation:isolate;
+ }
+.market-gift-card-face .upg-card-pattern{
+   position:absolute;
+   inset:-5%;
+   z-index:1;
+   opacity:.34;
+   -webkit-mask-image:radial-gradient(ellipse 59% 59% at 50% 50%,transparent 0 43%,#000 58%,#000 100%);
+   mask-image:radial-gradient(ellipse 59% 59% at 50% 50%,transparent 0 43%,#000 58%,#000 100%);
+ }
+.market-gift-card-face .upg-card-pattern svg{width:100%;height:100%;}
+.market-gift-card-art{
+   position:absolute;
+   inset:12%;
+   z-index:3;
+   display:flex;
+   align-items:center;
+   justify-content:center;
+ }
+.market-gift-card-art .market-gift-card-media{
+   width:92%;
+   height:92%;
+   object-fit:contain;
+   display:block;
+   filter:drop-shadow(0 8px 12px rgba(0,0,0,.45));
+ }
+.market-gift-card-art .card-ph{width:100%;height:100%;background:transparent;font-size:52px;}
+.market-card-ribbon{
+   position:absolute;
+   top:0;
+   right:0;
+   z-index:6;
+   width:72px;
+   height:72px;
+   overflow:hidden;
+   border-radius:0 20px 0 0;
+   background:linear-gradient(145deg,rgba(29,190,112,.96),rgba(9,126,74,.94));
+   clip-path:polygon(31% 0,100% 0,100% 100%);
+ }
+.market-card-ribbon::after{
+   content:'';
+   position:absolute;
+   right:0;
+   bottom:0;
+   border-top:11px solid rgba(3,73,45,.55);
+   border-left:11px solid transparent;
+ }
+.market-card-ribbon span{
+   position:absolute;
+   top:19px;
+   right:2px;
+   color:#effff5;
+   font-size:9px;
+   font-weight:800;
+   white-space:nowrap;
+   transform:rotate(35deg);
+   transform-origin:right center;
+   text-shadow:0 1px 2px rgba(0,0,0,.3);
+ }
+.market-card-price{
+   position:absolute;
+   left:50%;
+   bottom:9px;
+   z-index:7;
+   padding:5px 11px;
+   border:1px solid rgba(255,255,255,.22);
+   border-radius:999px;
+   background:linear-gradient(180deg,rgba(24,99,155,.94),rgba(10,48,81,.95));
+   box-shadow:0 5px 14px rgba(0,0,0,.3),inset 0 1px 0 rgba(255,255,255,.22);
+   color:#fff;
+   font-size:12px;
+   font-weight:800;
+   white-space:nowrap;
+   transform:translateX(-50%);
+   text-shadow:0 1px 2px rgba(0,0,0,.35);
+ }
 
 /* ═══ CORNER RIBBONS ═══ */
 .cr{position:absolute;top:12px;right:-28px;font-size:9px;font-weight:800;padding:3px 34px;transform:rotate(35deg);letter-spacing:.6px;box-shadow:0 2px 10px rgba(0,0,0,.5);z-index:6;white-space:nowrap;pointer-events:none;}
@@ -940,7 +1051,8 @@ select.fi option{background:#17212b;}
   position:relative;
   z-index:3;
   border-radius:22px;
-  background:#050509;
+   background:transparent;
+   object-position:center;
 }
 .shop-detail-art .media-audio{
   width:88%;
@@ -1834,12 +1946,28 @@ function mediaMarkup(filename,className='card-img',alt='Медиафайл',cont
   const mime=fileMime(filename);
   if(kind==='image')return `<img class="${className}" src="${src}" alt="${safeAlt}">`;
   if(kind==='video'){
-    return `<video class="${className} media-video" autoplay loop muted playsinline preload="metadata"><source src="${src}"${mime?` type="${mime}"`:''}></video>`;
+    return `<video class="${className} media-video" autoplay loop muted playsinline preload="auto"${controls?' controls':''} webkit-playsinline><source src="${src}"${mime?` type="${mime}"`:''}></video>`;
   }
   if(kind==='audio'){
     return `<div class="media-audio ${className}"><span class="media-audio-icon">🎵</span><audio controls preload="metadata"><source src="${src}"${mime?` type="${mime}"`:''}></audio></div>`;
   }
   return `<a class="media-file ${className}" href="${src}" target="_blank" rel="noopener">📎 Открыть файл</a>`;
+}
+
+function mountVideos(root=document){
+  root.querySelectorAll('video.media-video').forEach(video=>{
+    video.muted=true;
+    video.defaultMuted=true;
+    video.setAttribute('muted','');
+    video.setAttribute('autoplay','');
+    video.setAttribute('playsinline','');
+    const start=()=>{const attempt=video.play();if(attempt?.catch)attempt.catch(()=>{});};
+    if(video.readyState>=2)start();
+    else{
+      video.addEventListener('loadeddata',start,{once:true});
+      video.addEventListener('canplay',start,{once:true});
+    }
+  });
 }
 
 function previewMediaNode(file,className='prev-img'){
@@ -1861,6 +1989,7 @@ function previewMediaNode(file,className='prev-img'){
 }
 
 function mountPatterns(root=document){
+  mountVideos(root);
   if(!window.lottie)return;
   root.querySelectorAll('.upg-card-pattern[data-pattern-id]').forEach(el=>{
     if(el.dataset.patternMounted==='1')return;
@@ -2040,6 +2169,8 @@ function renderInv(gifts){
     const number=g.on_market
       ?'<span class="gift-card-market-ribbon"><span>Продаётся</span></span>'
       :(r?.number?`<span class="gift-card-number"><span>#${r.number}</span></span>`:'');
+    const marketPrice=g.on_market&&Number(g.market_price)>0
+      ?`<span class="gift-card-market-price">⭐ ${Number(g.market_price).toLocaleString('ru-RU')}</span>`:'';
     const media=photo
       ?mediaMarkup(photo,'profile-gift-card-media',g.name)
       :'<div class="card-ph">🎁</div>';
@@ -2051,6 +2182,7 @@ function renderInv(gifts){
         aria-label="${escHtml(g.name)}">
         ${pattern?`<div class="upg-card-pattern" data-pattern-id="${patternId}" aria-hidden="true"></div>`:''}
         ${number}
+        ${marketPrice}
         <div class="profile-gift-card-art">${media}</div>
       </div>
     </div>`;
@@ -2311,6 +2443,7 @@ async function loadShop(){
       </div>
     </div>`;
   }).join('')+'</div>';
+  mountVideos(el);
 }
 function openShopGift(gid){
   const gift=shopCatalog.find(item=>item.id===gid);
@@ -2349,6 +2482,7 @@ function openShopGift(gid){
     :(gift.price>0?`Купить подарок за ⭐ ${gift.price}`:'Получить подарок');
   document.body.classList.add('shop-detail-open');
   $('shop-detail-modal').classList.add('show');
+  mountVideos(art);
 }
 function openProfileGift(ugId){
   const gift=(cachedProfile?.gifts||[]).find(item=>item.ug_id===ugId);
@@ -2549,10 +2683,15 @@ async function loadMarket(){
   const el=$('market-list');
   if(!items.length){el.innerHTML='<div class="empty"><div class="emico">💱</div>Маркет пуст</div>';return;}
   el.innerHTML='<div class="mgrid">'+items.map(it=>{
-    const bg=SLOT_BGS[it.bg_id||0].css;
+    const bg=SLOT_BGS[Number(it.bg_id||0)%SLOT_BGS.length];
     const imgSection=it.rarity
-      ?`<div style="width:100%;aspect-ratio:1;background:${bg};display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden;">
-          ${it.photo_filename?mediaMarkup(it.photo_filename,'upg-card-media',it.name):`<span style="font-size:42px;">🎁</span>`}
+      ?`<div class="market-gift-card-face" style="background:${bg.css};">
+          ${patternUrl(resultPatternId(it))?`<div class="upg-card-pattern" data-pattern-id="${resultPatternId(it)}" aria-hidden="true"></div>`:''}
+          <div class="market-gift-card-art">
+            ${it.photo_filename?mediaMarkup(it.photo_filename,'market-gift-card-media',it.name):`<div class="card-ph">🎁</div>`}
+          </div>
+          <span class="market-card-ribbon"><span>Продаётся</span></span>
+          <span class="market-card-price">⭐ ${Number(it.price||0).toLocaleString('ru-RU')}</span>
           <span style="position:absolute;top:6px;right:6px;padding:2px 7px;border-radius:18px;font-size:9px;font-weight:800;background:${it.rarity_color}33;border:1px solid ${it.rarity_color}66;color:${it.rarity_color};">${rIcon(it.rarity)} ${it.rarity}</span>
         </div>`
       :`<div class="card-img-wrap">${it.image?mediaMarkup(it.image,'card-img',it.name):`<div class="card-ph">🎁</div>`}</div>`;
@@ -2561,10 +2700,11 @@ async function loadMarket(){
         <div class="mcard-name">${it.name}</div>
         <div class="mcard-seller">от ${it.seller_name}</div>
         ${it.model_name?`<div style="font-size:10px;color:rgba(226,232,240,.4);margin-bottom:4px;">🔩 ${it.model_name} #${it.number}</div>`:''}
-        <div class="mcard-price">⭐ ${it.price}</div>
+        <div class="mcard-price">⭐ ${Number(it.price||0).toLocaleString('ru-RU')}</div>
         <button class="btn bp" style="padding:8px;font-size:12px;" onclick="buyMarket(${it.id})">Купить</button>
       </div></div>`;
   }).join('')+'</div>';
+  mountPatterns(el);
 }
 async function buyMarket(id){
   const d=await fetch(`/api/market/buy/${id}`,{method:'POST'}).then(r=>r.json());
