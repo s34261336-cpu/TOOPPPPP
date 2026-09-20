@@ -1,4 +1,4 @@
-import hashlib, hmac, os, sqlite3, random, string, threading, time, secrets, requests
+import hashlib, hmac, os, sqlite3, random, string, threading, time, secrets, requests, subprocess
 from urllib.parse import urlparse
 from flask import Flask, render_template, request, jsonify, session, send_from_directory
 from flask_cors import CORS
@@ -85,7 +85,61 @@ def save_upload(file, prefix=""):
         + "."
         + ext
     )
-    file.save(os.path.join(UPLOAD_FOLDER, name))
+    source_path = os.path.join(UPLOAD_FOLDER, name)
+    file.save(source_path)
+
+    # Telegram-style animated gifts are often uploaded as MOV/WebM or as
+    # MP4s using a mobile-only codec. Normalize them to H.264 so browsers
+    # can render the gift instead of showing a black video surface.
+    if ext in {"mp4", "webm", "mov", "m4v", "ogv"}:
+        normalized = os.path.splitext(name)[0] + ".mp4"
+        normalized_path = os.path.join(UPLOAD_FOLDER, normalized)
+        temp_path = source_path + ".normalized.mp4"
+        try:
+            result = subprocess.run(
+                [
+                    "ffmpeg",
+                    "-hide_banner",
+                    "-loglevel",
+                    "error",
+                    "-y",
+                    "-i",
+                    source_path,
+                    "-map",
+                    "0:v:0",
+                    "-map",
+                    "0:a?",
+                    "-c:v",
+                    "libx264",
+                    "-pix_fmt",
+                    "yuv420p",
+                    "-vf",
+                    "scale=trunc(iw/2)*2:trunc(ih/2)*2",
+                    "-c:a",
+                    "aac",
+                    "-movflags",
+                    "+faststart",
+                    temp_path,
+                ],
+                capture_output=True,
+                timeout=90,
+                check=False,
+            )
+            if result.returncode == 0 and os.path.exists(temp_path):
+                os.replace(temp_path, normalized_path)
+                if normalized_path != source_path and os.path.exists(source_path):
+                    os.remove(source_path)
+                return normalized
+            app.logger.warning(
+                "Не удалось преобразовать видео %s: %s",
+                name,
+                result.stderr.decode("utf-8", "replace")[-500:],
+            )
+            if os.path.exists(temp_path):
+                os.remove(temp_path)
+        except (FileNotFoundError, subprocess.TimeoutExpired, OSError):
+            app.logger.exception("Ошибка нормализации видео %s", name)
+
     return name
 
 

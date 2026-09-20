@@ -1164,6 +1164,21 @@ select.fi option{background:#17212b;}
   border-color:color-mix(in srgb,var(--gift-accent,#5b8f70) 62%,rgba(255,255,255,.25));
   box-shadow:0 18px 45px color-mix(in srgb,var(--gift-accent,#5b8f70) 27%,rgba(0,0,0,.55)),inset 0 1px 0 rgba(255,255,255,.2);
 }
+.shop-detail.profile-gift-detail .shop-detail-art .upg-card-pattern{
+   inset:9%;
+   z-index:1;
+   border-radius:50%;
+   opacity:.34;
+   overflow:hidden;
+   -webkit-mask-image:radial-gradient(circle at 50% 50%,#000 0 48%,transparent 73%);
+   mask-image:radial-gradient(circle at 50% 50%,#000 0 48%,transparent 73%);
+ }
+.shop-detail.profile-gift-detail .shop-detail-art img.shop-detail-media,
+.shop-detail.profile-gift-detail .shop-detail-art video.shop-detail-media{
+   width:72%;
+   height:72%;
+   object-fit:contain;
+ }
 @media(min-width:481px){
   .shop-detail{height:min(720px,calc(100vh - 48px));border:1px solid rgba(255,255,255,.13);border-bottom:0;border-radius:22px 22px 0 0;}
 }
@@ -2163,8 +2178,8 @@ function renderInv(gifts){
     const r=g.upgrade_result;
     const bg=SLOT_BGS[Number(r?.bg_id||g.ug_id||g.id||0)%SLOT_BGS.length];
     const accent=r?.rarity_color||'#5f936f';
-    const patternId=r?resultPatternId(r):((Number(g.ug_id||g.id||1)-1)%PATTERN_COUNT)+1;
-    const pattern=patternUrl(patternId);
+    const patternId=r?resultPatternId(r):null;
+    const pattern=patternId?patternUrl(patternId):'';
     const photo=r?.photo||g.image;
     const number=g.on_market
       ?'<span class="gift-card-market-ribbon"><span>Продаётся</span></span>'
