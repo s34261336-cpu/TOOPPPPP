@@ -184,19 +184,30 @@ class SupabaseConnection:
         self._conn.commit()
 
     def _request(self, method: str, table: str, **kwargs: Any) -> requests.Response:
-        response = self._http.request(
-            method,
-            f"{self._base_url}/rest/v1/{table}",
-            headers=self._headers,
-            timeout=20,
-            **kwargs,
-        )
-        if not response.ok:
+        last_response: requests.Response | None = None
+        for attempt in range(4):
+            response = self._http.request(
+                method,
+                f"{self._base_url}/rest/v1/{table}",
+                headers=self._headers,
+                timeout=20,
+                **kwargs,
+            )
+            last_response = response
+            if response.ok:
+                return response
             detail = response.text[:300].replace("\n", " ")
+            transient = response.status_code in {401, 502, 503, 504, 522, 524}
+            future_jwt = "jwt issued at future" in detail.lower()
+            if attempt < 3 and (transient or future_jwt):
+                time.sleep(2**attempt)
+                continue
             raise RuntimeError(
                 f"Supabase {method} {table} failed ({response.status_code}): {detail}"
             )
-        return response
+        detail = last_response.text[:300].replace("\n", " ") if last_response else "no response"
+        status = last_response.status_code if last_response else "unknown"
+        raise RuntimeError(f"Supabase {method} {table} failed ({status}): {detail}")
 
     def _fetch_table(self, table: str) -> list[dict[str, Any]]:
         rows: list[dict[str, Any]] = []
